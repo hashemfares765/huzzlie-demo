@@ -698,7 +698,9 @@ function HuzzlieApp() {
   }
 
   function handleLoginClick() {
-    if (user) return;
+    if (user) {
+      return;
+    }
     openAuth();
   }
 
@@ -986,10 +988,6 @@ function HuzzlieApp() {
           >
             {lang === "en" ? "عربى" : "EN"}
           </button>
-          <button className="hz-account-btn" onClick={handleLoginClick}>
-            <User size={16} />
-            <span>{user ? user.name : S.account}</span>
-          </button>
         </div>
       </header>
 
@@ -1161,6 +1159,15 @@ function HuzzlieApp() {
         >
           <PlusCircle size={24} />
           <span>{S.placeListing}</span>
+        </button>
+        <button
+          onClick={function () {
+            handleLoginClick();
+            setActiveTab("account");
+          }}
+        >
+          <User size={20} />
+          <span>{S.account}</span>
         </button>
       </nav>
 
