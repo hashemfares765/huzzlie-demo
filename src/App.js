@@ -28,6 +28,8 @@ import {
 } from "lucide-react";
 import "./App.css";
 
+/* STRINGS */
+
 const STRINGS = {
   en: {
     searchPlaceholder: "Search anything...",
@@ -76,6 +78,8 @@ const STRINGS = {
     detailsContact: "تواصل مع المعلن",
   },
 };
+
+/* CATEGORY DEFINITIONS */
 
 const CATEGORY_DEFS = [
   {
@@ -168,6 +172,8 @@ const CATEGORY_DEFS = [
   },
 ];
 
+/* SYRIA CITIES */
+
 const SYRIA_CITIES = [
   { en: "Damascus", ar: "دمشق" },
   { en: "Aleppo", ar: "حلب" },
@@ -182,6 +188,8 @@ const SYRIA_CITIES = [
   { en: "Suwayda", ar: "السويداء" },
   { en: "Idlib", ar: "إدلب" },
 ];
+
+/* CAR BRANDS */
 
 const CAR_BRANDS = [
   "__all",
@@ -255,6 +263,8 @@ const CAR_BRANDS = [
   "Volkswagen",
   "Volvo",
 ];
+
+/* MOCK LISTINGS */
 
 const MOCK_LISTINGS = [
   {
@@ -349,7 +359,7 @@ const MOCK_LISTINGS = [
   },
 ];
 
-/* Helpers */
+/* HELPERS */
 
 function isCar(categoryKey, subKey) {
   return categoryKey === "motors" && subKey === "cars";
@@ -387,8 +397,9 @@ export function validateCarListing(listing) {
   });
 }
 
-/* Components */
+/* COMPONENTS */
 
+/* Simple small Ad banner (still used on category pages if needed) */
 function AdBanner(props) {
   var S = STRINGS[props.lang || "en"];
   return (
@@ -414,7 +425,9 @@ function WhatsAppButton(props) {
       target="_blank"
       rel="noopener noreferrer"
       className="hz-whatsapp"
-      onClick={(e) => e.stopPropagation()}
+      onClick={function (e) {
+        e.stopPropagation();
+      }}
     >
       <MessageCircle size={14} />
       <span>WhatsApp</span>
@@ -486,7 +499,7 @@ function ListingCard(props) {
   );
 }
 
-/* HEADER WITH LOGO INSIDE SEARCH */
+/* HEADER */
 
 function Header(props) {
   var q = props.q;
@@ -545,7 +558,7 @@ function Header(props) {
   );
 }
 
-/* Bottom Nav */
+/* BOTTOM NAV */
 
 function BottomNav(props) {
   var active = props.active;
@@ -583,17 +596,12 @@ function BottomNav(props) {
       <Item id="home" icon={Home} label={S.home} />
       <Item id="favs" icon={Heart} label={S.favourites} />
       <Item id="post" icon={PlusCircle} label={S.placeListing} onClick={onPost} />
-      <Item
-        id="account"
-        icon={User}
-        label={S.account}
-        onClick={onAccount}
-      />
+      <Item id="account" icon={User} label={S.account} onClick={onAccount} />
     </div>
   );
 }
 
-/* Filters */
+/* FILTERS */
 
 function MotorsFilters(props) {
   var filters = props.filters;
@@ -628,6 +636,7 @@ function MotorsFilters(props) {
             })}
           </select>
         </div>
+
         <div className="hz-filter-block">
           <label>Model</label>
           <input
@@ -641,6 +650,7 @@ function MotorsFilters(props) {
             }}
           />
         </div>
+
         <div className="hz-filter-block">
           <label>Seller</label>
           <select
@@ -657,6 +667,7 @@ function MotorsFilters(props) {
             <option value="dealership">Dealership</option>
           </select>
         </div>
+
         <div className="hz-filter-block">
           <label>Year from: {filters.yearMin || 1960}</label>
           <input
@@ -672,6 +683,7 @@ function MotorsFilters(props) {
             }}
           />
         </div>
+
         <div className="hz-filter-block">
           <label>Price ≤ {filters.priceMax || "Any"}</label>
           <input
@@ -683,7 +695,10 @@ function MotorsFilters(props) {
             onChange={function (e) {
               var v = Number(e.target.value) || undefined;
               setFilters(function (f) {
-                return { ...f, priceMax: v === 0 ? undefined : v };
+                return {
+                  ...f,
+                  priceMax: v === 0 ? undefined : v,
+                };
               });
             }}
           />
@@ -699,6 +714,7 @@ function MotorsFilters(props) {
             }}
           />
         </div>
+
         <div className="hz-filter-block">
           <label>Mileage ≤ {filters.mileageMax || "Any"} km</label>
           <input
@@ -710,7 +726,10 @@ function MotorsFilters(props) {
             onChange={function (e) {
               var v = Number(e.target.value) || undefined;
               setFilters(function (f) {
-                return { ...f, mileageMax: v === 0 ? undefined : v };
+                return {
+                  ...f,
+                  mileageMax: v === 0 ? undefined : v,
+                };
               });
             }}
           />
@@ -768,6 +787,7 @@ function PropertyFilters(props) {
             }}
           />
         </div>
+
         <div className="hz-filter-block">
           <label>Price ≤ {filters.priceMax || "Any"}</label>
           <input
@@ -795,6 +815,7 @@ function PropertyFilters(props) {
             }}
           />
         </div>
+
         <div className="hz-filter-block">
           <label>Area ≥ {filters.areaMin || 0} sqft</label>
           <input
@@ -822,6 +843,7 @@ function PropertyFilters(props) {
             }}
           />
         </div>
+
         <div className="hz-filter-block">
           <label>Area ≤ {filters.areaMax || "Any"} sqft</label>
           <input
@@ -854,7 +876,7 @@ function PropertyFilters(props) {
   );
 }
 
-/* Brand list + Category */
+/* BRAND LIST + CATEGORY */
 
 function MotorsBrandList(props) {
   var lang = props.lang;
@@ -1015,6 +1037,125 @@ function CategoryPage(props) {
   );
 }
 
+/* PROMO ADS CAROUSEL (HOME) */
+
+const PROMO_ADS = [
+  {
+    id: "chatgpt",
+    title: "ChatGPT for Smarter Listings",
+    desc: "Use AI to write stronger titles, descriptions & replies.",
+    cta: "Open ChatGPT",
+    bg: "linear-gradient(135deg, #111827, #4b5563)",
+    accent: "#22c55e",
+    url: "https://chatgpt.com",
+  },
+  {
+    id: "ferrari",
+    title: "Ferrari – The Ultimate Drive",
+    desc: "Explore the official Ferrari world of performance & design.",
+    cta: "Visit Ferrari",
+    bg: "linear-gradient(135deg, #450a0a, #b91c1c)",
+    accent: "#fecaca",
+    url: "https://www.ferrari.com",
+  },
+  {
+    id: "syriatel",
+    title: "Syriatel Online Services",
+    desc: "Check offers, recharge & manage your line online.",
+    cta: "Go to Syriatel",
+    bg: "linear-gradient(135deg, #1d4ed8, #38bdf8)",
+    accent: "#eff6ff",
+    url: "https://www.syriatel.sy",
+  },
+];
+
+function PromoCarousel() {
+  const [active, setActive] = useState(0);
+
+  function goTo(index) {
+    if (index < 0) index = PROMO_ADS.length - 1;
+    if (index >= PROMO_ADS.length) index = 0;
+    setActive(index);
+  }
+
+  function handleClick(url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  return (
+    <div className="hz-promo-wrap">
+      <div
+        className="hz-promo-track"
+        style={{ transform: `translateX(-${active * 100}%)` }}
+      >
+        {PROMO_ADS.map(function (ad) {
+          return (
+            <div
+              key={ad.id}
+              className="hz-promo-slide"
+              style={{ background: ad.bg }}
+              onClick={function () {
+                handleClick(ad.url);
+              }}
+            >
+              <div className="hz-promo-content">
+                <div className="hz-promo-title">{ad.title}</div>
+                <div className="hz-promo-desc">{ad.desc}</div>
+                <div
+                  className="hz-promo-cta"
+                  style={{ backgroundColor: ad.accent }}
+                >
+                  {ad.cta}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="hz-promo-controls">
+        <button
+          className="hz-promo-arrow"
+          onClick={function (e) {
+            e.stopPropagation();
+            goTo(active - 1);
+          }}
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        <div className="hz-promo-dots">
+          {PROMO_ADS.map(function (ad, index) {
+            return (
+              <button
+                key={ad.id}
+                className={
+                  "hz-promo-dot " +
+                  (index === active ? "hz-promo-dot-active" : "")
+                }
+                onClick={function (e) {
+                  e.stopPropagation();
+                  setActive(index);
+                }}
+              />
+            );
+          })}
+        </div>
+
+        <button
+          className="hz-promo-arrow"
+          onClick={function (e) {
+            e.stopPropagation();
+            goTo(active + 1);
+          }}
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* HOME GRID */
 
 function HomeGrid(props) {
@@ -1025,8 +1166,6 @@ function HomeGrid(props) {
 
   return (
     <div className="hz-page">
-      <AdBanner lang={lang} />
-
       <div className="hz-cat-grid">
         {CATEGORY_DEFS.filter(function (c) {
           return c.key !== "community";
@@ -1052,6 +1191,9 @@ function HomeGrid(props) {
         })}
       </div>
 
+      {/* Big swipeable ads under categories */}
+      <PromoCarousel />
+
       <div className="hz-fee-note">{S.feeNote}</div>
 
       <div className="hz-section-header">
@@ -1076,9 +1218,12 @@ function HomeGrid(props) {
   );
 }
 
-/* DETAILS PAGE (dubizzle-style layout) */
+/* DETAILS PAGE */
 
-function ListingDetail({ item, onBack, lang }) {
+function ListingDetail(props) {
+  var item = props.item;
+  var onBack = props.onBack;
+  var lang = props.lang;
   var S = STRINGS[lang];
 
   return (
@@ -1099,14 +1244,17 @@ function ListingDetail({ item, onBack, lang }) {
         )}
         {item.imgs && item.imgs.length > 1 && (
           <div className="hz-detail-dots">
-            {item.imgs.map((_, i) => (
-              <span
-                key={i}
-                className={
-                  "hz-detail-dot " + (i === 0 ? "hz-detail-dot-active" : "")
-                }
-              />
-            ))}
+            {item.imgs.map(function (_, i) {
+              return (
+                <span
+                  key={i}
+                  className={
+                    "hz-detail-dot " +
+                    (i === 0 ? "hz-detail-dot-active" : "")
+                  }
+                />
+              );
+            })}
           </div>
         )}
       </div>
@@ -1179,7 +1327,8 @@ function ListingDetail({ item, onBack, lang }) {
 
 /* ACCOUNT PAGE */
 
-function AccountPage({ user, lang }) {
+function AccountPage(props) {
+  var user = props.user;
   var displayName = (user && user.name) || "Huzzlie User";
 
   return (
@@ -1310,7 +1459,7 @@ function AccountPage({ user, lang }) {
   );
 }
 
-/* ACCOUNT SHEET (SIGNUP) */
+/* ACCOUNT SHEET (SIGNUP MODAL) */
 
 function AccountSheet(props) {
   var open = props.open;
@@ -1766,7 +1915,7 @@ export default function App() {
   }
 
   function filteredListingsForCategory() {
-    // currently just returns all mocks; hook filters/search here later
+    // hook search/filters here later
     return MOCK_LISTINGS;
   }
 
@@ -1836,7 +1985,7 @@ export default function App() {
               />
             ) : null}
 
-            {showFavs && !activeCategory ? (
+            {showFavs ? (
               <div className="hz-page">
                 <div className="hz-section-header">
                   <h3>{STRINGS[lang].favourites}</h3>

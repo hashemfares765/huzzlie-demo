@@ -230,6 +230,109 @@ body {
   color: #15803d;
 }
 
+/* PROMO CAROUSEL (Home big swipeable banners) */
+
+.hz-promo-wrap {
+  position: relative;
+  margin: 8px 0 10px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.hz-promo-track {
+  display: flex;
+  width: 300%;
+  transition: transform 0.35s ease-in-out;
+}
+
+.hz-promo-slide {
+  flex: 0 0 100%;
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.hz-promo-content {
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hz-promo-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hz-promo-desc {
+  font-size: 11px;
+  opacity: 0.95;
+}
+
+.hz-promo-cta {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Dots + arrows overlay at bottom of banner */
+
+.hz-promo-controls {
+  position: absolute;
+  inset: auto 8px 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.hz-promo-dots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex: 1;
+}
+
+.hz-promo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.hz-promo-dot-active {
+  width: 12px;
+  background-color: #ffffff;
+}
+
+.hz-promo-arrow {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(17, 24, 39, 0.12);
+  color: #ffffff;
+  cursor: pointer;
+  pointer-events: auto;
+  padding: 0;
+}
+
+
 /* Section header */
 .hz-section-header {
   margin-top: 6px;
