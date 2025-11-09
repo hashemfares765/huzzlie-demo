@@ -450,7 +450,7 @@ function ListingCard(props) {
   );
 }
 
-/* UPDATED HEADER (no top Account button, only tidy language toggle) */
+/* UPDATED HEADER per your request */
 function Header(props) {
   var q = props.q;
   var setQ = props.setQ;
@@ -463,13 +463,10 @@ function Header(props) {
   return (
     <div className="hz-header">
       <div className="hz-header-inner">
-        <div className="hz-logo-wrap">
-          <div className="hz-logo-dot" />
-          <span className="hz-logo-text">Huzzlie</span>
-        </div>
-
         <div className="hz-search-wrap">
-          <Search size={18} className="hz-search-icon" />
+          {/* Logo dot on far left inside the search bar */}
+          <div className="hz-logo-dot" />
+
           <input
             value={q}
             onChange={function (e) {
@@ -484,8 +481,10 @@ function Header(props) {
             }
             dir={isAR ? "rtl" : "ltr"}
           />
+
+          {/* Green button with ONLY the search icon on the right */}
           <button className="hz-search-btn" onClick={onSearch}>
-            {S.search}
+            <Search size={16} className="hz-search-btn-icon" />
           </button>
         </div>
 
@@ -504,6 +503,7 @@ function Header(props) {
     </div>
   );
 }
+
 
 function BottomNav(props) {
   var active = props.active;

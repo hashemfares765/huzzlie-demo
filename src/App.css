@@ -1,22 +1,32 @@
-body {
+/* Reset and safe-area support */
+html,
+body,
+#root {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #f6fdf8;
+}
+
+/* Prevent horizontal scroll */
+body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     -system-ui, sans-serif;
-  background-color: #f6fdf8;
   color: #111827;
+  overflow-x: hidden;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+/* Root wrapper */
 .hz-root {
   min-height: 100vh;
   background-color: #f6fdf8;
   color: #111827;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    sans-serif;
   padding-bottom: 72px;
 }
 
+/* Header */
 .hz-header {
   position: sticky;
   top: 0;
@@ -24,8 +34,12 @@ body {
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid #dcfce7;
+
+  /* FIX: make header hug the real top under notch/status bar */
+  padding-top: env(safe-area-inset-top);
 }
 
+/* Header inner layout */
 .hz-header-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -35,41 +49,25 @@ body {
   gap: 10px;
 }
 
-.hz-logo-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
+/* Logo dot (inside search bar) */
 .hz-logo-dot {
   width: 26px;
   height: 26px;
   border-radius: 9px;
   background-color: #16a34a;
+  flex-shrink: 0;
 }
 
-.hz-logo-text {
-  font-weight: 800;
-  font-size: 20px;
-  letter-spacing: -0.02em;
-  color: #16a34a;
-}
-
+/* Search bar */
 .hz-search-wrap {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid #bbf7d0;
   background-color: #ffffff;
-}
-
-.hz-search-icon {
-  color: #16a34a;
-  flex-shrink: 0;
 }
 
 .hz-search-input {
@@ -79,23 +77,26 @@ body {
   font-size: 14px;
   background: transparent;
   color: #111827;
+  min-width: 0;
 }
 
 .hz-rtl-text {
   text-align: right;
 }
-
 .hz-ltr-text {
   text-align: left;
 }
 
+/* Search button — now only shows icon */
 .hz-search-btn {
-  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
   border-radius: 999px;
   border: none;
   background-color: #16a34a;
   color: #ffffff;
-  font-size: 13px;
   cursor: pointer;
 }
 
@@ -105,12 +106,12 @@ body {
   flex-shrink: 0;
 }
 
-.hz-lang-btn,
-.hz-account-btn {
+/* Language switch button */
+.hz-lang-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid #bbf7d0;
   background-color: #ffffff;
@@ -120,12 +121,14 @@ body {
   white-space: nowrap;
 }
 
+/* Main container */
 .hz-main {
   max-width: 1100px;
   margin: 0 auto;
   padding: 10px 16px 80px;
 }
 
+/* Page layout */
 .hz-page {
   width: 100%;
 }
@@ -157,6 +160,7 @@ body {
   cursor: pointer;
 }
 
+/* Ad banner */
 .hz-ad {
   margin: 4px 0 10px;
   padding: 8px 12px;
@@ -173,11 +177,11 @@ body {
   font-weight: 600;
   color: #16a34a;
 }
-
 .hz-ad-text {
   color: #6b7280;
 }
 
+/* Category grid */
 .hz-cat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -218,6 +222,7 @@ body {
   color: #15803d;
 }
 
+/* Section header */
 .hz-section-header {
   margin-top: 6px;
   margin-bottom: 6px;
@@ -241,18 +246,19 @@ body {
   cursor: pointer;
 }
 
+/* Listings grid */
 .hz-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
-
 @media (min-width: 768px) {
   .hz-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
+/* Cards */
 .hz-card {
   background-color: #ffffff;
   border-radius: 18px;
@@ -298,7 +304,6 @@ body {
   background-color: #ffffff;
   color: #f97316;
 }
-
 .hz-heart-inactive {
   background-color: #ffffff;
   color: #6b7280;
@@ -327,38 +332,32 @@ body {
   justify-content: space-between;
   gap: 4px;
 }
-
 .hz-card-title {
   font-size: 13px;
   font-weight: 600;
   margin: 0;
   color: #111827;
 }
-
 .hz-card-tag {
   color: #16a34a;
   flex-shrink: 0;
 }
-
 .hz-card-price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
 }
-
 .hz-price {
   font-weight: 700;
   color: #16a34a;
 }
-
 .hz-loc {
   display: inline-flex;
   align-items: center;
   gap: 2px;
   color: #6b7280;
 }
-
 .hz-card-meta {
   display: flex;
   flex-wrap: wrap;
@@ -366,7 +365,6 @@ body {
   font-size: 9px;
   color: #6b7280;
 }
-
 .hz-whatsapp {
   margin-top: 2px;
   display: inline-flex;
@@ -381,7 +379,6 @@ body {
 }
 
 /* Filters */
-
 .hz-filters {
   margin-top: 8px;
   margin-bottom: 6px;
@@ -391,26 +388,22 @@ body {
   background-color: #ffffff;
   font-size: 10px;
 }
-
 .hz-filters-title {
   font-weight: 600;
   color: #16a34a;
   margin-bottom: 4px;
 }
-
 .hz-filters-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
-
 .hz-filter-block label {
   display: block;
   font-size: 9px;
   color: #6b7280;
   margin-bottom: 2px;
 }
-
 .hz-filter-block input,
 .hz-filter-block select {
   width: 100%;
@@ -419,21 +412,18 @@ body {
   border-radius: 8px;
   border: 1px solid #e5e7eb;
 }
-
 .hz-filter-block input[type="range"] {
   padding: 0;
   border: none;
 }
 
 /* Brand list */
-
 .hz-brand-list-title {
   font-size: 12px;
   font-weight: 600;
   color: #16a34a;
   margin: 6px 0 4px;
 }
-
 .hz-brand-list {
   border-radius: 16px;
   border: 1px solid #e5e7eb;
@@ -441,7 +431,6 @@ body {
   max-height: 420px;
   overflow-y: auto;
 }
-
 .hz-brand-row {
   width: 100%;
   text-align: left;
@@ -452,15 +441,12 @@ body {
   font-size: 13px;
   cursor: pointer;
 }
-
 .hz-brand-row:last-child {
   border-bottom: none;
 }
-
 .hz-brand-row:hover {
   background-color: #f9fafb;
 }
-
 .hz-selected-brand {
   margin: 4px 0;
   font-size: 11px;
@@ -468,7 +454,6 @@ body {
 }
 
 /* Bottom nav */
-
 .hz-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -483,7 +468,6 @@ body {
   align-items: center;
   z-index: 50;
 }
-
 .hz-nav-item {
   flex: 1;
   max-width: 90px;
@@ -497,17 +481,14 @@ body {
   color: #6b7280;
   font-size: 10px;
 }
-
 .hz-nav-item svg {
   display: block;
 }
-
 .hz-nav-item-active {
   color: #16a34a;
 }
 
 /* Modals */
-
 .hz-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -517,7 +498,6 @@ body {
   justify-content: center;
   z-index: 60;
 }
-
 .hz-modal {
   width: 90%;
   max-width: 420px;
@@ -528,25 +508,21 @@ body {
   flex-direction: column;
   gap: 6px;
 }
-
 .hz-modal-large {
   max-width: 640px;
 }
-
 .hz-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
 }
-
 .hz-modal-header h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
   color: #16a34a;
 }
-
 .hz-close {
   border: none;
   background: none;
@@ -554,35 +530,29 @@ body {
   cursor: pointer;
   color: #6b7280;
 }
-
 .hz-modal-body {
   font-size: 11px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .hz-modal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px 8px;
 }
-
 .hz-field {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-
 .hz-field-full {
   grid-column: 1 / -1;
 }
-
 .hz-field label {
   font-size: 9px;
   color: #6b7280;
 }
-
 .hz-field input,
 .hz-field select,
 .hz-field textarea {
@@ -592,7 +562,6 @@ body {
   font-size: 11px;
   resize: vertical;
 }
-
 .hz-provider-btn {
   width: 100%;
   padding: 6px 8px;
@@ -603,18 +572,15 @@ body {
   cursor: pointer;
   text-align: left;
 }
-
 .hz-or {
   text-align: center;
   font-size: 9px;
   color: #9ca3af;
 }
-
 .hz-images-count {
   font-size: 9px;
   color: #6b7280;
 }
-
 .hz-modal-footer {
   margin-top: 4px;
   display: flex;
@@ -623,16 +589,13 @@ body {
   gap: 8px;
   font-size: 9px;
 }
-
 .hz-fee-label {
   color: #16a34a;
 }
-
 .hz-modal-actions {
   display: flex;
   gap: 6px;
 }
-
 .hz-primary,
 .hz-secondary {
   padding: 5px 10px;
@@ -641,93 +604,12 @@ body {
   border: none;
   cursor: pointer;
 }
-
 .hz-primary {
   background-color: #16a34a;
   color: #ffffff;
 }
-
 .hz-secondary {
   background-color: #ffffff;
   color: #6b7280;
   border: 1px solid #e5e7eb;
-}
-/* Prevent any horizontal scroll */
-.hz-root {
-  min-height: 100vh;
-  background: #f6fdf8;
-  color: #111827;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    sans-serif;
-  overflow-x: hidden;
-}
-
-/* Header layout */
-.hz-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: #f6fdf8;
-}
-
-.hz-header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-sizing: border-box;
-}
-
-/* Make sure search area flexes nicely without pushing out of screen */
-.hz-search-wrap {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid #16a34a33;
-}
-
-.hz-search-input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-}
-
-.hz-search-btn {
-  padding: 6px 18px;
-  border-radius: 999px;
-  border: none;
-  background: #16a34a;
-  color: #ffffff;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.hz-header-actions {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-/* Language pill: small, spaced, not stuck to search */
-.hz-lang-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid #16a34a33;
-  background: #ffffff;
-  color: #16a34a;
-  cursor: pointer;
-  margin-left: 4px;
 }
