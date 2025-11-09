@@ -47,13 +47,22 @@ body {
   gap: 10px;
 }
 
-/* Logo dot used inside search bar */
+/* Plain logo inside search (no box bg) */
 .hz-logo-dot {
-  width: 26px;
-  height: 26px;
-  border-radius: 9px;
-  background-color: #16a34a;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  background: none;
+  border: none;
+}
+
+.hz-logo-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 /* Search bar */
@@ -625,7 +634,6 @@ body {
 
 .hz-detail-top {
   position: absolute;
-  /* header already has safe-area; this button sits just under it visually via App structure */
 }
 
 .hz-detail-back {
@@ -763,4 +771,124 @@ body {
   margin-top: 14px;
   display: flex;
   gap: 8px;
+}
+
+/* ACCOUNT PAGE STYLES */
+
+.hz-account {
+  margin-top: 6px;
+}
+
+/* Top profile card */
+.hz-account-card {
+  background-color: #ffffff;
+  border-radius: 22px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  margin-bottom: 10px;
+}
+
+.hz-account-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+  flex-shrink: 0;
+}
+
+.hz-account-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hz-account-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.hz-account-joined {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.hz-account-verify {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #16a34a;
+  background-color: #ffffff;
+  color: #16a34a;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* My Ads / My Searches */
+.hz-account-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.hz-account-action {
+  padding: 10px 8px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: #111827;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03);
+}
+
+/* Settings list */
+.hz-account-list {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 4px 0;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.hz-account-item {
+  width: 100%;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: #111827;
+  cursor: pointer;
+  text-align: left;
+}
+
+.hz-account-item + .hz-account-item {
+  border-top: 1px solid #f3f4f6;
+}
+
+.hz-account-item svg {
+  color: #6b7280;
+}
+
+.hz-account-danger {
+  color: #b91c1c;
+}
+
+.hz-account-danger svg {
+  color: #dc2626;
 }

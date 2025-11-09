@@ -17,6 +17,14 @@ import {
   ChevronLeft,
   MessageCircle,
   Languages,
+  UserCircle,
+  Settings,
+  Shield,
+  Bell,
+  Phone,
+  LogOut,
+  Trash2,
+  Bookmark,
 } from "lucide-react";
 import "./App.css";
 
@@ -341,6 +349,8 @@ const MOCK_LISTINGS = [
   },
 ];
 
+/* Helpers */
+
 function isCar(categoryKey, subKey) {
   return categoryKey === "motors" && subKey === "cars";
 }
@@ -377,6 +387,8 @@ export function validateCarListing(listing) {
   });
 }
 
+/* Components */
+
 function AdBanner(props) {
   var S = STRINGS[props.lang || "en"];
   return (
@@ -411,6 +423,7 @@ function WhatsAppButton(props) {
 }
 
 /* CLICKABLE CARD */
+
 function ListingCard(props) {
   var item = props.item;
   var fav = props.fav;
@@ -473,7 +486,8 @@ function ListingCard(props) {
   );
 }
 
-/* HEADER WITH LOGO DOT INSIDE SEARCH + ICON BUTTON ON RIGHT */
+/* HEADER WITH LOGO INSIDE SEARCH */
+
 function Header(props) {
   var q = props.q;
   var setQ = props.setQ;
@@ -487,7 +501,14 @@ function Header(props) {
     <div className="hz-header">
       <div className="hz-header-inner">
         <div className="hz-search-wrap">
-          <div className="hz-logo-dot" />
+          <div className="hz-logo-dot">
+            <img
+              src="/huzzlie-logo.png"
+              alt="Huzzlie"
+              className="hz-logo-img"
+            />
+          </div>
+
           <input
             value={q}
             onChange={function (e) {
@@ -502,6 +523,7 @@ function Header(props) {
             }
             dir={isAR ? "rtl" : "ltr"}
           />
+
           <button className="hz-search-btn" onClick={onSearch}>
             <Search size={18} />
           </button>
@@ -522,6 +544,8 @@ function Header(props) {
     </div>
   );
 }
+
+/* Bottom Nav */
 
 function BottomNav(props) {
   var active = props.active;
@@ -558,18 +582,18 @@ function BottomNav(props) {
     <div className="hz-bottom-nav">
       <Item id="home" icon={Home} label={S.home} />
       <Item id="favs" icon={Heart} label={S.favourites} />
+      <Item id="post" icon={PlusCircle} label={S.placeListing} onClick={onPost} />
       <Item
-        id="post"
-        icon={PlusCircle}
-        label={S.placeListing}
-        onClick={onPost}
+        id="account"
+        icon={User}
+        label={S.account}
+        onClick={onAccount}
       />
-      <Item id="account" icon={User} label={S.account} onClick={onAccount} />
     </div>
   );
 }
 
-/* MOTORS & PROPERTY FILTERS (unchanged) */
+/* Filters */
 
 function MotorsFilters(props) {
   var filters = props.filters;
@@ -830,7 +854,7 @@ function PropertyFilters(props) {
   );
 }
 
-/* Brand list + category page */
+/* Brand list + Category */
 
 function MotorsBrandList(props) {
   var lang = props.lang;
@@ -1153,7 +1177,140 @@ function ListingDetail({ item, onBack, lang }) {
   );
 }
 
-/* ACCOUNT + POST DIALOG (unchanged core, just reused) */
+/* ACCOUNT PAGE */
+
+function AccountPage({ user, lang }) {
+  var displayName = (user && user.name) || "Huzzlie User";
+
+  return (
+    <div className="hz-page hz-account">
+      <div className="hz-account-card">
+        <div className="hz-account-avatar">
+          <UserCircle size={42} />
+        </div>
+        <div className="hz-account-main">
+          <div className="hz-account-name">{displayName}</div>
+          <div className="hz-account-joined">Joined on July 2023</div>
+        </div>
+        <button
+          className="hz-account-verify"
+          onClick={function () {
+            alert("Verification flow coming soon (demo).");
+          }}
+        >
+          Get Verified
+        </button>
+      </div>
+
+      <div className="hz-account-actions">
+        <button
+          className="hz-account-action"
+          onClick={function () {
+            alert("My Ads section (demo).");
+          }}
+        >
+          <Bookmark size={20} />
+          <span>My Ads</span>
+        </button>
+        <button
+          className="hz-account-action"
+          onClick={function () {
+            alert("My Searches section (demo).");
+          }}
+        >
+          <Search size={20} />
+          <span>My Searches</span>
+        </button>
+      </div>
+
+      <div className="hz-account-list">
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("Edit basic info (name, DOB, nationality, gender).");
+          }}
+        >
+          <User size={18} />
+          <span>Profile & Basic Info</span>
+        </button>
+
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("Manage phone numbers & addresses.");
+          }}
+        >
+          <Phone size={18} />
+          <span>Phone Numbers & Addresses</span>
+        </button>
+
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("Change password & security settings.");
+          }}
+        >
+          <Shield size={18} />
+          <span>Password & Security</span>
+        </button>
+
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("View Active / Pending / Inactive / Moderated ads.");
+          }}
+        >
+          <Bookmark size={18} />
+          <span>My Ads Status</span>
+        </button>
+
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("Control email & push notifications.");
+          }}
+        >
+          <Bell size={18} />
+          <span>Notifications & Email Settings</span>
+        </button>
+
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("General account settings.");
+          }}
+        >
+          <Settings size={18} />
+          <span>Account Settings</span>
+        </button>
+
+        <button
+          className="hz-account-item hz-account-danger"
+          onClick={function () {
+            alert(
+              "Deactivate / delete / request re-activation flow (demo only)."
+            );
+          }}
+        >
+          <Trash2 size={18} />
+          <span>Deactivate / Delete Account</span>
+        </button>
+
+        <button
+          className="hz-account-item"
+          onClick={function () {
+            alert("Logged out (demo).");
+          }}
+        >
+          <LogOut size={18} />
+          <span>Log Out</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ACCOUNT SHEET (SIGNUP) */
 
 function AccountSheet(props) {
   var open = props.open;
@@ -1246,6 +1403,8 @@ function AccountSheet(props) {
     </div>
   );
 }
+
+/* POST DIALOG */
 
 function PostDialog(props) {
   var open = props.open;
@@ -1607,6 +1766,7 @@ export default function App() {
   }
 
   function filteredListingsForCategory() {
+    // currently just returns all mocks; hook filters/search here later
     return MOCK_LISTINGS;
   }
 
@@ -1698,6 +1858,10 @@ export default function App() {
                 </div>
               </div>
             ) : null}
+
+            {activeTab === "account" && user ? (
+              <AccountPage user={user} lang={lang} />
+            ) : null}
           </>
         )}
       </main>
@@ -1711,7 +1875,13 @@ export default function App() {
         }}
         onPost={handlePostClick}
         onAccount={function () {
-          setAccountOpen(true);
+          if (!user) {
+            setAccountOpen(true);
+          } else {
+            setActiveTab("account");
+            setActiveCategoryKey(null);
+            setSelectedListing(null);
+          }
         }}
         lang={lang}
       />
