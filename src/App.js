@@ -49,7 +49,7 @@ const STRINGS = {
     createAccountToPost: "Please create an account before placing a listing.",
     adSpace: "Ad space",
     adSpaceDesc: "External banner placement for partners.",
-    brandSelectTitle: "Select a car brand",
+    
     detailsOverview: "Overview",
     detailsShowMore: "Show more",
     detailsContact: "Contact seller",
@@ -399,7 +399,6 @@ export function validateCarListing(listing) {
 
 /* COMPONENTS */
 
-/* Simple small Ad banner (still used on category pages if needed) */
 function AdBanner(props) {
   var S = STRINGS[props.lang || "en"];
   return (
@@ -434,8 +433,6 @@ function WhatsAppButton(props) {
     </a>
   );
 }
-
-/* CLICKABLE CARD */
 
 function ListingCard(props) {
   var item = props.item;
@@ -499,8 +496,6 @@ function ListingCard(props) {
   );
 }
 
-/* HEADER */
-
 function Header(props) {
   var q = props.q;
   var setQ = props.setQ;
@@ -557,8 +552,6 @@ function Header(props) {
     </div>
   );
 }
-
-/* BOTTOM NAV */
 
 function BottomNav(props) {
   var active = props.active;
@@ -876,89 +869,38 @@ function PropertyFilters(props) {
   );
 }
 
-/* BRAND LIST + CATEGORY */
-
-function MotorsBrandList(props) {
-  var lang = props.lang;
-  var S = STRINGS[lang];
-
-  return (
-    <div className="hz-page">
-      <div className="hz-page-header">
-        <button className="hz-back-btn" onClick={props.onBack}>
-          <ChevronLeft />
-        </button>
-        <h2>{S.motorsTitle}</h2>
-      </div>
-      <AdBanner lang={lang} />
-      <div className="hz-brand-list-title">{S.brandSelectTitle}</div>
-      <div className="hz-brand-list">
-        <button
-          className="hz-brand-row"
-          onClick={function () {
-            props.onSelect("__all");
-          }}
-        >
-          <span>{S.motorsAllInCars}</span>
-        </button>
-        {CAR_BRANDS.filter(function (b) {
-          return b !== "__all";
-        }).map(function (b) {
-          return (
-            <button
-              key={b}
-              className="hz-brand-row"
-              onClick={function () {
-                props.onSelect(b);
-              }}
-            >
-              <span>{b}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+/* CATEGORY PAGE */
 
 function CategoryPage(props) {
   var cat = props.cat;
   var listings = props.listings;
   var favs = props.favs;
   var toggleFav = props.toggleFav;
+  var onBack = props.onBack;
+  var activeSub = props.activeSub;
   var lang = props.lang;
   var S = STRINGS[lang];
+
   var isMotors = cat.key === "motors";
   var isProp = !!cat.isProperty;
-  var motorsBrand = props.motorsBrand;
-  var onMotorsBrandSelect = props.onMotorsBrandSelect;
+
   var [filters, setFilters] = useState({});
 
-  if (isMotors && !motorsBrand) {
-    return (
-      <MotorsBrandList
-        lang={lang}
-        onBack={props.onBack}
-        onSelect={onMotorsBrandSelect}
-      />
-    );
-  }
-
   var filtered = listings.filter(function (l) {
+    // Match category
     if (l.category !== cat.key) return false;
 
+    // Respect active subcategory if defined
     if (cat.subcategories && cat.subcategories.length) {
-      if (props.activeSub && l.subcategory !== props.activeSub) {
-        return false;
-      }
+      if (activeSub && l.subcategory !== activeSub) return false;
     }
 
+    // Motors-specific filters (cars only)
     if (isMotors) {
       if (l.subcategory !== "cars") return false;
-      if (motorsBrand && motorsBrand !== "__all" && l.brand !== motorsBrand) {
-        return false;
-      }
+
       if (filters.brand && l.brand !== filters.brand) return false;
+
       if (
         filters.model &&
         (!l.model ||
@@ -966,14 +908,19 @@ function CategoryPage(props) {
       ) {
         return false;
       }
+
       if (filters.sellerType && l.sellerType !== filters.sellerType)
         return false;
+
       if (filters.yearMin && (l.year || 0) < filters.yearMin) return false;
+
       if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
+
       if (filters.mileageMax && (l.mileage || 0) > filters.mileageMax)
         return false;
     }
 
+    // Property-specific filters
     if (isProp) {
       if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
       if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
@@ -988,38 +935,40 @@ function CategoryPage(props) {
   return (
     <div className="hz-page">
       <div className="hz-page-header">
-        <button className="hz-back-btn" onClick={props.onBack}>
+        <button className="hz-back-btn" onClick={onBack}>
           <ChevronLeft />
         </button>
         <h2>{cat.label}</h2>
       </div>
 
+      {/* Simple ad banner */}
       <AdBanner lang={lang} />
 
-      {isMotors && motorsBrand ? (
+      {/* Motors: show current selection text only, no list */}
+      {isMotors && (
         <div className="hz-selected-brand">
-          {motorsBrand === "__all"
-            ? S.motorsAllInCars
-            : "Brand: " + motorsBrand}
+          {filters.brand ? "Brand: " + filters.brand : S.motorsAllInCars}
         </div>
-      ) : null}
+      )}
 
-      {isMotors && motorsBrand ? (
+      {/* Show relevant filters */}
+      {isMotors && (
         <MotorsFilters
           lang={lang}
           filters={filters}
           setFilters={setFilters}
         />
-      ) : null}
+      )}
 
-      {isProp ? (
+      {isProp && (
         <PropertyFilters
           lang={lang}
           filters={filters}
           setFilters={setFilters}
         />
-      ) : null}
+      )}
 
+      {/* Listings grid */}
       <div className="hz-grid">
         {filtered.map(function (l) {
           return (
@@ -1037,7 +986,8 @@ function CategoryPage(props) {
   );
 }
 
-/* PROMO ADS CAROUSEL (HOME) */
+
+/* PROMO ADS CAROUSEL */
 
 const PROMO_ADS = [
   {
@@ -1085,7 +1035,6 @@ function PromoCarousel() {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
-  // Touch swipe handlers
   function onTouchStart(e) {
     setTouchStartX(e.touches[0].clientX);
     setTouchEndX(null);
@@ -1097,20 +1046,12 @@ function PromoCarousel() {
 
   function onTouchEnd() {
     if (touchStartX == null || touchEndX == null) return;
-
     const diff = touchStartX - touchEndX;
-    const threshold = 40; // px
-
+    const threshold = 40;
     if (Math.abs(diff) > threshold) {
-      if (diff > 0) {
-        // swipe left → next
-        goTo(active + 1);
-      } else {
-        // swipe right → prev
-        goTo(active - 1);
-      }
+      if (diff > 0) goTo(active + 1);
+      else goTo(active - 1);
     }
-
     setTouchStartX(null);
     setTouchEndX(null);
   }
@@ -1129,31 +1070,35 @@ function PromoCarousel() {
           width: `${PROMO_ADS.length * 100}%`,
         }}
       >
-        {PROMO_ADS.map((ad) => (
-          <div
-            key={ad.id}
-            className="hz-promo-slide"
-            style={{ background: ad.bg }}
-            onClick={() => handleClick(ad.url)}
-          >
-            <div className="hz-promo-content">
-              <div className="hz-promo-title">{ad.title}</div>
-              <div className="hz-promo-desc">{ad.desc}</div>
-              <div
-                className="hz-promo-cta"
-                style={{ backgroundColor: ad.accent }}
-              >
-                {ad.cta}
+        {PROMO_ADS.map(function (ad) {
+          return (
+            <div
+              key={ad.id}
+              className="hz-promo-slide"
+              style={{ background: ad.bg }}
+              onClick={function () {
+                handleClick(ad.url);
+              }}
+            >
+              <div className="hz-promo-content">
+                <div className="hz-promo-title">{ad.title}</div>
+                <div className="hz-promo-desc">{ad.desc}</div>
+                <div
+                  className="hz-promo-cta"
+                  style={{ backgroundColor: ad.accent }}
+                >
+                  {ad.cta}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="hz-promo-controls">
         <button
           className="hz-promo-arrow"
-          onClick={(e) => {
+          onClick={function (e) {
             e.stopPropagation();
             goTo(active - 1);
           }}
@@ -1162,24 +1107,26 @@ function PromoCarousel() {
         </button>
 
         <div className="hz-promo-dots">
-          {PROMO_ADS.map((ad, index) => (
-            <button
-              key={ad.id}
-              className={
-                "hz-promo-dot " +
-                (index === active ? "hz-promo-dot-active" : "")
-              }
-              onClick={(e) => {
-                e.stopPropagation();
-                setActive(index);
-              }}
-            />
-          ))}
+          {PROMO_ADS.map(function (ad, index) {
+            return (
+              <button
+                key={ad.id}
+                className={
+                  "hz-promo-dot " +
+                  (index === active ? "hz-promo-dot-active" : "")
+                }
+                onClick={function (e) {
+                  e.stopPropagation();
+                  setActive(index);
+                }}
+              />
+            );
+          })}
         </div>
 
         <button
           className="hz-promo-arrow"
-          onClick={(e) => {
+          onClick={function (e) {
             e.stopPropagation();
             goTo(active + 1);
           }}
@@ -1190,7 +1137,6 @@ function PromoCarousel() {
     </div>
   );
 }
-
 
 /* HOME GRID */
 
@@ -1227,7 +1173,6 @@ function HomeGrid(props) {
         })}
       </div>
 
-      {/* Big swipeable ads under categories */}
       <PromoCarousel />
 
       <div className="hz-fee-note">{S.feeNote}</div>
@@ -1254,7 +1199,7 @@ function HomeGrid(props) {
   );
 }
 
-/* DETAILS PAGE */
+/* LISTING DETAIL */
 
 function ListingDetail(props) {
   var item = props.item;
@@ -1495,7 +1440,7 @@ function AccountPage(props) {
   );
 }
 
-/* ACCOUNT SHEET (SIGNUP MODAL) */
+/* ACCOUNT SHEET */
 
 function AccountSheet(props) {
   var open = props.open;
@@ -1908,7 +1853,6 @@ export default function App() {
   var [favs, setFavs] = useState({});
   var [activeCategoryKey, setActiveCategoryKey] = useState(null);
   var [activeSub, setActiveSub] = useState("");
-  var [motorsBrand, setMotorsBrand] = useState(null);
   var [selectedListing, setSelectedListing] = useState(null);
 
   function toggleFav(id) {
@@ -1927,18 +1871,10 @@ export default function App() {
         ? cat.subcategories[0].key
         : "";
     setActiveSub(firstSub);
-    if (key === "motors") {
-      setMotorsBrand(null);
-    }
   }
 
   function handleBackFromCategory() {
-    if (activeCategoryKey === "motors" && motorsBrand) {
-      setMotorsBrand(null);
-      return;
-    }
     setActiveCategoryKey(null);
-    setMotorsBrand(null);
   }
 
   function handlePostClick() {
@@ -1951,7 +1887,7 @@ export default function App() {
   }
 
   function filteredListingsForCategory() {
-    // hook search/filters here later
+    // plug search/filter logic here later if needed
     return MOCK_LISTINGS;
   }
 
@@ -1999,10 +1935,6 @@ export default function App() {
                 activeSub={activeSub}
                 setActiveSub={setActiveSub}
                 lang={lang}
-                motorsBrand={motorsBrand}
-                onMotorsBrandSelect={function (b) {
-                  setMotorsBrand(b);
-                }}
                 onOpenListing={function (item) {
                   setSelectedListing(item);
                 }}
