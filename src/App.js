@@ -40,6 +40,9 @@ const STRINGS = {
     adSpace: "Ad space",
     adSpaceDesc: "External banner placement for partners.",
     brandSelectTitle: "Select a car brand",
+    detailsOverview: "Overview",
+    detailsShowMore: "Show more",
+    detailsContact: "Contact seller",
   },
   ar: {
     searchPlaceholder: "ابحث عن أي شيء...",
@@ -60,6 +63,9 @@ const STRINGS = {
     adSpace: "مساحة إعلانية",
     adSpaceDesc: "مكان للبانرات الخارجية.",
     brandSelectTitle: "اختر ماركة السيارة",
+    detailsOverview: "نظرة عامة",
+    detailsShowMore: "عرض المزيد",
+    detailsContact: "تواصل مع المعلن",
   },
 };
 
@@ -255,7 +261,9 @@ const MOCK_LISTINGS = [
     whatsapp: "+963944111222",
     imgs: [
       "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
     ],
+    desc: "Bright 1BR apartment in central Damascus, close to shops and cafés.",
     featured: true,
   },
   {
@@ -276,6 +284,7 @@ const MOCK_LISTINGS = [
     imgs: [
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
     ],
+    desc: "Clean Camry with full service history and no major accidents.",
     featured: false,
   },
   {
@@ -290,6 +299,7 @@ const MOCK_LISTINGS = [
     imgs: [
       "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop",
     ],
+    desc: "Comfortable 3-seater sofa, barely used.",
     featured: false,
   },
   {
@@ -304,6 +314,7 @@ const MOCK_LISTINGS = [
     imgs: [
       "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop",
     ],
+    desc: "Entry-level marketing role at a growing agency.",
     featured: false,
   },
   {
@@ -323,7 +334,9 @@ const MOCK_LISTINGS = [
     whatsapp: "+971581234567",
     imgs: [
       "https://images.unsplash.com/photo-1549921296-3b4a6b26b6b4?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1200&auto=format&fit=crop",
     ],
+    desc: "Dealer-maintained C-Class with remaining warranty and full options.",
     featured: true,
   },
 ];
@@ -389,6 +402,7 @@ function WhatsAppButton(props) {
       target="_blank"
       rel="noopener noreferrer"
       className="hz-whatsapp"
+      onClick={(e) => e.stopPropagation()}
     >
       <MessageCircle size={14} />
       <span>WhatsApp</span>
@@ -396,12 +410,20 @@ function WhatsAppButton(props) {
   );
 }
 
+/* CLICKABLE CARD */
 function ListingCard(props) {
   var item = props.item;
   var fav = props.fav;
   var onToggleFav = props.onToggleFav;
+  var onOpen = props.onOpen;
+
   return (
-    <div className="hz-card">
+    <div
+      className="hz-card"
+      onClick={function () {
+        if (onOpen) onOpen(item);
+      }}
+    >
       <div className="hz-card-img-wrap">
         <img
           src={item.imgs && item.imgs[0]}
@@ -409,7 +431,8 @@ function ListingCard(props) {
           className="hz-card-img"
         />
         <button
-          onClick={function () {
+          onClick={function (e) {
+            e.stopPropagation();
             onToggleFav(item.id);
           }}
           className={
@@ -450,7 +473,7 @@ function ListingCard(props) {
   );
 }
 
-/* UPDATED HEADER per your request */
+/* HEADER WITH LOGO DOT INSIDE SEARCH + ICON BUTTON ON RIGHT */
 function Header(props) {
   var q = props.q;
   var setQ = props.setQ;
@@ -464,9 +487,7 @@ function Header(props) {
     <div className="hz-header">
       <div className="hz-header-inner">
         <div className="hz-search-wrap">
-          {/* Logo dot on far left inside the search bar */}
           <div className="hz-logo-dot" />
-
           <input
             value={q}
             onChange={function (e) {
@@ -481,10 +502,8 @@ function Header(props) {
             }
             dir={isAR ? "rtl" : "ltr"}
           />
-
-          {/* Green button with ONLY the search icon on the right */}
           <button className="hz-search-btn" onClick={onSearch}>
-            <Search size={16} className="hz-search-btn-icon" />
+            <Search size={18} />
           </button>
         </div>
 
@@ -503,7 +522,6 @@ function Header(props) {
     </div>
   );
 }
-
 
 function BottomNav(props) {
   var active = props.active;
@@ -546,15 +564,12 @@ function BottomNav(props) {
         label={S.placeListing}
         onClick={onPost}
       />
-      <Item
-        id="account"
-        icon={User}
-        label={S.account}
-        onClick={onAccount}
-      />
+      <Item id="account" icon={User} label={S.account} onClick={onAccount} />
     </div>
   );
 }
+
+/* MOTORS & PROPERTY FILTERS (unchanged) */
 
 function MotorsFilters(props) {
   var filters = props.filters;
@@ -815,6 +830,8 @@ function PropertyFilters(props) {
   );
 }
 
+/* Brand list + category page */
+
 function MotorsBrandList(props) {
   var lang = props.lang;
   var S = STRINGS[lang];
@@ -915,7 +932,8 @@ function CategoryPage(props) {
       if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
       if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
       if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin) return false;
-      if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax) return false;
+      if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax)
+        return false;
     }
 
     return true;
@@ -964,6 +982,7 @@ function CategoryPage(props) {
               item={l}
               fav={!!favs[l.id]}
               onToggleFav={toggleFav}
+              onOpen={props.onOpenListing}
             />
           );
         })}
@@ -971,6 +990,8 @@ function CategoryPage(props) {
     </div>
   );
 }
+
+/* HOME GRID */
 
 function HomeGrid(props) {
   var lang = props.lang;
@@ -1022,6 +1043,7 @@ function HomeGrid(props) {
               item={l}
               fav={!!favs[l.id]}
               onToggleFav={toggleFav}
+              onOpen={props.onOpenListing}
             />
           );
         })}
@@ -1029,6 +1051,109 @@ function HomeGrid(props) {
     </div>
   );
 }
+
+/* DETAILS PAGE (dubizzle-style layout) */
+
+function ListingDetail({ item, onBack, lang }) {
+  var S = STRINGS[lang];
+
+  return (
+    <div className="hz-detail">
+      <div className="hz-detail-top">
+        <button className="hz-detail-back" onClick={onBack}>
+          <ChevronLeft size={20} />
+        </button>
+      </div>
+
+      <div className="hz-detail-img-wrap">
+        {item.imgs && item.imgs.length > 0 && (
+          <img
+            src={item.imgs[0]}
+            alt={item.title}
+            className="hz-detail-img"
+          />
+        )}
+        {item.imgs && item.imgs.length > 1 && (
+          <div className="hz-detail-dots">
+            {item.imgs.map((_, i) => (
+              <span
+                key={i}
+                className={
+                  "hz-detail-dot " + (i === 0 ? "hz-detail-dot-active" : "")
+                }
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="hz-detail-body">
+        <div className="hz-detail-price">
+          {item.currency}{" "}
+          {item.price != null ? item.price.toLocaleString() : ""}
+        </div>
+        <div className="hz-detail-title">{item.title}</div>
+
+        <div className="hz-detail-meta-row">
+          {item.year && <span>{item.year}</span>}
+          {item.mileage != null && (
+            <span>{item.mileage.toLocaleString()} km</span>
+          )}
+          {item.specs && <span>{item.specs}</span>}
+          {item.areaSqft && <span>{item.areaSqft} sqft</span>}
+          {item.location && (
+            <span className="hz-detail-loc">
+              <MapPin size={12} />
+              {item.location}
+            </span>
+          )}
+        </div>
+
+        <div className="hz-detail-section-title">
+          {S.detailsOverview}
+        </div>
+
+        <div className="hz-detail-overview">
+          {item.brand && (
+            <div className="hz-detail-row">
+              <span>Brand</span>
+              <span>{item.brand}</span>
+            </div>
+          )}
+          {item.model && (
+            <div className="hz-detail-row">
+              <span>Model</span>
+              <span>{item.model}</span>
+            </div>
+          )}
+          {item.sellerType && (
+            <div className="hz-detail-row">
+              <span>Seller</span>
+              <span>{item.sellerType}</span>
+            </div>
+          )}
+          {item.areaSqft && (
+            <div className="hz-detail-row">
+              <span>Area</span>
+              <span>{item.areaSqft} sqft</span>
+            </div>
+          )}
+        </div>
+
+        <div className="hz-detail-desc">
+          {item.desc ||
+            "Listing description will appear here with all relevant details provided by the seller."}
+        </div>
+
+        <div className="hz-detail-contact">
+          <WhatsAppButton number={item.whatsapp} title={item.title} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ACCOUNT + POST DIALOG (unchanged core, just reused) */
 
 function AccountSheet(props) {
   var open = props.open;
@@ -1427,6 +1552,8 @@ function PostDialog(props) {
   );
 }
 
+/* ROOT APP */
+
 export default function App() {
   var [lang, setLang] = useState("en");
   var [activeTab, setActiveTab] = useState("home");
@@ -1438,6 +1565,7 @@ export default function App() {
   var [activeCategoryKey, setActiveCategoryKey] = useState(null);
   var [activeSub, setActiveSub] = useState("");
   var [motorsBrand, setMotorsBrand] = useState(null);
+  var [selectedListing, setSelectedListing] = useState(null);
 
   function toggleFav(id) {
     setFavs(function (prev) {
@@ -1506,56 +1634,81 @@ export default function App() {
       />
 
       <main className="hz-main">
-        {activeCategory ? (
-          <CategoryPage
-            cat={activeCategory}
-            listings={filteredListingsForCategory()}
-            favs={favs}
-            toggleFav={toggleFav}
-            onBack={handleBackFromCategory}
-            activeSub={activeSub}
-            setActiveSub={setActiveSub}
-            lang={lang}
-            motorsBrand={motorsBrand}
-            onMotorsBrandSelect={function (b) {
-              setMotorsBrand(b);
+        {selectedListing ? (
+          <ListingDetail
+            item={selectedListing}
+            onBack={function () {
+              setSelectedListing(null);
             }}
-          />
-        ) : null}
-
-        {showHome ? (
-          <HomeGrid
             lang={lang}
-            favs={favs}
-            toggleFav={toggleFav}
-            onOpenCategory={openCategory}
           />
-        ) : null}
+        ) : (
+          <>
+            {activeCategory ? (
+              <CategoryPage
+                cat={activeCategory}
+                listings={filteredListingsForCategory()}
+                favs={favs}
+                toggleFav={toggleFav}
+                onBack={handleBackFromCategory}
+                activeSub={activeSub}
+                setActiveSub={setActiveSub}
+                lang={lang}
+                motorsBrand={motorsBrand}
+                onMotorsBrandSelect={function (b) {
+                  setMotorsBrand(b);
+                }}
+                onOpenListing={function (item) {
+                  setSelectedListing(item);
+                }}
+              />
+            ) : null}
 
-        {showFavs && !activeCategory ? (
-          <div className="hz-page">
-            <div className="hz-section-header">
-              <h3>{STRINGS[lang].favourites}</h3>
-            </div>
-            <div className="hz-grid">
-              {favListings.map(function (l) {
-                return (
-                  <ListingCard
-                    key={l.id}
-                    item={l}
-                    fav={!!favs[l.id]}
-                    onToggleFav={toggleFav}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        ) : null}
+            {showHome ? (
+              <HomeGrid
+                lang={lang}
+                favs={favs}
+                toggleFav={toggleFav}
+                onOpenCategory={openCategory}
+                onOpenListing={function (item) {
+                  setSelectedListing(item);
+                }}
+              />
+            ) : null}
+
+            {showFavs && !activeCategory ? (
+              <div className="hz-page">
+                <div className="hz-section-header">
+                  <h3>{STRINGS[lang].favourites}</h3>
+                </div>
+                <div className="hz-grid">
+                  {favListings.map(function (l) {
+                    return (
+                      <ListingCard
+                        key={l.id}
+                        item={l}
+                        fav={!!favs[l.id]}
+                        onToggleFav={toggleFav}
+                        onOpen={function (item) {
+                          setSelectedListing(item);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+          </>
+        )}
       </main>
 
       <BottomNav
         active={activeTab}
-        setActive={setActiveTab}
+        setActive={function (tab) {
+          setActiveTab(tab);
+          setActiveCategoryKey(null);
+          setSelectedListing(null);
+        }}
         onPost={handlePostClick}
         onAccount={function () {
           setAccountOpen(true);

@@ -1,12 +1,11 @@
-/* === GLOBAL RESET & SAFE-AREA FIX === */
+/* Reset + safe area */
 html,
 body,
 #root {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #f6fdf8; /* Match app background */
-  overscroll-behavior: none;
+  background-color: #f6fdf8;
 }
 
 /* Prevent horizontal scroll */
@@ -27,18 +26,15 @@ body {
   padding-bottom: 72px;
 }
 
-/* === HEADER === */
+/* Header */
 .hz-header {
   position: sticky;
   top: 0;
   z-index: 40;
   backdrop-filter: blur(10px);
-  background-color: #f6fdf8; /* unified color (no black notch) */
+  background-color: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid #dcfce7;
-
-  /* make header hug the real top under notch/status bar */
   padding-top: env(safe-area-inset-top);
-  padding-bottom: 6px;
 }
 
 /* Header inner layout */
@@ -51,7 +47,7 @@ body {
   gap: 10px;
 }
 
-/* Logo */
+/* Logo dot used inside search bar */
 .hz-logo-dot {
   width: 26px;
   height: 26px;
@@ -60,7 +56,7 @@ body {
   flex-shrink: 0;
 }
 
-/* === SEARCH BAR === */
+/* Search bar */
 .hz-search-wrap {
   flex: 1;
   display: flex;
@@ -89,7 +85,7 @@ body {
   text-align: left;
 }
 
-/* Search button (icon only) */
+/* Icon-only search button */
 .hz-search-btn {
   display: inline-flex;
   align-items: center;
@@ -102,14 +98,14 @@ body {
   cursor: pointer;
 }
 
-/* Header right actions */
+/* Header actions */
 .hz-header-actions {
   display: flex;
   gap: 6px;
   flex-shrink: 0;
 }
 
-/* Language switch button */
+/* Language button */
 .hz-lang-btn {
   display: inline-flex;
   align-items: center;
@@ -124,14 +120,14 @@ body {
   white-space: nowrap;
 }
 
-/* === MAIN === */
+/* Main container */
 .hz-main {
   max-width: 1100px;
   margin: 0 auto;
   padding: 10px 16px 80px;
 }
 
-/* Page layout */
+/* Page */
 .hz-page {
   width: 100%;
 }
@@ -163,7 +159,7 @@ body {
   cursor: pointer;
 }
 
-/* === AD BANNER === */
+/* Ad banner */
 .hz-ad {
   margin: 4px 0 10px;
   padding: 8px 12px;
@@ -175,6 +171,7 @@ body {
   gap: 8px;
   font-size: 11px;
 }
+
 .hz-ad-label {
   font-weight: 600;
   color: #16a34a;
@@ -183,7 +180,7 @@ body {
   color: #6b7280;
 }
 
-/* === CATEGORY GRID === */
+/* Category grid */
 .hz-cat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -232,12 +229,14 @@ body {
   align-items: center;
   justify-content: space-between;
 }
+
 .hz-section-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
   color: #15803d;
 }
+
 .hz-see-all {
   border: none;
   background: none;
@@ -246,7 +245,7 @@ body {
   cursor: pointer;
 }
 
-/* === LISTINGS GRID === */
+/* Grid */
 .hz-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -258,7 +257,7 @@ body {
   }
 }
 
-/* === LISTING CARDS === */
+/* Cards */
 .hz-card {
   background-color: #ffffff;
   border-radius: 18px;
@@ -268,6 +267,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  cursor: pointer;
 }
 
 .hz-card-img-wrap {
@@ -378,7 +378,7 @@ body {
   text-decoration: none;
 }
 
-/* === FILTERS === */
+/* Filters */
 .hz-filters {
   margin-top: 8px;
   margin-bottom: 6px;
@@ -417,7 +417,7 @@ body {
   border: none;
 }
 
-/* === BRAND LIST === */
+/* Brand list */
 .hz-brand-list-title {
   font-size: 12px;
   font-weight: 600;
@@ -453,7 +453,7 @@ body {
   color: #16a34a;
 }
 
-/* === BOTTOM NAV === */
+/* Bottom nav */
 .hz-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -488,7 +488,7 @@ body {
   color: #16a34a;
 }
 
-/* === MODALS === */
+/* Modals */
 .hz-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -612,4 +612,155 @@ body {
   background-color: #ffffff;
   color: #6b7280;
   border: 1px solid #e5e7eb;
+}
+
+/* Detail page */
+
+.hz-detail {
+  background-color: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+
+.hz-detail-top {
+  position: absolute;
+  /* header already has safe-area; this button sits just under it visually via App structure */
+}
+
+.hz-detail-back {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111827;
+  cursor: pointer;
+}
+
+/* Image area */
+.hz-detail-img-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 65%;
+  background-color: #f3f4f6;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+}
+
+.hz-detail-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hz-detail-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.hz-detail-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.hz-detail-dot-active {
+  width: 10px;
+  background-color: #16a34a;
+}
+
+/* Body */
+.hz-detail-body {
+  padding: 12px 12px 14px;
+}
+
+.hz-detail-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.hz-detail-title {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.hz-detail-meta-row {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.hz-detail-loc {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Overview box */
+.hz-detail-section-title {
+  margin-top: 14px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.hz-detail-overview {
+  padding: 8px 10px;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hz-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hz-detail-row span:first-child {
+  color: #6b7280;
+}
+.hz-detail-row span:last-child {
+  color: #111827;
+}
+
+/* Description */
+.hz-detail-desc {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Contact block */
+.hz-detail-contact {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
 }
