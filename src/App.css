@@ -1,11 +1,12 @@
-/* Reset and safe-area support */
+/* === GLOBAL RESET & SAFE-AREA FIX === */
 html,
 body,
 #root {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #f6fdf8;
+  background-color: #f6fdf8; /* Match app background */
+  overscroll-behavior: none;
 }
 
 /* Prevent horizontal scroll */
@@ -26,17 +27,18 @@ body {
   padding-bottom: 72px;
 }
 
-/* Header */
+/* === HEADER === */
 .hz-header {
   position: sticky;
   top: 0;
   z-index: 40;
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.96);
+  background-color: #f6fdf8; /* unified color (no black notch) */
   border-bottom: 1px solid #dcfce7;
 
-  /* FIX: make header hug the real top under notch/status bar */
+  /* make header hug the real top under notch/status bar */
   padding-top: env(safe-area-inset-top);
+  padding-bottom: 6px;
 }
 
 /* Header inner layout */
@@ -49,7 +51,7 @@ body {
   gap: 10px;
 }
 
-/* Logo dot (inside search bar) */
+/* Logo */
 .hz-logo-dot {
   width: 26px;
   height: 26px;
@@ -58,7 +60,7 @@ body {
   flex-shrink: 0;
 }
 
-/* Search bar */
+/* === SEARCH BAR === */
 .hz-search-wrap {
   flex: 1;
   display: flex;
@@ -87,7 +89,7 @@ body {
   text-align: left;
 }
 
-/* Search button — now only shows icon */
+/* Search button (icon only) */
 .hz-search-btn {
   display: inline-flex;
   align-items: center;
@@ -100,6 +102,7 @@ body {
   cursor: pointer;
 }
 
+/* Header right actions */
 .hz-header-actions {
   display: flex;
   gap: 6px;
@@ -121,7 +124,7 @@ body {
   white-space: nowrap;
 }
 
-/* Main container */
+/* === MAIN === */
 .hz-main {
   max-width: 1100px;
   margin: 0 auto;
@@ -160,7 +163,7 @@ body {
   cursor: pointer;
 }
 
-/* Ad banner */
+/* === AD BANNER === */
 .hz-ad {
   margin: 4px 0 10px;
   padding: 8px 12px;
@@ -172,7 +175,6 @@ body {
   gap: 8px;
   font-size: 11px;
 }
-
 .hz-ad-label {
   font-weight: 600;
   color: #16a34a;
@@ -181,7 +183,7 @@ body {
   color: #6b7280;
 }
 
-/* Category grid */
+/* === CATEGORY GRID === */
 .hz-cat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -230,14 +232,12 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-
 .hz-section-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
   color: #15803d;
 }
-
 .hz-see-all {
   border: none;
   background: none;
@@ -246,7 +246,7 @@ body {
   cursor: pointer;
 }
 
-/* Listings grid */
+/* === LISTINGS GRID === */
 .hz-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -258,7 +258,7 @@ body {
   }
 }
 
-/* Cards */
+/* === LISTING CARDS === */
 .hz-card {
   background-color: #ffffff;
   border-radius: 18px;
@@ -378,7 +378,7 @@ body {
   text-decoration: none;
 }
 
-/* Filters */
+/* === FILTERS === */
 .hz-filters {
   margin-top: 8px;
   margin-bottom: 6px;
@@ -417,7 +417,7 @@ body {
   border: none;
 }
 
-/* Brand list */
+/* === BRAND LIST === */
 .hz-brand-list-title {
   font-size: 12px;
   font-weight: 600;
@@ -453,7 +453,7 @@ body {
   color: #16a34a;
 }
 
-/* Bottom nav */
+/* === BOTTOM NAV === */
 .hz-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -488,7 +488,7 @@ body {
   color: #16a34a;
 }
 
-/* Modals */
+/* === MODALS === */
 .hz-modal-backdrop {
   position: fixed;
   inset: 0;
