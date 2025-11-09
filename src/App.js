@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import "./App.css";
 
-const BRAND = { name: "Huzzlie", primary: "#16a34a", light: "#f0fdf4" };
+// const BRAND = { name: "Huzzlie", primary: "#16a34a", light: "#f0fdf4" };
+
 
 const STRINGS = {
   en: {
