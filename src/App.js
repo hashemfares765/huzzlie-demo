@@ -1071,10 +1071,13 @@ const PROMO_ADS = [
 
 function PromoCarousel() {
   const [active, setActive] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
 
   function goTo(index) {
-    if (index < 0) index = PROMO_ADS.length - 1;
-    if (index >= PROMO_ADS.length) index = 0;
+    const last = PROMO_ADS.length - 1;
+    if (index < 0) index = last;
+    if (index > last) index = 0;
     setActive(index);
   }
 
@@ -1082,41 +1085,75 @@ function PromoCarousel() {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  // Touch swipe handlers
+  function onTouchStart(e) {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchEndX(null);
+  }
+
+  function onTouchMove(e) {
+    setTouchEndX(e.touches[0].clientX);
+  }
+
+  function onTouchEnd() {
+    if (touchStartX == null || touchEndX == null) return;
+
+    const diff = touchStartX - touchEndX;
+    const threshold = 40; // px
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // swipe left → next
+        goTo(active + 1);
+      } else {
+        // swipe right → prev
+        goTo(active - 1);
+      }
+    }
+
+    setTouchStartX(null);
+    setTouchEndX(null);
+  }
+
   return (
-    <div className="hz-promo-wrap">
+    <div
+      className="hz-promo-wrap"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       <div
         className="hz-promo-track"
-        style={{ transform: `translateX(-${active * 100}%)` }}
+        style={{
+          transform: `translateX(-${active * 100}%)`,
+          width: `${PROMO_ADS.length * 100}%`,
+        }}
       >
-        {PROMO_ADS.map(function (ad) {
-          return (
-            <div
-              key={ad.id}
-              className="hz-promo-slide"
-              style={{ background: ad.bg }}
-              onClick={function () {
-                handleClick(ad.url);
-              }}
-            >
-              <div className="hz-promo-content">
-                <div className="hz-promo-title">{ad.title}</div>
-                <div className="hz-promo-desc">{ad.desc}</div>
-                <div
-                  className="hz-promo-cta"
-                  style={{ backgroundColor: ad.accent }}
-                >
-                  {ad.cta}
-                </div>
+        {PROMO_ADS.map((ad) => (
+          <div
+            key={ad.id}
+            className="hz-promo-slide"
+            style={{ background: ad.bg }}
+            onClick={() => handleClick(ad.url)}
+          >
+            <div className="hz-promo-content">
+              <div className="hz-promo-title">{ad.title}</div>
+              <div className="hz-promo-desc">{ad.desc}</div>
+              <div
+                className="hz-promo-cta"
+                style={{ backgroundColor: ad.accent }}
+              >
+                {ad.cta}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="hz-promo-controls">
         <button
           className="hz-promo-arrow"
-          onClick={function (e) {
+          onClick={(e) => {
             e.stopPropagation();
             goTo(active - 1);
           }}
@@ -1125,26 +1162,24 @@ function PromoCarousel() {
         </button>
 
         <div className="hz-promo-dots">
-          {PROMO_ADS.map(function (ad, index) {
-            return (
-              <button
-                key={ad.id}
-                className={
-                  "hz-promo-dot " +
-                  (index === active ? "hz-promo-dot-active" : "")
-                }
-                onClick={function (e) {
-                  e.stopPropagation();
-                  setActive(index);
-                }}
-              />
-            );
-          })}
+          {PROMO_ADS.map((ad, index) => (
+            <button
+              key={ad.id}
+              className={
+                "hz-promo-dot " +
+                (index === active ? "hz-promo-dot-active" : "")
+              }
+              onClick={(e) => {
+                e.stopPropagation();
+                setActive(index);
+              }}
+            />
+          ))}
         </div>
 
         <button
           className="hz-promo-arrow"
-          onClick={function (e) {
+          onClick={(e) => {
             e.stopPropagation();
             goTo(active + 1);
           }}
@@ -1155,6 +1190,7 @@ function PromoCarousel() {
     </div>
   );
 }
+
 
 /* HOME GRID */
 
