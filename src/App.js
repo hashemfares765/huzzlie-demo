@@ -20,9 +20,6 @@ import {
 } from "lucide-react";
 import "./App.css";
 
-// const BRAND = { name: "Huzzlie", primary: "#16a34a", light: "#f0fdf4" };
-
-
 const STRINGS = {
   en: {
     searchPlaceholder: "Search anything...",
@@ -453,15 +450,16 @@ function ListingCard(props) {
   );
 }
 
+/* UPDATED HEADER (no top Account button, only tidy language toggle) */
 function Header(props) {
   var q = props.q;
   var setQ = props.setQ;
   var onSearch = props.onSearch;
   var lang = props.lang;
   var setLang = props.setLang;
-  var onAccount = props.onAccount;
   var S = STRINGS[lang];
   var isAR = lang === "ar";
+
   return (
     <div className="hz-header">
       <div className="hz-header-inner">
@@ -469,6 +467,7 @@ function Header(props) {
           <div className="hz-logo-dot" />
           <span className="hz-logo-text">Huzzlie</span>
         </div>
+
         <div className="hz-search-wrap">
           <Search size={18} className="hz-search-icon" />
           <input
@@ -489,6 +488,7 @@ function Header(props) {
             {S.search}
           </button>
         </div>
+
         <div className="hz-header-actions">
           <button
             className="hz-lang-btn"
@@ -498,10 +498,6 @@ function Header(props) {
           >
             <Languages size={16} />
             <span>{lang === "en" ? "عربي" : "EN"}</span>
-          </button>
-          <button className="hz-account-btn" onClick={onAccount}>
-            <User size={16} />
-            <span>{S.account}</span>
           </button>
         </div>
       </div>
@@ -516,6 +512,7 @@ function BottomNav(props) {
   var onAccount = props.onAccount;
   var lang = props.lang;
   var S = STRINGS[lang];
+
   function Item(p) {
     var Icon = p.icon;
     var id = p.id;
@@ -538,6 +535,7 @@ function BottomNav(props) {
       </button>
     );
   }
+
   return (
     <div className="hz-bottom-nav">
       <Item id="home" icon={Home} label={S.home} />
@@ -563,6 +561,7 @@ function MotorsFilters(props) {
   var setFilters = props.setFilters;
   var lang = props.lang;
   var S = STRINGS[lang];
+
   return (
     <div className="hz-filters">
       <div className="hz-filters-title">{S.motorsFilters}</div>
@@ -698,6 +697,7 @@ function PropertyFilters(props) {
   var setFilters = props.setFilters;
   var lang = props.lang;
   var S = STRINGS[lang];
+
   return (
     <div className="hz-filters">
       <div className="hz-filters-title">{S.propertyFilters}</div>
@@ -818,6 +818,7 @@ function PropertyFilters(props) {
 function MotorsBrandList(props) {
   var lang = props.lang;
   var S = STRINGS[lang];
+
   return (
     <div className="hz-page">
       <div className="hz-page-header">
@@ -882,11 +883,13 @@ function CategoryPage(props) {
 
   var filtered = listings.filter(function (l) {
     if (l.category !== cat.key) return false;
+
     if (cat.subcategories && cat.subcategories.length) {
       if (props.activeSub && l.subcategory !== props.activeSub) {
         return false;
       }
     }
+
     if (isMotors) {
       if (l.subcategory !== "cars") return false;
       if (motorsBrand && motorsBrand !== "__all" && l.brand !== motorsBrand) {
@@ -907,12 +910,14 @@ function CategoryPage(props) {
       if (filters.mileageMax && (l.mileage || 0) > filters.mileageMax)
         return false;
     }
+
     if (isProp) {
       if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
       if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
       if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin) return false;
       if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax) return false;
     }
+
     return true;
   });
 
@@ -924,7 +929,9 @@ function CategoryPage(props) {
         </button>
         <h2>{cat.label}</h2>
       </div>
+
       <AdBanner lang={lang} />
+
       {isMotors && motorsBrand ? (
         <div className="hz-selected-brand">
           {motorsBrand === "__all"
@@ -932,6 +939,7 @@ function CategoryPage(props) {
             : "Brand: " + motorsBrand}
         </div>
       ) : null}
+
       {isMotors && motorsBrand ? (
         <MotorsFilters
           lang={lang}
@@ -939,6 +947,7 @@ function CategoryPage(props) {
           setFilters={setFilters}
         />
       ) : null}
+
       {isProp ? (
         <PropertyFilters
           lang={lang}
@@ -946,6 +955,7 @@ function CategoryPage(props) {
           setFilters={setFilters}
         />
       ) : null}
+
       <div className="hz-grid">
         {filtered.map(function (l) {
           return (
@@ -967,9 +977,11 @@ function HomeGrid(props) {
   var S = STRINGS[lang];
   var favs = props.favs;
   var toggleFav = props.toggleFav;
+
   return (
     <div className="hz-page">
       <AdBanner lang={lang} />
+
       <div className="hz-cat-grid">
         {CATEGORY_DEFS.filter(function (c) {
           return c.key !== "community";
@@ -994,11 +1006,14 @@ function HomeGrid(props) {
           );
         })}
       </div>
+
       <div className="hz-fee-note">{S.feeNote}</div>
+
       <div className="hz-section-header">
         <h3>{S.latestListings}</h3>
         <button className="hz-see-all">{S.seeAll}</button>
       </div>
+
       <div className="hz-grid">
         {MOCK_LISTINGS.map(function (l) {
           return (
@@ -1111,7 +1126,6 @@ function PostDialog(props) {
   var open = props.open;
   var onClose = props.onClose;
   var lang = props.lang;
-
   var S = STRINGS[lang];
 
   var [category, setCategory] = useState("");
@@ -1146,6 +1160,7 @@ function PostDialog(props) {
       alert("Please fill title, category, subcategory & WhatsApp.");
       return;
     }
+
     var listing = {
       category: category,
       subcategory: subcategory,
@@ -1156,12 +1171,14 @@ function PostDialog(props) {
       mileage: mileage ? Number(mileage) : undefined,
       vin: vin,
     };
+
     if (!validateCarListing(listing)) {
       alert(
         "For Motors > Cars, brand, model, year, seller, mileage & VIN are required."
       );
       return;
     }
+
     alert(
       "Listing ready. " +
         (fee.amount
@@ -1203,6 +1220,7 @@ function PostDialog(props) {
               })}
             </select>
           </div>
+
           <div className="hz-field">
             <label>Subcategory</label>
             <select
@@ -1226,6 +1244,7 @@ function PostDialog(props) {
                 })}
             </select>
           </div>
+
           <div className="hz-field">
             <label>Title</label>
             <input
@@ -1236,6 +1255,7 @@ function PostDialog(props) {
               placeholder="Listing title"
             />
           </div>
+
           <div className="hz-field">
             <label>Price (optional)</label>
             <input
@@ -1247,6 +1267,7 @@ function PostDialog(props) {
               placeholder="Price"
             />
           </div>
+
           <div className="hz-field">
             <label>WhatsApp</label>
             <input
@@ -1257,6 +1278,7 @@ function PostDialog(props) {
               placeholder="+9639xxxxxxxx"
             />
           </div>
+
           <div className="hz-field">
             <label>City</label>
             <select
@@ -1275,6 +1297,7 @@ function PostDialog(props) {
               })}
             </select>
           </div>
+
           {isCar(category, subcategory) ? (
             <>
               <div className="hz-field">
@@ -1342,6 +1365,7 @@ function PostDialog(props) {
               </div>
             </>
           ) : null}
+
           {isAnyProperty(category) ? (
             <div className="hz-field">
               <label>Area (sqft)</label>
@@ -1354,6 +1378,7 @@ function PostDialog(props) {
               />
             </div>
           ) : null}
+
           <div className="hz-field hz-field-full">
             <label>Images</label>
             <input
@@ -1368,6 +1393,7 @@ function PostDialog(props) {
               </div>
             ) : null}
           </div>
+
           <div className="hz-field hz-field-full">
             <label>Description</label>
             <textarea
@@ -1380,6 +1406,7 @@ function PostDialog(props) {
             />
           </div>
         </div>
+
         <div className="hz-modal-footer">
           <div className="hz-fee-label">
             {fee.amount
@@ -1476,9 +1503,6 @@ export default function App() {
         onSearch={function () {}}
         lang={lang}
         setLang={setLang}
-        onAccount={function () {
-          setAccountOpen(true);
-        }}
       />
 
       <main className="hz-main">

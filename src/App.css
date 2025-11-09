@@ -652,3 +652,82 @@ body {
   color: #6b7280;
   border: 1px solid #e5e7eb;
 }
+/* Prevent any horizontal scroll */
+.hz-root {
+  min-height: 100vh;
+  background: #f6fdf8;
+  color: #111827;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    sans-serif;
+  overflow-x: hidden;
+}
+
+/* Header layout */
+.hz-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #f6fdf8;
+}
+
+.hz-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+/* Make sure search area flexes nicely without pushing out of screen */
+.hz-search-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #16a34a33;
+}
+
+.hz-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+.hz-search-btn {
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.hz-header-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Language pill: small, spaced, not stuck to search */
+.hz-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #16a34a33;
+  background: #ffffff;
+  color: #16a34a;
+  cursor: pointer;
+  margin-left: 4px;
+}
