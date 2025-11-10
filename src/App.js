@@ -18,14 +18,15 @@ import {
   MessageCircle,
   Languages,
   UserCircle,
-  Settings,
-  Shield,
-  Bell,
-  Phone,
-  LogOut,
-  Trash2,
   Bookmark,
+  Shield,
+  Phone,
+  Bell,
+  Settings,
+  Trash2,
+  LogOut,
 } from "lucide-react";
+
 import "./App.css";
 
 /* STRINGS */
@@ -33,7 +34,6 @@ import "./App.css";
 const STRINGS = {
   en: {
     searchPlaceholder: "Search anything...",
-    search: "Search",
     home: "Home",
     favourites: "Favourites",
     placeListing: "Place Listing",
@@ -42,21 +42,39 @@ const STRINGS = {
     seeAll: "See all",
     feeNote:
       "Cars cost $3 per listing. Properties (rent/sale/off-plan/rooms) cost $10 per listing. Others are free.",
-    motorsTitle: "Motors",
-    motorsAllInCars: "All in Cars",
     motorsFilters: "Motors Filters",
     propertyFilters: "Property Filters",
     createAccountToPost: "Please create an account before placing a listing.",
     adSpace: "Ad space",
     adSpaceDesc: "External banner placement for partners.",
-    brandSelectTitle: "Select a car brand",
     detailsOverview: "Overview",
-    detailsShowMore: "Show more",
     detailsContact: "Contact seller",
+    whatsappMessage: "Hi, I'm interested in your listing:",
+    createAccount: "Create Account",
+    or: "or",
+    cancel: "Cancel",
+    save: "Save",
+    images: "Images",
+    fileSelected: "file(s) selected",
+    postingFee: "Posting fee",
+    freeCategory: "This category is free to post.",
+    payPostMock: "Pay & Post (mock)",
+    myAds: "My Ads",
+    mySearches: "My Searches",
+    joinedOn: "Joined on July 2023",
+    getVerified: "Get Verified",
+    profileInfo: "Profile & Basic Info",
+    phonesAddresses: "Phone Numbers & Addresses",
+    passwordSecurity: "Password & Security",
+    myAdsStatus: "My Ads Status",
+    notificationsSettings: "Notifications & Email Settings",
+    accountSettings: "Account Settings",
+    deactivateDelete: "Deactivate / Delete Account",
+    logout: "Log Out",
+    featured: "Featured",
   },
   ar: {
     searchPlaceholder: "ابحث عن أي شيء...",
-    search: "بحث",
     home: "الرئيسية",
     favourites: "المفضلة",
     placeListing: "إضافة إعلان",
@@ -64,18 +82,37 @@ const STRINGS = {
     latestListings: "أحدث الإعلانات",
     seeAll: "عرض الكل",
     feeNote:
-      "إعلانات السيارات 3$ للإعلان. العقارات (إيجار/بيع/خطة/off-plan/غرف) 10$ للإعلان. الباقي مجاني.",
-    motorsTitle: "المحركات",
-    motorsAllInCars: "الكل في السيارات",
+      "إعلانات السيارات 3$ للإعلان. العقارات (إيجار/بيع/خطة/غرف) 10$ للإعلان. باقي الأقسام مجانية.",
     motorsFilters: "فلاتر السيارات",
     propertyFilters: "فلاتر العقارات",
     createAccountToPost: "يرجى إنشاء حساب قبل إضافة إعلان.",
     adSpace: "مساحة إعلانية",
-    adSpaceDesc: "مكان للبانرات الخارجية.",
-    brandSelectTitle: "اختر ماركة السيارة",
+    adSpaceDesc: "مكان لوضع إعلانات الشركاء.",
     detailsOverview: "نظرة عامة",
-    detailsShowMore: "عرض المزيد",
     detailsContact: "تواصل مع المعلن",
+    whatsappMessage: "مرحباً، أنا مهتم بالإعلان:",
+    createAccount: "إنشاء حساب",
+    or: "أو",
+    cancel: "إلغاء",
+    save: "حفظ",
+    images: "الصور",
+    fileSelected: "ملف/ملفات محددة",
+    postingFee: "رسوم النشر",
+    freeCategory: "هذا القسم مجاني للنشر.",
+    payPostMock: "ادفع وانشر (تجريبي)",
+    myAds: "إعلاناتي",
+    mySearches: "بحثي",
+    joinedOn: "انضم منذ يوليو 2023",
+    getVerified: "الحصول على التحقق",
+    profileInfo: "الملف الشخصي والمعلومات الأساسية",
+    phonesAddresses: "أرقام الهواتف والعناوين",
+    passwordSecurity: "كلمة المرور والأمان",
+    myAdsStatus: "حالة إعلاناتي",
+    notificationsSettings: "إعدادات الإشعارات والبريد",
+    accountSettings: "إعدادات الحساب",
+    deactivateDelete: "إلغاء / حذف الحساب",
+    logout: "تسجيل الخروج",
+    featured: "مميز",
   },
 };
 
@@ -85,89 +122,97 @@ const CATEGORY_DEFS = [
   {
     key: "rent",
     label: "Properties for Rent",
+    labelAr: "عقارات للإيجار",
     icon: Building2,
     isProperty: true,
     subcategories: [
-      { key: "apartment", label: "Apartments" },
-      { key: "villa", label: "Villas" },
-      { key: "townhouse", label: "Townhouses" },
-      { key: "room", label: "Rooms" },
+      { key: "apartment", label: "Apartments", labelAr: "شقق" },
+      { key: "villa", label: "Villas", labelAr: "فلل" },
+      { key: "townhouse", label: "Townhouses", labelAr: "تاون هاوس" },
+      { key: "room", label: "Rooms", labelAr: "غرف" },
     ],
   },
   {
     key: "sale",
     label: "Properties for Sale",
+    labelAr: "عقارات للبيع",
     icon: Home,
     isProperty: true,
     subcategories: [
-      { key: "apartment", label: "Apartments" },
-      { key: "villa", label: "Villas" },
-      { key: "plot", label: "Plots" },
-      { key: "offplan", label: "Off-plan" },
+      { key: "apartment", label: "Apartments", labelAr: "شقق" },
+      { key: "villa", label: "Villas", labelAr: "فلل" },
+      { key: "plot", label: "Plots", labelAr: "أراضٍ" },
+      { key: "offplan", label: "Off-plan", labelAr: "على المخطط" },
     ],
   },
   {
     key: "offplan",
     label: "Off Plan Properties",
+    labelAr: "عقارات على المخطط",
     icon: MapPin,
     isProperty: true,
     subcategories: [
-      { key: "apt", label: "Off-plan Apts" },
-      { key: "villa", label: "Off-plan Villas" },
+      { key: "apt", label: "Off-plan Apts", labelAr: "شقق على المخطط" },
+      { key: "villa", label: "Off-plan Villas", labelAr: "فلل على المخطط" },
     ],
   },
   {
     key: "rooms",
     label: "Rooms for Rent",
+    labelAr: "غرف للإيجار",
     icon: BedDouble,
     isProperty: true,
     subcategories: [
-      { key: "shared", label: "Shared" },
-      { key: "private", label: "Private" },
-      { key: "master", label: "Master" },
+      { key: "shared", label: "Shared", labelAr: "مشتركة" },
+      { key: "private", label: "Private", labelAr: "خاصة" },
+      { key: "master", label: "Master", labelAr: "ماستر" },
     ],
   },
   {
     key: "motors",
     label: "Motors",
+    labelAr: "المحركات",
     icon: Car,
     isProperty: false,
-    subcategories: [{ key: "cars", label: "Cars" }],
+    subcategories: [{ key: "cars", label: "Cars", labelAr: "سيارات" }],
   },
   {
     key: "jobs",
     label: "Jobs",
+    labelAr: "وظائف",
     icon: Briefcase,
     isProperty: false,
     subcategories: [
-      { key: "sales", label: "Sales" },
-      { key: "it", label: "IT" },
-      { key: "admin", label: "Admin" },
-      { key: "marketing", label: "Marketing" },
+      { key: "sales", label: "Sales", labelAr: "مبيعات" },
+      { key: "it", label: "IT", labelAr: "تقنية معلومات" },
+      { key: "admin", label: "Admin", labelAr: "إداري" },
+      { key: "marketing", label: "Marketing", labelAr: "تسويق" },
     ],
   },
   {
     key: "classifieds",
     label: "Classifieds",
+    labelAr: "إعلانات مبوبة",
     icon: Store,
     isProperty: false,
     subcategories: [
-      { key: "electronics", label: "Electronics" },
-      { key: "fashion", label: "Fashion" },
-      { key: "services", label: "Services" },
-      { key: "pets", label: "Pets" },
+      { key: "electronics", label: "Electronics", labelAr: "إلكترونيات" },
+      { key: "fashion", label: "Fashion", labelAr: "أزياء" },
+      { key: "services", label: "Services", labelAr: "خدمات" },
+      { key: "pets", label: "Pets", labelAr: "حيوانات أليفة" },
     ],
   },
   {
     key: "furniture",
     label: "Furniture & Garden",
+    labelAr: "أثاث وحديقة",
     icon: Sofa,
     isProperty: false,
     subcategories: [
-      { key: "sofa", label: "Sofas" },
-      { key: "bed", label: "Beds" },
-      { key: "outdoor", label: "Outdoor" },
-      { key: "decor", label: "Décor" },
+      { key: "sofa", label: "Sofas", labelAr: "كنب" },
+      { key: "bed", label: "Beds", labelAr: "أسرة" },
+      { key: "outdoor", label: "Outdoor", labelAr: "خارجي" },
+      { key: "decor", label: "Décor", labelAr: "ديكور" },
     ],
   },
 ];
@@ -264,29 +309,88 @@ const CAR_BRANDS = [
   "Volvo",
 ];
 
-/* MOCK LISTINGS (initial data) */
+/* HELPERS */
+
+function isCar(categoryKey, subKey) {
+  return categoryKey === "motors" && subKey === "cars";
+}
+
+function isAnyProperty(categoryKey) {
+  return !!CATEGORY_DEFS.find((c) => c.isProperty && c.key === categoryKey);
+}
+
+function postingFeeFor(categoryKey, subKey) {
+  if (isCar(categoryKey, subKey)) {
+    return { amount: 3, currency: "USD", reason: "Cars category fee" };
+  }
+  if (isAnyProperty(categoryKey)) {
+    return { amount: 10, currency: "USD", reason: "Property listing fee" };
+  }
+  return { amount: 0, currency: "USD", reason: "Free category" };
+}
+
+function validateCarListing(listing) {
+  if (!isCar(listing.category, listing.subcategory)) return true;
+  var required = [
+    "brand",
+    "model",
+    "year",
+    "specs",
+    "sellerType",
+    "mileage",
+    "vin",
+  ];
+  return required.every((k) => !!listing[k]);
+}
+
+function getCityName(cityEn, lang) {
+  if (!cityEn) return "";
+  if (lang !== "ar") return cityEn;
+  const found = SYRIA_CITIES.find((c) => c.en === cityEn);
+  return found ? found.ar : cityEn;
+}
+
+function listingTitle(item, lang) {
+  return lang === "ar" && item.titleAr ? item.titleAr : item.title;
+}
+function listingDesc(item, lang) {
+  return lang === "ar" && item.descAr ? item.descAr : item.desc;
+}
+function listingLocation(item, lang) {
+  if (lang === "ar") {
+    if (item.locationAr) return item.locationAr;
+    return getCityName(item.location, "ar");
+  }
+  return item.location;
+}
+
+/* MOCK LISTINGS */
 
 const MOCK_LISTINGS = [
   {
     id: "l1",
     title: "1BR Apartment | Downtown Damascus",
+    titleAr: "شقة غرفة نوم واحدة | وسط دمشق",
     price: 3000000,
     currency: "SYP",
     category: "rent",
     subcategory: "apartment",
     location: "Damascus",
+    locationAr: "دمشق",
     areaSqft: 780,
     whatsapp: "+963944111222",
     imgs: [
       "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
     ],
     desc: "Bright 1BR apartment in central Damascus, close to shops and cafés.",
+    descAr:
+      "شقة غرفة نوم واحدة مشرقة في وسط دمشق، قريبة من المحال التجارية والمقاهي.",
     featured: true,
   },
   {
     id: "l2",
     title: "2018 Toyota Camry | GCC | Full service",
+    titleAr: "تويوتا كامري 2018 | مواصفات خليجية | سيرفس كامل",
     price: 15000,
     currency: "USD",
     category: "motors",
@@ -298,46 +402,55 @@ const MOCK_LISTINGS = [
     specs: "GCC",
     sellerType: "private",
     location: "Aleppo",
+    locationAr: "حلب",
     whatsapp: "+963944333444",
     imgs: [
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
     ],
     desc: "Clean Camry with full service history and no major accidents.",
+    descAr: "كامري نظيفة مع سجل صيانة كامل وبدون حوادث كبيرة.",
     featured: false,
   },
   {
     id: "l3",
     title: "Modern Sofa | Like New",
+    titleAr: "كنبة حديثة | شبه جديدة",
     price: 400,
     currency: "USD",
     category: "furniture",
     subcategory: "sofa",
     location: "Homs",
+    locationAr: "حمص",
     whatsapp: "+963944555666",
     imgs: [
       "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop",
     ],
     desc: "Comfortable 3-seater sofa, barely used.",
+    descAr: "كنبة ثلاثية مريحة، استخدام بسيط.",
     featured: false,
   },
   {
     id: "l4",
     title: "Junior Marketing Executive",
+    titleAr: "تنفيذي تسويق مبتدئ",
     price: 0,
     currency: "SYP",
     category: "jobs",
     subcategory: "marketing",
     location: "Damascus",
+    locationAr: "دمشق",
     whatsapp: "+963944777888",
     imgs: [
       "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop",
     ],
     desc: "Entry-level marketing role at a growing agency.",
+    descAr: "وظيفة تسويق للمبتدئين في وكالة نامية.",
     featured: false,
   },
   {
     id: "l5",
     title: "2021 Mercedes C-Class | Warranty",
+    titleAr: "مرسيدس C-Class 2021 | تحت الضمان",
     price: 129000,
     currency: "AED",
     category: "motors",
@@ -349,58 +462,21 @@ const MOCK_LISTINGS = [
     specs: "GCC",
     sellerType: "dealership",
     location: "Dubai",
+    locationAr: "دبي",
     whatsapp: "+971581234567",
     imgs: [
       "https://images.unsplash.com/photo-1549921296-3b4a6b26b6b4?q=80&w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1200&auto=format&fit=crop",
     ],
     desc: "Dealer-maintained C-Class with remaining warranty and full options.",
+    descAr: "C-Class من الوكيل مع ضمان ساري ومواصفات كاملة.",
     featured: true,
   },
 ];
 
-/* HELPERS */
-
-function isCar(categoryKey, subKey) {
-  return categoryKey === "motors" && subKey === "cars";
-}
-
-function isAnyProperty(categoryKey) {
-  return !!CATEGORY_DEFS.find(function (c) {
-    return c.isProperty && c.key === categoryKey;
-  });
-}
-
-export function postingFeeFor(categoryKey, subKey) {
-  if (isCar(categoryKey, subKey)) {
-    return { amount: 3, currency: "USD", reason: "Cars category fee" };
-  }
-  if (isAnyProperty(categoryKey)) {
-    return { amount: 10, currency: "USD", reason: "Property listing fee" };
-  }
-  return { amount: 0, currency: "USD", reason: "Free category" };
-}
-
-export function validateCarListing(listing) {
-  if (!isCar(listing.category, listing.subcategory)) return true;
-  var required = [
-    "brand",
-    "model",
-    "year",
-    "specs",
-    "sellerType",
-    "mileage",
-    "vin",
-  ];
-  return required.every(function (k) {
-    return !!listing[k];
-  });
-}
-
 /* BASIC COMPONENTS */
 
-function AdBanner(props) {
-  var S = STRINGS[props.lang || "en"];
+function AdBanner({ lang }) {
+  const S = STRINGS[lang];
   return (
     <div className="hz-ad">
       <div className="hz-ad-label">{S.adSpace}</div>
@@ -409,52 +485,49 @@ function AdBanner(props) {
   );
 }
 
-function WhatsAppButton(props) {
-  var number = props.number;
-  var title = props.title;
+function WhatsAppButton({ number, title, lang }) {
   if (!number) return null;
-  var url =
+  const msg = STRINGS[lang].whatsappMessage;
+  const url =
     "https://wa.me/" +
     number.replace(/[^\d+]/g, "") +
     "?text=" +
-    encodeURIComponent("Hi, I'm interested in your listing: " + title);
+    encodeURIComponent(msg + " " + title);
+
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
       className="hz-whatsapp"
-      onClick={function (e) {
-        e.stopPropagation();
-      }}
+      onClick={(e) => e.stopPropagation()}
     >
       <MessageCircle size={14} />
-      <span>WhatsApp</span>
+      <span>{lang === "ar" ? "واتساب" : "WhatsApp"}</span>
     </a>
   );
 }
 
-function ListingCard(props) {
-  var item = props.item;
-  var fav = props.fav;
-  var onToggleFav = props.onToggleFav;
-  var onOpen = props.onOpen;
+function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
+  const title = listingTitle(item, lang);
+  const loc = listingLocation(item, lang);
+  const S = STRINGS[lang];
 
   return (
     <div
       className="hz-card"
-      onClick={function () {
+      onClick={() => {
         if (onOpen) onOpen(item);
       }}
     >
       <div className="hz-card-img-wrap">
         <img
           src={item.imgs && item.imgs[0]}
-          alt={item.title}
+          alt={title}
           className="hz-card-img"
         />
         <button
-          onClick={function (e) {
+          onClick={(e) => {
             e.stopPropagation();
             onToggleFav(item.id);
           }}
@@ -464,11 +537,13 @@ function ListingCard(props) {
         >
           <Heart size={18} fill={fav ? "currentColor" : "none"} />
         </button>
-        {item.featured ? <div className="hz-badge">Featured</div> : null}
+        {item.featured && (
+          <div className="hz-badge">{S.featured}</div>
+        )}
       </div>
       <div className="hz-card-body">
         <div className="hz-card-title-row">
-          <h3 className="hz-card-title">{item.title}</h3>
+          <h3 className="hz-card-title">{title}</h3>
           <Tag size={14} className="hz-card-tag" />
         </div>
         <div className="hz-card-price-row">
@@ -478,32 +553,55 @@ function ListingCard(props) {
           </span>
           <span className="hz-loc">
             <MapPin size={12} />
-            {item.location}
+            {loc}
           </span>
         </div>
         <div className="hz-card-meta">
-          {item.year ? <span>Year: {item.year}</span> : null}
-          {item.mileage ? (
-            <span>Mileage: {item.mileage.toLocaleString()} km</span>
-          ) : null}
-          {item.specs ? <span>Specs: {item.specs}</span> : null}
-          {item.areaSqft ? <span>Area: {item.areaSqft} sqft</span> : null}
-          {item.sellerType ? <span>Seller: {item.sellerType}</span> : null}
+          {item.year && (
+            <span>
+              {lang === "ar" ? "الموديل" : "Year"}: {item.year}
+            </span>
+          )}
+          {item.mileage && (
+            <span>
+              {lang === "ar" ? "المسافة" : "Mileage"}:{" "}
+              {item.mileage.toLocaleString()} km
+            </span>
+          )}
+          {item.specs && (
+            <span>
+              {lang === "ar" ? "المواصفات" : "Specs"}: {item.specs}
+            </span>
+          )}
+          {item.areaSqft && (
+            <span>
+              {lang === "ar" ? "المساحة" : "Area"}: {item.areaSqft} sqft
+            </span>
+          )}
+          {item.sellerType && (
+            <span>
+              {lang === "ar" ? "البائع" : "Seller"}:{" "}
+              {item.sellerType === "private"
+                ? lang === "ar"
+                  ? "شخصي"
+                  : "Private"
+                : item.sellerType === "dealership"
+                ? lang === "ar"
+                  ? "معرض"
+                  : "Dealership"
+                : item.sellerType}
+            </span>
+          )}
         </div>
-        <WhatsAppButton number={item.whatsapp} title={item.title} />
+        <WhatsAppButton number={item.whatsapp} title={title} lang={lang} />
       </div>
     </div>
   );
 }
 
-function Header(props) {
-  var q = props.q;
-  var setQ = props.setQ;
-  var onSearch = props.onSearch;
-  var lang = props.lang;
-  var setLang = props.setLang;
-  var S = STRINGS[lang];
-  var isAR = lang === "ar";
+function Header({ q, setQ, onSearch, lang, setLang }) {
+  const S = STRINGS[lang];
+  const isAR = lang === "ar";
 
   return (
     <div className="hz-header">
@@ -516,13 +614,10 @@ function Header(props) {
               className="hz-logo-img"
             />
           </div>
-
           <input
             value={q}
-            onChange={function (e) {
-              setQ(e.target.value);
-            }}
-            onKeyDown={function (e) {
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
               if (e.key === "Enter") onSearch();
             }}
             placeholder={S.searchPlaceholder}
@@ -531,7 +626,6 @@ function Header(props) {
             }
             dir={isAR ? "rtl" : "ltr"}
           />
-
           <button className="hz-search-btn" onClick={onSearch}>
             <Search size={18} />
           </button>
@@ -540,9 +634,7 @@ function Header(props) {
         <div className="hz-header-actions">
           <button
             className="hz-lang-btn"
-            onClick={function () {
-              setLang(lang === "en" ? "ar" : "en");
-            }}
+            onClick={() => setLang(lang === "en" ? "ar" : "en")}
           >
             <Languages size={16} />
             <span>{lang === "en" ? "عربي" : "EN"}</span>
@@ -553,19 +645,10 @@ function Header(props) {
   );
 }
 
-function BottomNav(props) {
-  var active = props.active;
-  var setActive = props.setActive;
-  var onPost = props.onPost;
-  var onAccount = props.onAccount;
-  var lang = props.lang;
-  var S = STRINGS[lang];
+function BottomNav({ active, setActive, onPost, onAccount, lang }) {
+  const S = STRINGS[lang];
 
-  function Item(p) {
-    var Icon = p.icon;
-    var id = p.id;
-    var label = p.label;
-    var onClick = p.onClick;
+  function Item({ id, icon: Icon, label, onClick }) {
     return (
       <button
         className={
@@ -573,9 +656,9 @@ function BottomNav(props) {
         }
         onClick={
           onClick ||
-          function () {
+          (() => {
             setActive(id);
-          }
+          })
         }
       >
         <Icon size={22} />
@@ -588,20 +671,28 @@ function BottomNav(props) {
     <div className="hz-bottom-nav">
       <Item id="home" icon={Home} label={S.home} />
       <Item id="favs" icon={Heart} label={S.favourites} />
-      <Item id="post" icon={PlusCircle} label={S.placeListing} onClick={onPost} />
-      <Item id="account" icon={User} label={S.account} onClick={onAccount} />
+      <Item
+        id="post"
+        icon={PlusCircle}
+        label={S.placeListing}
+        onClick={onPost}
+      />
+      <Item
+        id="account"
+        icon={User}
+        label={S.account}
+        onClick={onAccount}
+      />
     </div>
   );
 }
 
-/* FILTERS */
+/* MOTORS FILTERS – HORIZONTAL CHIPS + PANEL */
 
-function MotorsFilters(props) {
-  var filters = props.filters;
-  var setFilters = props.setFilters;
-  var lang = props.lang;
-  var S = STRINGS[lang];
-  var [activeFilter, setActiveFilter] = useState(null);
+function MotorsFilters({ filters, setFilters, lang }) {
+  const S = STRINGS[lang];
+  const isAr = lang === "ar";
+  const [activeFilter, setActiveFilter] = useState(null);
 
   function chipClass(key) {
     return (
@@ -614,178 +705,137 @@ function MotorsFilters(props) {
     <div className="hz-filters">
       <div className="hz-filters-title">{S.motorsFilters}</div>
 
-      {/* Horizontal scrollable chips */}
       <div className="hz-filter-chips-scroll">
         <button
           className={chipClass("brand")}
-          onClick={function () {
-            setActiveFilter(activeFilter === "brand" ? null : "brand");
-          }}
+          onClick={() =>
+            setActiveFilter(activeFilter === "brand" ? null : "brand")
+          }
         >
-          Brand {filters.brand ? `· ${filters.brand}` : ""}
-        </button>
-
-        <button
-          className={chipClass("model")}
-          onClick={function () {
-            setActiveFilter(activeFilter === "model" ? null : "model");
-          }}
-        >
-          Model {filters.model ? `· ${filters.model}` : ""}
+          {isAr ? "ماركة السيارة" : "Brand"}
+          {filters.brand ? ` · ${filters.brand}` : ""}
         </button>
 
         <button
           className={chipClass("sellerType")}
-          onClick={function () {
+          onClick={() =>
             setActiveFilter(
               activeFilter === "sellerType" ? null : "sellerType"
-            );
-          }}
+            )
+          }
         >
-          Seller {filters.sellerType ? `· ${filters.sellerType}` : ""}
+          {isAr ? "نوع البائع" : "Seller"}
+          {filters.sellerType
+            ? ` · ${
+                filters.sellerType === "private"
+                  ? isAr
+                    ? "شخصي"
+                    : "Private"
+                  : isAr
+                  ? "معرض"
+                  : "Dealership"
+              }`
+            : ""}
         </button>
 
         <button
-          className={chipClass("yearMin")}
-          onClick={function () {
-            setActiveFilter(activeFilter === "yearMin" ? null : "yearMin");
-          }}
+          className={chipClass("model")}
+          onClick={() =>
+            setActiveFilter(activeFilter === "model" ? null : "model")
+          }
         >
-          Min Year {filters.yearMin ? `· ${filters.yearMin}` : ""}
+          {isAr ? "الطراز" : "Model"}
+          {filters.model ? ` · ${filters.model}` : ""}
         </button>
 
         <button
           className={chipClass("priceMax")}
-          onClick={function () {
-            setActiveFilter(activeFilter === "priceMax" ? null : "priceMax");
-          }}
-        >
-          Max Price {filters.priceMax ? `· ${filters.priceMax}` : ""}
-        </button>
-
-        <button
-          className={chipClass("mileageMax")}
-          onClick={function () {
+          onClick={() =>
             setActiveFilter(
-              activeFilter === "mileageMax" ? null : "mileageMax"
-            );
-          }}
+              activeFilter === "priceMax" ? null : "priceMax"
+            )
+          }
         >
-          Max KM {filters.mileageMax ? `· ${filters.mileageMax}` : ""}
+          {isAr ? "أعلى سعر" : "Max Price"}
+          {filters.priceMax ? ` · ${filters.priceMax}` : ""}
         </button>
       </div>
 
-      {/* Active filter control */}
       <div className="hz-filter-active-panel">
         {activeFilter === "brand" && (
           <div className="hz-field">
-            <label>Brand</label>
+            <label>{isAr ? "اختر الماركة" : "Select brand"}</label>
             <select
               value={filters.brand || ""}
-              onChange={function (e) {
-                var v = e.target.value || undefined;
-                setFilters(function (f) {
-                  return { ...f, brand: v };
-                });
+              onChange={(e) => {
+                const v = e.target.value || undefined;
+                setFilters((f) => ({ ...f, brand: v }));
               }}
             >
-              <option value="">Any</option>
-              {CAR_BRANDS.filter(function (b) {
-                return b !== "__all";
-              }).map(function (b) {
-                return (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                );
-              })}
+              <option value="">
+                {isAr ? "أي ماركة" : "Any brand"}
+              </option>
+              {CAR_BRANDS.filter((b) => b !== "__all").map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {activeFilter === "sellerType" && (
+          <div className="hz-field">
+            <label>{isAr ? "نوع البائع" : "Seller type"}</label>
+            <select
+              value={filters.sellerType || ""}
+              onChange={(e) => {
+                const v = e.target.value || undefined;
+                setFilters((f) => ({ ...f, sellerType: v }));
+              }}
+            >
+              <option value="">
+                {isAr ? "أي" : "Any"}
+              </option>
+              <option value="private">
+                {isAr ? "شخصي" : "Private"}
+              </option>
+              <option value="dealership">
+                {isAr ? "معرض" : "Dealership"}
+              </option>
             </select>
           </div>
         )}
 
         {activeFilter === "model" && (
           <div className="hz-field">
-            <label>Model</label>
+            <label>{isAr ? "اسم الطراز" : "Model name"}</label>
             <input
-              placeholder="e.g. C-Class"
               value={filters.model || ""}
-              onChange={function (e) {
-                var v = e.target.value || undefined;
-                setFilters(function (f) {
-                  return { ...f, model: v };
-                });
+              onChange={(e) => {
+                const v = e.target.value || undefined;
+                setFilters((f) => ({ ...f, model: v }));
               }}
-            />
-          </div>
-        )}
-
-        {activeFilter === "sellerType" && (
-          <div className="hz-field">
-            <label>Seller</label>
-            <select
-              value={filters.sellerType || ""}
-              onChange={function (e) {
-                var v = e.target.value || undefined;
-                setFilters(function (f) {
-                  return { ...f, sellerType: v };
-                });
-              }}
-            >
-              <option value="">Any</option>
-              <option value="private">Private</option>
-              <option value="dealership">Dealership</option>
-            </select>
-          </div>
-        )}
-
-        {activeFilter === "yearMin" && (
-          <div className="hz-field">
-            <label>Minimum Year</label>
-            <input
-              type="number"
-              min="1960"
-              max="2026"
-              value={filters.yearMin || ""}
-              onChange={function (e) {
-                var v = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, yearMin: v };
-                });
-              }}
+              placeholder={isAr ? "مثال: C-Class" : "e.g. C-Class"}
             />
           </div>
         )}
 
         {activeFilter === "priceMax" && (
           <div className="hz-field">
-            <label>Max Price</label>
+            <label>
+              {isAr ? "أقصى سعر (بالدولار/العملة المعروضة)" : "Maximum price"}
+            </label>
             <input
               type="number"
               value={filters.priceMax || ""}
-              onChange={function (e) {
-                var v = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, priceMax: v };
-                });
+              onChange={(e) => {
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
+                setFilters((f) => ({ ...f, priceMax: n }));
               }}
-              placeholder="Max price"
-            />
-          </div>
-        )}
-
-        {activeFilter === "mileageMax" && (
-          <div className="hz-field">
-            <label>Max Mileage (km)</label>
-            <input
-              type="number"
-              value={filters.mileageMax || ""}
-              onChange={function (e) {
-                var v = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, mileageMax: v };
-                });
-              }}
-              placeholder="Max km"
+              placeholder={isAr ? "أدخل أقصى سعر" : "Enter max price"}
             />
           </div>
         )}
@@ -794,13 +844,11 @@ function MotorsFilters(props) {
   );
 }
 
+/* PROPERTY FILTERS – SAME PATTERN */
 
-function PropertyFilters(props) {
-  var filters = props.filters;
-  var setFilters = props.setFilters;
-  var lang = props.lang;
-  var S = STRINGS[lang];
-  var [activeFilter, setActiveFilter] = useState(null);
+function PropertyFilters({ filters, setFilters, lang }) {
+  const S = STRINGS[lang];
+  const [activeFilter, setActiveFilter] = useState(null);
 
   function chipClass(key) {
     return (
@@ -813,119 +861,134 @@ function PropertyFilters(props) {
     <div className="hz-filters">
       <div className="hz-filters-title">{S.propertyFilters}</div>
 
-      {/* Horizontal chips */}
       <div className="hz-filter-chips-scroll">
         <button
           className={chipClass("priceMin")}
-          onClick={function () {
+          onClick={() =>
             setActiveFilter(
               activeFilter === "priceMin" ? null : "priceMin"
-            );
-          }}
+            )
+          }
         >
-          Min Price {filters.priceMin ? `· ${filters.priceMin}` : ""}
+          {lang === "ar" ? "أدنى سعر" : "Min Price"}
+          {filters.priceMin ? ` · ${filters.priceMin}` : ""}
         </button>
-
         <button
           className={chipClass("priceMax")}
-          onClick={function () {
+          onClick={() =>
             setActiveFilter(
               activeFilter === "priceMax" ? null : "priceMax"
-            );
-          }}
+            )
+          }
         >
-          Max Price {filters.priceMax ? `· ${filters.priceMax}` : ""}
+          {lang === "ar" ? "أعلى سعر" : "Max Price"}
+          {filters.priceMax ? ` · ${filters.priceMax}` : ""}
         </button>
-
         <button
           className={chipClass("areaMin")}
-          onClick={function () {
+          onClick={() =>
             setActiveFilter(
               activeFilter === "areaMin" ? null : "areaMin"
-            );
-          }}
+            )
+          }
         >
-          Min Area {filters.areaMin ? `· ${filters.areaMin}` : ""}
+          {lang === "ar" ? "أقل مساحة" : "Min Area"}
+          {filters.areaMin ? ` · ${filters.areaMin}` : ""}
         </button>
-
         <button
           className={chipClass("areaMax")}
-          onClick={function () {
+          onClick={() =>
             setActiveFilter(
               activeFilter === "areaMax" ? null : "areaMax"
-            );
-          }}
+            )
+          }
         >
-          Max Area {filters.areaMax ? `· ${filters.areaMax}` : ""}
+          {lang === "ar" ? "أكبر مساحة" : "Max Area"}
+          {filters.areaMax ? ` · ${filters.areaMax}` : ""}
         </button>
       </div>
 
-      {/* Active filter input */}
       <div className="hz-filter-active-panel">
         {activeFilter === "priceMin" && (
           <div className="hz-field">
-            <label>Minimum Price</label>
+            <label>
+              {lang === "ar" ? "أدنى سعر" : "Minimum Price"}
+            </label>
             <input
               type="number"
               value={filters.priceMin || ""}
-              onChange={function (e) {
-                var n = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, priceMin: n };
-                });
+              onChange={(e) => {
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
+                setFilters((f) => ({ ...f, priceMin: n }));
               }}
-              placeholder="Min price"
+              placeholder={lang === "ar" ? "أدنى سعر" : "Min price"}
             />
           </div>
         )}
 
         {activeFilter === "priceMax" && (
           <div className="hz-field">
-            <label>Maximum Price</label>
+            <label>
+              {lang === "ar" ? "أعلى سعر" : "Maximum Price"}
+            </label>
             <input
               type="number"
               value={filters.priceMax || ""}
-              onChange={function (e) {
-                var n = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, priceMax: n };
-                });
+              onChange={(e) => {
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
+                setFilters((f) => ({ ...f, priceMax: n }));
               }}
-              placeholder="Max price"
+              placeholder={lang === "ar" ? "أعلى سعر" : "Max price"}
             />
           </div>
         )}
 
         {activeFilter === "areaMin" && (
           <div className="hz-field">
-            <label>Minimum Area (sqft)</label>
+            <label>
+              {lang === "ar"
+                ? "أقل مساحة (قدم مربع)"
+                : "Minimum Area (sqft)"}
+            </label>
             <input
               type="number"
               value={filters.areaMin || ""}
-              onChange={function (e) {
-                var n = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, areaMin: n };
-                });
+              onChange={(e) => {
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
+                setFilters((f) => ({ ...f, areaMin: n }));
               }}
-              placeholder="Min sqft"
+              placeholder={
+                lang === "ar" ? "أقل مساحة" : "Min sqft"
+              }
             />
           </div>
         )}
 
         {activeFilter === "areaMax" && (
           <div className="hz-field">
-            <label>Maximum Area (sqft)</label>
+            <label>
+              {lang === "ar"
+                ? "أكبر مساحة (قدم مربع)"
+                : "Maximum Area (sqft)"}
+            </label>
             <input
               type="number"
               value={filters.areaMax || ""}
-              onChange={function (e) {
-                var n = e.target.value ? Number(e.target.value) : undefined;
-                setFilters(function (f) {
-                  return { ...f, areaMax: n };
-                });
+              onChange={(e) => {
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
+                setFilters((f) => ({ ...f, areaMax: n }));
               }}
-              placeholder="Max sqft"
+              placeholder={
+                lang === "ar" ? "أكبر مساحة" : "Max sqft"
+              }
             />
           </div>
         )}
@@ -934,25 +997,24 @@ function PropertyFilters(props) {
   );
 }
 
+/* CATEGORY PAGE */
 
-/* CATEGORY PAGE (NO BRAND LIST) */
+function CategoryPage({
+  cat,
+  listings,
+  favs,
+  toggleFav,
+  onBack,
+  activeSub,
+  setActiveSub,
+  lang,
+  onOpenListing,
+}) {
+  const isMotors = cat.key === "motors";
+  const isProp = !!cat.isProperty;
+  const [filters, setFilters] = useState({});
 
-function CategoryPage(props) {
-  var cat = props.cat;
-  var listings = props.listings;
-  var favs = props.favs;
-  var toggleFav = props.toggleFav;
-  var onBack = props.onBack;
-  var activeSub = props.activeSub;
-  var lang = props.lang;
-  var S = STRINGS[lang];
-
-  var isMotors = cat.key === "motors";
-  var isProp = !!cat.isProperty;
-
-  var [filters, setFilters] = useState({});
-
-  var filtered = listings.filter(function (l) {
+  const filtered = listings.filter((l) => {
     if (l.category !== cat.key) return false;
 
     if (cat.subcategories && cat.subcategories.length && activeSub) {
@@ -967,7 +1029,8 @@ function CategoryPage(props) {
       if (
         filters.model &&
         (!l.model ||
-          l.model.toLowerCase().indexOf(filters.model.toLowerCase()) === -1)
+          l.model.toLowerCase().indexOf(filters.model.toLowerCase()) ===
+            -1)
       ) {
         return false;
       }
@@ -975,18 +1038,17 @@ function CategoryPage(props) {
       if (filters.sellerType && l.sellerType !== filters.sellerType)
         return false;
 
-      if (filters.yearMin && (l.year || 0) < filters.yearMin) return false;
-
-      if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
-
-      if (filters.mileageMax && (l.mileage || 0) > filters.mileageMax)
+      if (filters.priceMax && (l.price || 0) > filters.priceMax)
         return false;
     }
 
     if (isProp) {
-      if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
-      if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
-      if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin) return false;
+      if (filters.priceMin && (l.price || 0) < filters.priceMin)
+        return false;
+      if (filters.priceMax && (l.price || 0) > filters.priceMax)
+        return false;
+      if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin)
+        return false;
       if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax)
         return false;
     }
@@ -994,20 +1056,37 @@ function CategoryPage(props) {
     return true;
   });
 
+  const title = lang === "ar" ? cat.labelAr || cat.label : cat.label;
+
   return (
     <div className="hz-page">
       <div className="hz-page-header">
         <button className="hz-back-btn" onClick={onBack}>
           <ChevronLeft />
         </button>
-        <h2>{cat.label}</h2>
+        <h2>{title}</h2>
       </div>
 
       <AdBanner lang={lang} />
 
-      {isMotors && (
-        <div className="hz-selected-brand">
-          {filters.brand ? "Brand: " + filters.brand : S.motorsAllInCars}
+      {cat.subcategories && cat.subcategories.length > 1 && (
+        <div className="hz-filter-chips-scroll">
+          {cat.subcategories.map((s) => {
+            const label = lang === "ar" ? s.labelAr || s.label : s.label;
+            const isActive = activeSub === s.key;
+            return (
+              <button
+                key={s.key}
+                className={
+                  "hz-filter-chip " +
+                  (isActive ? "hz-filter-chip-active" : "")
+                }
+                onClick={() => setActiveSub(s.key)}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -1028,55 +1107,63 @@ function CategoryPage(props) {
       )}
 
       <div className="hz-grid">
-        {filtered.map(function (l) {
-          return (
-            <ListingCard
-              key={l.id}
-              item={l}
-              fav={!!favs[l.id]}
-              onToggleFav={toggleFav}
-              onOpen={props.onOpenListing}
-            />
-          );
-        })}
+        {filtered.map((l) => (
+          <ListingCard
+            key={l.id}
+            item={l}
+            fav={!!favs[l.id]}
+            onToggleFav={toggleFav}
+            onOpen={onOpenListing}
+            lang={lang}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-/* PROMO ADS CAROUSEL */
+/* PROMO CAROUSEL – 3 ADS (ChatGPT, Ferrari, Syriatel) */
 
 const PROMO_ADS = [
   {
     id: "chatgpt",
-    title: "ChatGPT for Smarter Listings",
-    desc: "Use AI to write stronger titles, descriptions & replies.",
-    cta: "Open ChatGPT",
+    titleEn: "ChatGPT for Smarter Listings",
+    titleAr: "ChatGPT لإعلانات أذكى",
+    descEn: "Use AI to write better titles, descriptions & replies.",
+    descAr: "استخدم الذكاء الاصطناعي لصياغة عناوين ووصف أفضل.",
+    ctaEn: "Open ChatGPT",
+    ctaAr: "افتح ChatGPT",
     bg: "linear-gradient(135deg, #111827, #4b5563)",
     accent: "#22c55e",
-    url: "https://chatgpt.com",
+    url: "https://chat.openai.com",
   },
   {
     id: "ferrari",
-    title: "Ferrari – The Ultimate Drive",
-    desc: "Explore the official Ferrari world of performance & design.",
-    cta: "Visit Ferrari",
+    titleEn: "Ferrari – The Ultimate Drive",
+    titleAr: "فيراري – قمة القيادة",
+    descEn: "Explore the official Ferrari world of performance & design.",
+    descAr: "اكتشف عالم فيراري من الأداء والفخامة.",
+    ctaEn: "Visit Ferrari",
+    ctaAr: "زيارة الموقع",
     bg: "linear-gradient(135deg, #450a0a, #b91c1c)",
     accent: "#fecaca",
     url: "https://www.ferrari.com",
   },
   {
     id: "syriatel",
-    title: "Syriatel Online Services",
-    desc: "Check offers, recharge & manage your line online.",
-    cta: "Go to Syriatel",
+    titleEn: "Syriatel Online Services",
+    titleAr: "خدمات سيرياتيل أونلاين",
+    descEn: "Check offers, recharge & manage your line online.",
+    descAr: "تحقق من العروض، اشحن وأدر خطك عبر الإنترنت.",
+    ctaEn: "Go to Syriatel",
+    ctaAr: "زيارة سيرياتيل",
     bg: "linear-gradient(135deg, #1d4ed8, #38bdf8)",
     accent: "#eff6ff",
     url: "https://www.syriatel.sy",
   },
 ];
 
-function PromoCarousel() {
+function PromoCarousel({ lang }) {
   const [active, setActive] = useState(0);
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
@@ -1089,6 +1176,7 @@ function PromoCarousel() {
   }
 
   function handleClick(url) {
+    if (!url) return;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
@@ -1104,8 +1192,7 @@ function PromoCarousel() {
   function onTouchEnd() {
     if (touchStartX == null || touchEndX == null) return;
     const diff = touchStartX - touchEndX;
-    const threshold = 40;
-    if (Math.abs(diff) > threshold) {
+    if (Math.abs(diff) > 40) {
       if (diff > 0) goTo(active + 1);
       else goTo(active - 1);
     }
@@ -1127,24 +1214,28 @@ function PromoCarousel() {
           width: `${PROMO_ADS.length * 100}%`,
         }}
       >
-        {PROMO_ADS.map(function (ad) {
+        {PROMO_ADS.map((ad) => {
+          const title =
+            lang === "ar" ? ad.titleAr || ad.titleEn : ad.titleEn;
+          const desc =
+            lang === "ar" ? ad.descAr || ad.descEn : ad.descEn;
+          const cta = lang === "ar" ? ad.ctaAr || ad.ctaEn : ad.ctaEn;
+
           return (
             <div
               key={ad.id}
               className="hz-promo-slide"
               style={{ background: ad.bg }}
-              onClick={function () {
-                handleClick(ad.url);
-              }}
+              onClick={() => handleClick(ad.url)}
             >
               <div className="hz-promo-content">
-                <div className="hz-promo-title">{ad.title}</div>
-                <div className="hz-promo-desc">{ad.desc}</div>
+                <div className="hz-promo-title">{title}</div>
+                <div className="hz-promo-desc">{desc}</div>
                 <div
                   className="hz-promo-cta"
                   style={{ backgroundColor: ad.accent }}
                 >
-                  {ad.cta}
+                  {cta}
                 </div>
               </div>
             </div>
@@ -1155,7 +1246,7 @@ function PromoCarousel() {
       <div className="hz-promo-controls">
         <button
           className="hz-promo-arrow"
-          onClick={function (e) {
+          onClick={(e) => {
             e.stopPropagation();
             goTo(active - 1);
           }}
@@ -1164,26 +1255,24 @@ function PromoCarousel() {
         </button>
 
         <div className="hz-promo-dots">
-          {PROMO_ADS.map(function (ad, index) {
-            return (
-              <button
-                key={ad.id}
-                className={
-                  "hz-promo-dot " +
-                  (index === active ? "hz-promo-dot-active" : "")
-                }
-                onClick={function (e) {
-                  e.stopPropagation();
-                  setActive(index);
-                }}
-              />
-            );
-          })}
+          {PROMO_ADS.map((ad, index) => (
+            <button
+              key={ad.id}
+              className={
+                "hz-promo-dot " +
+                (index === active ? "hz-promo-dot-active" : "")
+              }
+              onClick={(e) => {
+                e.stopPropagation();
+                setActive(index);
+              }}
+            />
+          ))}
         </div>
 
         <button
           className="hz-promo-arrow"
-          onClick={function (e) {
+          onClick={(e) => {
             e.stopPropagation();
             goTo(active + 1);
           }}
@@ -1197,32 +1286,33 @@ function PromoCarousel() {
 
 /* HOME GRID */
 
-function HomeGrid(props) {
-  var lang = props.lang;
-  var S = STRINGS[lang];
-  var favs = props.favs;
-  var toggleFav = props.toggleFav;
-  var listings = props.listings;
+function HomeGrid({
+  lang,
+  favs,
+  listings,
+  toggleFav,
+  onOpenCategory,
+  onOpenListing,
+}) {
+  const S = STRINGS[lang];
 
   return (
     <div className="hz-page">
       <div className="hz-cat-grid">
-        {CATEGORY_DEFS.map(function (c) {
-          if (c.key === "community") return null;
-          var Icon = c.icon;
+        {CATEGORY_DEFS.map((c) => {
+          const Icon = c.icon;
+          const label = lang === "ar" ? c.labelAr || c.label : c.label;
           return (
             <button
               key={c.key}
               className="hz-cat-pill"
-              onClick={function () {
-                props.onOpenCategory(c.key);
-              }}
+              onClick={() => onOpenCategory(c.key)}
             >
               <div className="hz-cat-icon-wrap">
                 <Icon size={22} />
               </div>
               <div className="hz-cat-label-wrap">
-                <span>{c.label}</span>
+                <span>{label}</span>
               </div>
               <ChevronRight size={18} />
             </button>
@@ -1230,7 +1320,7 @@ function HomeGrid(props) {
         })}
       </div>
 
-      <PromoCarousel />
+      <PromoCarousel lang={lang} />
 
       <div className="hz-fee-note">{S.feeNote}</div>
 
@@ -1240,17 +1330,16 @@ function HomeGrid(props) {
       </div>
 
       <div className="hz-grid">
-        {listings.map(function (l) {
-          return (
-            <ListingCard
-              key={l.id}
-              item={l}
-              fav={!!favs[l.id]}
-              onToggleFav={toggleFav}
-              onOpen={props.onOpenListing}
-            />
-          );
-        })}
+        {listings.map((l) => (
+          <ListingCard
+            key={l.id}
+            item={l}
+            fav={!!favs[l.id]}
+            onToggleFav={toggleFav}
+            onOpen={onOpenListing}
+            lang={lang}
+          />
+        ))}
       </div>
     </div>
   );
@@ -1258,41 +1347,37 @@ function HomeGrid(props) {
 
 /* LISTING DETAIL */
 
-function ListingDetail(props) {
-  var item = props.item;
-  var onBack = props.onBack;
-  var lang = props.lang;
-  var S = STRINGS[lang];
+function ListingDetail({ item, onBack, lang }) {
+  const S = STRINGS[lang];
+  const title = listingTitle(item, lang);
+  const loc = listingLocation(item, lang);
+  const desc = listingDesc(item, lang);
 
   return (
     <div className="hz-detail">
-      <div className="hz-detail-top">
-        <button className="hz-detail-back" onClick={onBack}>
-          <ChevronLeft size={20} />
-        </button>
-      </div>
+      <button className="hz-detail-back" onClick={onBack}>
+        <ChevronLeft size={20} />
+      </button>
 
       <div className="hz-detail-img-wrap">
         {item.imgs && item.imgs.length > 0 && (
           <img
             src={item.imgs[0]}
-            alt={item.title}
+            alt={title}
             className="hz-detail-img"
           />
         )}
         {item.imgs && item.imgs.length > 1 && (
           <div className="hz-detail-dots">
-            {item.imgs.map(function (_, i) {
-              return (
-                <span
-                  key={i}
-                  className={
-                    "hz-detail-dot " +
-                    (i === 0 ? "hz-detail-dot-active" : "")
-                  }
-                />
-              );
-            })}
+            {item.imgs.map((_, i) => (
+              <span
+                key={i}
+                className={
+                  "hz-detail-dot " +
+                  (i === 0 ? "hz-detail-dot-active" : "")
+                }
+              />
+            ))}
           </div>
         )}
       </div>
@@ -1302,19 +1387,34 @@ function ListingDetail(props) {
           {item.currency}{" "}
           {item.price != null ? item.price.toLocaleString() : ""}
         </div>
-        <div className="hz-detail-title">{item.title}</div>
+        <div className="hz-detail-title">{title}</div>
 
         <div className="hz-detail-meta-row">
-          {item.year && <span>{item.year}</span>}
-          {item.mileage != null && (
-            <span>{item.mileage.toLocaleString()} km</span>
+          {item.year && (
+            <span>
+              {lang === "ar" ? "الموديل" : "Year"} {item.year}
+            </span>
           )}
-          {item.specs && <span>{item.specs}</span>}
-          {item.areaSqft && <span>{item.areaSqft} sqft</span>}
-          {item.location && (
+          {item.mileage != null && (
+            <span>
+              {lang === "ar" ? "المسافة" : "Mileage"}{" "}
+              {item.mileage.toLocaleString()} km
+            </span>
+          )}
+          {item.specs && (
+            <span>
+              {lang === "ar" ? "المواصفات" : "Specs"} {item.specs}
+            </span>
+          )}
+          {item.areaSqft && (
+            <span>
+              {lang === "ar" ? "المساحة" : "Area"} {item.areaSqft} sqft
+            </span>
+          )}
+          {loc && (
             <span className="hz-detail-loc">
               <MapPin size={12} />
-              {item.location}
+              {loc}
             </span>
           )}
         </div>
@@ -1326,37 +1426,49 @@ function ListingDetail(props) {
         <div className="hz-detail-overview">
           {item.brand && (
             <div className="hz-detail-row">
-              <span>Brand</span>
+              <span>{lang === "ar" ? "الماركة" : "Brand"}</span>
               <span>{item.brand}</span>
             </div>
           )}
           {item.model && (
             <div className="hz-detail-row">
-              <span>Model</span>
+              <span>{lang === "ar" ? "الطراز" : "Model"}</span>
               <span>{item.model}</span>
             </div>
           )}
           {item.sellerType && (
             <div className="hz-detail-row">
-              <span>Seller</span>
-              <span>{item.sellerType}</span>
+              <span>{lang === "ar" ? "نوع البائع" : "Seller"}</span>
+              <span>
+                {item.sellerType === "private"
+                  ? lang === "ar"
+                    ? "شخصي"
+                    : "Private"
+                  : item.sellerType === "dealership"
+                  ? lang === "ar"
+                    ? "معرض"
+                    : "Dealership"
+                  : item.sellerType}
+              </span>
             </div>
           )}
           {item.areaSqft && (
             <div className="hz-detail-row">
-              <span>Area</span>
+              <span>{lang === "ar" ? "المساحة" : "Area"}</span>
               <span>{item.areaSqft} sqft</span>
             </div>
           )}
         </div>
 
         <div className="hz-detail-desc">
-          {item.desc ||
-            "Listing description will appear here with all relevant details provided by the seller."}
+          {desc ||
+            (lang === "ar"
+              ? "ستظهر هنا تفاصيل الإعلان التي يضيفها صاحب الإعلان."
+              : "Listing description will appear here with all relevant details provided by the seller.")}
         </div>
 
         <div className="hz-detail-contact">
-          <WhatsAppButton number={item.whatsapp} title={item.title} />
+          <WhatsAppButton number={item.whatsapp} title={title} lang={lang} />
         </div>
       </div>
     </div>
@@ -1365,9 +1477,15 @@ function ListingDetail(props) {
 
 /* ACCOUNT PAGE */
 
-function AccountPage(props) {
-  var user = props.user;
-  var displayName = (user && user.name) || "Huzzlie User";
+function AccountPage({ user, lang }) {
+  const S = STRINGS[lang];
+  const displayName =
+    (user && user.name) ||
+    (lang === "ar" ? "مستخدم هَزلي" : "Huzzlie User");
+
+  function demo(msgEn, msgAr) {
+    alert(lang === "ar" ? msgAr : msgEn);
+  }
 
   return (
     <div className="hz-page hz-account">
@@ -1377,120 +1495,145 @@ function AccountPage(props) {
         </div>
         <div className="hz-account-main">
           <div className="hz-account-name">{displayName}</div>
-          <div className="hz-account-joined">Joined on July 2023</div>
+          <div className="hz-account-joined">{S.joinedOn}</div>
         </div>
         <button
           className="hz-account-verify"
-          onClick={function () {
-            alert("Verification flow coming soon (demo).");
-          }}
+          onClick={() =>
+            demo(
+              "Verification flow coming soon (demo).",
+              "ميزة التحقق قادمة قريباً (تجريبي)."
+            )
+          }
         >
-          Get Verified
+          {S.getVerified}
         </button>
       </div>
 
       <div className="hz-account-actions">
         <button
           className="hz-account-action"
-          onClick={function () {
-            alert("My Ads section (demo).");
-          }}
+          onClick={() =>
+            demo("My Ads section (demo).", "قسم إعلاناتي (تجريبي).")
+          }
         >
           <Bookmark size={20} />
-          <span>My Ads</span>
+          <span>{S.myAds}</span>
         </button>
         <button
           className="hz-account-action"
-          onClick={function () {
-            alert("My Searches section (demo).");
-          }}
+          onClick={() =>
+            demo(
+              "My Searches section (demo).",
+              "قسم عمليات البحث (تجريبي)."
+            )
+          }
         >
           <Search size={20} />
-          <span>My Searches</span>
+          <span>{S.mySearches}</span>
         </button>
       </div>
 
       <div className="hz-account-list">
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("Edit basic info (name, DOB, nationality, gender).");
-          }}
+          onClick={() =>
+            demo(
+              "Edit basic info (demo).",
+              "تعديل المعلومات الأساسية (تجريبي)."
+            )
+          }
         >
           <User size={18} />
-          <span>Profile & Basic Info</span>
+          <span>{S.profileInfo}</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("Manage phone numbers & addresses.");
-          }}
+          onClick={() =>
+            demo(
+              "Manage phone numbers & addresses (demo).",
+              "إدارة أرقام الهواتف والعناوين (تجريبي)."
+            )
+          }
         >
           <Phone size={18} />
-          <span>Phone Numbers & Addresses</span>
+          <span>{S.phonesAddresses}</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("Change password & security settings.");
-          }}
+          onClick={() =>
+            demo(
+              "Change password & security settings (demo).",
+              "تغيير كلمة المرور والأمان (تجريبي)."
+            )
+          }
         >
           <Shield size={18} />
-          <span>Password & Security</span>
+          <span>{S.passwordSecurity}</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("View Active / Pending / Inactive / Moderated ads.");
-          }}
+          onClick={() =>
+            demo(
+              "View ads status (demo).",
+              "عرض حالة الإعلانات (تجريبي)."
+            )
+          }
         >
           <Bookmark size={18} />
-          <span>My Ads Status</span>
+          <span>{S.myAdsStatus}</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("Control email & push notifications.");
-          }}
+          onClick={() =>
+            demo(
+              "Notifications settings (demo).",
+              "إعدادات الإشعارات والبريد (تجريبي)."
+            )
+          }
         >
           <Bell size={18} />
-          <span>Notifications & Email Settings</span>
+          <span>{S.notificationsSettings}</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("General account settings.");
-          }}
+          onClick={() =>
+            demo(
+              "General account settings (demo).",
+              "إعدادات الحساب العامة (تجريبي)."
+            )
+          }
         >
           <Settings size={18} />
-          <span>Account Settings</span>
+          <span>{S.accountSettings}</span>
         </button>
 
         <button
           className="hz-account-item hz-account-danger"
-          onClick={function () {
-            alert(
-              "Deactivate / delete / request re-activation flow (demo only)."
-            );
-          }}
+          onClick={() =>
+            demo(
+              "Deactivate / delete flow (demo).",
+              "إلغاء / حذف الحساب (تجريبي)."
+            )
+          }
         >
           <Trash2 size={18} />
-          <span>Deactivate / Delete Account</span>
+          <span>{S.deactivateDelete}</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={function () {
-            alert("Logged out (demo).");
-          }}
+          onClick={() =>
+            demo("Logged out (demo).", "تم تسجيل الخروج (تجريبي).")
+          }
         >
           <LogOut size={18} />
-          <span>Log Out</span>
+          <span>{S.logout}</span>
         </button>
       </div>
     </div>
@@ -1499,27 +1642,20 @@ function AccountPage(props) {
 
 /* ACCOUNT SHEET */
 
-function AccountSheet(props) {
-  var open = props.open;
-  var onClose = props.onClose;
-  var setUser = props.setUser;
-  var [name, setName] = useState("");
-  var [email, setEmail] = useState("");
+function AccountSheet({ open, onClose, setUser, lang }) {
+  const S = STRINGS[lang];
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
   if (!open) return null;
 
-  var providers = [
-    { key: "google", label: "Continue with Google" },
-    {
-      key: "microsoft",
-      label: "Continue with Microsoft (Hotmail/Outlook)",
-    },
-    { key: "apple", label: "Continue with Apple" },
-  ];
-
   function completeWithProvider(key) {
-    var displayName = name || key.toUpperCase() + " User";
-    var displayEmail = email || key + "@huzzlie.com";
+    const displayName =
+      name ||
+      (lang === "ar"
+        ? `مستخدم ${key.toUpperCase()}`
+        : `${key.toUpperCase()} User`);
+    const displayEmail = email || `${key}@huzzlie.com`;
     setUser({ name: displayName, email: displayEmail });
     onClose();
   }
@@ -1527,7 +1663,7 @@ function AccountSheet(props) {
   function completeManual() {
     if (!name && !email) return;
     setUser({
-      name: name || "Huzzlie User",
+      name: name || (lang === "ar" ? "مستخدم هَزلي" : "Huzzlie User"),
       email: email || "user@huzzlie.com",
     });
     onClose();
@@ -1537,53 +1673,63 @@ function AccountSheet(props) {
     <div className="hz-modal-backdrop">
       <div className="hz-modal">
         <div className="hz-modal-header">
-          <h3>Create Account</h3>
+          <h3>{S.createAccount}</h3>
           <button className="hz-close" onClick={onClose}>
             ×
           </button>
         </div>
         <div className="hz-modal-body">
-          {providers.map(function (p) {
-            return (
-              <button
-                key={p.key}
-                className="hz-provider-btn"
-                onClick={function () {
-                  completeWithProvider(p.key);
-                }}
-              >
-                {p.label}
-              </button>
-            );
-          })}
-          <div className="hz-or">or</div>
+          <button
+            className="hz-provider-btn"
+            onClick={() => completeWithProvider("google")}
+          >
+            {lang === "ar"
+              ? "متابعة باستخدام Google"
+              : "Continue with Google"}
+          </button>
+          <button
+            className="hz-provider-btn"
+            onClick={() => completeWithProvider("microsoft")}
+          >
+            {lang === "ar"
+              ? "متابعة باستخدام Microsoft"
+              : "Continue with Microsoft (Hotmail/Outlook)"}
+          </button>
+          <button
+            className="hz-provider-btn"
+            onClick={() => completeWithProvider("apple")}
+          >
+            {lang === "ar"
+              ? "متابعة باستخدام Apple"
+              : "Continue with Apple"}
+          </button>
+          <div className="hz-or">{S.or}</div>
+
           <div className="hz-field">
-            <label>Name</label>
+            <label>{lang === "ar" ? "الاسم" : "Name"}</label>
             <input
               value={name}
-              onChange={function (e) {
-                setName(e.target.value);
-              }}
-              placeholder="Your name"
+              onChange={(e) => setName(e.target.value)}
+              placeholder={lang === "ar" ? "اسمك" : "Your name"}
             />
           </div>
           <div className="hz-field">
-            <label>Email</label>
+            <label>
+              {lang === "ar" ? "البريد الإلكتروني" : "Email"}
+            </label>
             <input
               value={email}
-              onChange={function (e) {
-                setEmail(e.target.value);
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
             />
           </div>
         </div>
         <div className="hz-modal-footer">
           <button className="hz-secondary" onClick={onClose}>
-            Cancel
+            {S.cancel}
           </button>
           <button className="hz-primary" onClick={completeManual}>
-            Save
+            {S.save}
           </button>
         </div>
       </div>
@@ -1591,40 +1737,37 @@ function AccountSheet(props) {
   );
 }
 
-/* POST DIALOG - NOW CREATES REAL LISTINGS */
+/* POST DIALOG */
 
-function PostDialog(props) {
-  var open = props.open;
-  var onClose = props.onClose;
-  var lang = props.lang;
-  var onCreateListing = props.onCreateListing;
-  var S = STRINGS[lang];
+function PostDialog({ open, onClose, lang, onCreateListing }) {
+  const S = STRINGS[lang];
 
-  var [category, setCategory] = useState("");
-  var [subcategory, setSubcategory] = useState("");
-  var [title, setTitle] = useState("");
-  var [price, setPrice] = useState("");
-  var [whatsapp, setWhatsapp] = useState("");
-  var [brand, setBrand] = useState("");
-  var [model, setModel] = useState("");
-  var [year, setYear] = useState("");
-  var [sellerType, setSellerType] = useState("");
-  var [mileage, setMileage] = useState("");
-  var [vin, setVin] = useState("");
-  var [specs, setSpecs] = useState("");
-  var [city, setCity] = useState("");
-  var [area, setArea] = useState("");
-  var [desc, setDesc] = useState("");
-  var [images, setImages] = useState([]);
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [title, setTitle] = useState("");
+  const [titleAr, setTitleAr] = useState("");
+  const [price, setPrice] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [year, setYear] = useState("");
+  const [sellerType, setSellerType] = useState("");
+  const [mileage, setMileage] = useState("");
+  const [vin, setVin] = useState("");
+  const [specs, setSpecs] = useState("");
+  const [city, setCity] = useState("");
+  const [area, setArea] = useState("");
+  const [desc, setDesc] = useState("");
+  const [descAr, setDescAr] = useState("");
+  const [images, setImages] = useState([]);
 
-  var catDef = CATEGORY_DEFS.find(function (c) {
-    return c.key === category;
-  });
+  const catDef = CATEGORY_DEFS.find((c) => c.key === category);
+  const fee = postingFeeFor(category, subcategory);
 
-  var fee = postingFeeFor(category, subcategory);
+  if (!open) return null;
 
   function onImagesChange(e) {
-    var files = Array.prototype.slice.call(e.target.files || []);
+    const files = Array.prototype.slice.call(e.target.files || []);
     setImages(files);
   }
 
@@ -1632,6 +1775,7 @@ function PostDialog(props) {
     setCategory("");
     setSubcategory("");
     setTitle("");
+    setTitleAr("");
     setPrice("");
     setWhatsapp("");
     setBrand("");
@@ -1644,18 +1788,23 @@ function PostDialog(props) {
     setCity("");
     setArea("");
     setDesc("");
+    setDescAr("");
     setImages([]);
   }
 
   function handleSubmit() {
     if (!title || !category || !subcategory || !whatsapp) {
-      alert("Please fill title, category, subcategory & WhatsApp.");
+      alert(
+        lang === "ar"
+          ? "يرجى تعبئة العنوان، الفئة، القسم الفرعي ورقم الواتساب."
+          : "Please fill title, category, subcategory & WhatsApp."
+      );
       return;
     }
 
-    var baseListing = {
-      category: category,
-      subcategory: subcategory,
+    const baseListing = {
+      category,
+      subcategory,
       brand: brand || undefined,
       model: model || undefined,
       year: year ? Number(year) : undefined,
@@ -1667,31 +1816,32 @@ function PostDialog(props) {
 
     if (!validateCarListing(baseListing)) {
       alert(
-        "For Motors > Cars, brand, model, year, specs, seller, mileage & VIN are required."
+        lang === "ar"
+          ? "في قسم السيارات، الماركة والطراز والموديل والمواصفات ونوع البائع والمسافة ورقم الهيكل مطلوبة."
+          : "For Motors > Cars, brand, model, year, specs, seller, mileage & VIN are required."
       );
       return;
     }
 
-    var imgUrls =
+    const imgUrls =
       images && images.length
-        ? images.map(function (file) {
-            return URL.createObjectURL(file);
-          })
+        ? images.map((file) => URL.createObjectURL(file))
         : [
             "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
           ];
 
-    var newListing = {
+    const newListing = {
       id: "user-" + Date.now(),
-      title: title,
+      title,
+      titleAr: titleAr || undefined,
       price: price ? Number(price) : 0,
       currency: "USD",
-      category: category,
-      subcategory: subcategory,
+      category,
+      subcategory,
       location: city || "Damascus",
-      areaSqft:
-        isAnyProperty(category) && area ? Number(area) : undefined,
-      whatsapp: whatsapp,
+      locationAr: getCityName(city || "Damascus", "ar"),
+      areaSqft: isAnyProperty(category) && area ? Number(area) : undefined,
+      whatsapp,
       brand: baseListing.brand,
       model: baseListing.model,
       year: baseListing.year,
@@ -1699,27 +1849,31 @@ function PostDialog(props) {
       mileage: baseListing.mileage,
       vin: baseListing.vin,
       specs: baseListing.specs,
-      desc: desc,
+      desc,
+      descAr: descAr || undefined,
       imgs: imgUrls,
       featured: false,
     };
 
-    if (typeof onCreateListing === "function") {
-      onCreateListing(newListing);
-    }
+    if (onCreateListing) onCreateListing(newListing);
 
-    alert(
-      "Listing created. " +
-        (fee.amount
-          ? "A $" + fee.amount + " fee would apply (" + fee.reason + ") in production."
-          : "This category is free to post.")
-    );
+    if (fee.amount) {
+      alert(
+        lang === "ar"
+          ? `تم إنشاء الإعلان. سيتم احتساب رسوم ${fee.amount}$ (${fee.reason}) في النسخة النهائية.`
+          : `Listing created. A $${fee.amount} fee would apply (${fee.reason}) in production.`
+      );
+    } else {
+      alert(
+        lang === "ar"
+          ? "تم إنشاء الإعلان. هذا القسم مجاني للنشر."
+          : "Listing created. This category is free to post."
+      );
+    }
 
     resetForm();
     onClose();
   }
-
-  if (!open) return null;
 
   return (
     <div className="hz-modal-backdrop">
@@ -1730,219 +1884,292 @@ function PostDialog(props) {
             ×
           </button>
         </div>
+
         <div className="hz-modal-body hz-modal-grid">
+          {/* Category */}
           <div className="hz-field">
-            <label>Category</label>
+            <label>{lang === "ar" ? "الفئة" : "Category"}</label>
             <select
               value={category}
-              onChange={function (e) {
+              onChange={(e) => {
                 setCategory(e.target.value);
                 setSubcategory("");
               }}
             >
-              <option value="">Select category</option>
-              {CATEGORY_DEFS.map(function (c) {
-                return (
-                  <option key={c.key} value={c.key}>
-                    {c.label}
-                  </option>
-                );
-              })}
+              <option value="">
+                {lang === "ar" ? "اختر الفئة" : "Select category"}
+              </option>
+              {CATEGORY_DEFS.map((c) => (
+                <option key={c.key} value={c.key}>
+                  {lang === "ar" ? c.labelAr || c.label : c.label}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Subcategory */}
           <div className="hz-field">
-            <label>Subcategory</label>
+            <label>
+              {lang === "ar" ? "القسم الفرعي" : "Subcategory"}
+            </label>
             <select
               value={subcategory}
-              onChange={function (e) {
-                setSubcategory(e.target.value);
-              }}
+              onChange={(e) => setSubcategory(e.target.value)}
               disabled={!catDef}
             >
               <option value="">
-                {catDef ? "Select subcategory" : "Select category first"}
+                {catDef
+                  ? lang === "ar"
+                    ? "اختر القسم الفرعي"
+                    : "Select subcategory"
+                  : lang === "ar"
+                  ? "اختر الفئة أولاً"
+                  : "Select category first"}
               </option>
               {catDef &&
-                catDef.subcategories &&
-                catDef.subcategories.map(function (s) {
-                  return (
-                    <option key={s.key} value={s.key}>
-                      {s.label}
-                    </option>
-                  );
-                })}
+                catDef.subcategories.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {lang === "ar" ? s.labelAr || s.label : s.label}
+                  </option>
+                ))}
             </select>
           </div>
 
+          {/* Titles */}
           <div className="hz-field">
-            <label>Title</label>
+            <label>
+              {lang === "ar" ? "العنوان (إنجليزي)" : "Title (EN)"}
+            </label>
             <input
               value={title}
-              onChange={function (e) {
-                setTitle(e.target.value);
-              }}
-              placeholder="Listing title"
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={
+                lang === "ar"
+                  ? "عنوان الإعلان بالإنجليزية"
+                  : "Listing title"
+              }
             />
           </div>
 
           <div className="hz-field">
-            <label>Price (optional)</label>
+            <label>
+              {lang === "ar" ? "العنوان (عربي)" : "Title (AR)"}
+            </label>
+            <input
+              value={titleAr}
+              onChange={(e) => setTitleAr(e.target.value)}
+              placeholder={
+                lang === "ar"
+                  ? "عنوان الإعلان بالعربية (اختياري)"
+                  : "Listing title in Arabic (optional)"
+              }
+            />
+          </div>
+
+          {/* Price */}
+          <div className="hz-field">
+            <label>
+              {lang === "ar"
+                ? "السعر (اختياري)"
+                : "Price (optional)"}
+            </label>
             <input
               type="number"
               value={price}
-              onChange={function (e) {
-                setPrice(e.target.value);
-              }}
-              placeholder="Price"
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder={lang === "ar" ? "السعر" : "Price"}
             />
           </div>
 
+          {/* WhatsApp */}
           <div className="hz-field">
-            <label>WhatsApp</label>
+            <label>{lang === "ar" ? "رقم واتساب" : "WhatsApp"}</label>
             <input
               value={whatsapp}
-              onChange={function (e) {
-                setWhatsapp(e.target.value);
-              }}
+              onChange={(e) => setWhatsapp(e.target.value)}
               placeholder="+9639xxxxxxxx"
             />
           </div>
 
+          {/* City */}
           <div className="hz-field">
-            <label>City</label>
+            <label>{lang === "ar" ? "المدينة" : "City"}</label>
             <select
               value={city}
-              onChange={function (e) {
-                setCity(e.target.value);
-              }}
+              onChange={(e) => setCity(e.target.value)}
             >
-              <option value="">Select city</option>
-              {SYRIA_CITIES.map(function (c) {
-                return (
-                  <option key={c.en} value={c.en}>
-                    {c.en}
-                  </option>
-                );
-              })}
+              <option value="">
+                {lang === "ar" ? "اختر المدينة" : "Select city"}
+              </option>
+              {SYRIA_CITIES.map((c) => (
+                <option key={c.en} value={c.en}>
+                  {lang === "ar" ? c.ar : c.en}
+                </option>
+              ))}
             </select>
           </div>
 
-          {isCar(category, subcategory) ? (
+          {/* Car specific */}
+          {isCar(category, subcategory) && (
             <>
               <div className="hz-field">
-                <label>Brand</label>
+                <label>{lang === "ar" ? "الماركة" : "Brand"}</label>
                 <input
                   value={brand}
-                  onChange={function (e) {
-                    setBrand(e.target.value);
-                  }}
-                  placeholder="e.g. Mercedes"
+                  onChange={(e) => setBrand(e.target.value)}
+                  placeholder={
+                    lang === "ar"
+                      ? "مثال: Mercedes"
+                      : "e.g. Mercedes"
+                  }
                 />
               </div>
               <div className="hz-field">
-                <label>Model</label>
+                <label>{lang === "ar" ? "الطراز" : "Model"}</label>
                 <input
                   value={model}
-                  onChange={function (e) {
-                    setModel(e.target.value);
-                  }}
-                  placeholder="e.g. C-Class"
+                  onChange={(e) => setModel(e.target.value)}
+                  placeholder={
+                    lang === "ar"
+                      ? "مثال: C-Class"
+                      : "e.g. C-Class"
+                  }
                 />
               </div>
               <div className="hz-field">
-                <label>Year</label>
+                <label>{lang === "ar" ? "الموديل" : "Year"}</label>
                 <input
                   type="number"
                   value={year}
-                  onChange={function (e) {
-                    setYear(e.target.value);
-                  }}
+                  onChange={(e) => setYear(e.target.value)}
                 />
               </div>
               <div className="hz-field">
-                <label>Seller</label>
+                <label>
+                  {lang === "ar" ? "نوع البائع" : "Seller"}
+                </label>
                 <select
                   value={sellerType}
-                  onChange={function (e) {
-                    setSellerType(e.target.value);
-                  }}
+                  onChange={(e) => setSellerType(e.target.value)}
                 >
-                  <option value="">Select</option>
-                  <option value="private">Private</option>
-                  <option value="dealership">Dealership</option>
+                  <option value="">
+                    {lang === "ar" ? "اختر" : "Select"}
+                  </option>
+                  <option value="private">
+                    {lang === "ar" ? "شخصي" : "Private"}
+                  </option>
+                  <option value="dealership">
+                    {lang === "ar" ? "معرض" : "Dealership"}
+                  </option>
                 </select>
               </div>
               <div className="hz-field">
-                <label>Mileage (km)</label>
+                <label>
+                  {lang === "ar"
+                    ? "المسافة (كم)"
+                    : "Mileage (km)"}
+                </label>
                 <input
                   type="number"
                   value={mileage}
-                  onChange={function (e) {
-                    setMileage(e.target.value);
-                  }}
+                  onChange={(e) => setMileage(e.target.value)}
                 />
               </div>
               <div className="hz-field">
-                <label>Specs</label>
+                <label>
+                  {lang === "ar" ? "المواصفات" : "Specs"}
+                </label>
                 <input
                   value={specs}
-                  onChange={function (e) {
-                    setSpecs(e.target.value);
-                  }}
-                  placeholder="e.g. GCC"
+                  onChange={(e) => setSpecs(e.target.value)}
+                  placeholder={
+                    lang === "ar" ? "مثال: GCC" : "e.g. GCC"
+                  }
                 />
               </div>
               <div className="hz-field">
-                <label>VIN</label>
+                <label>
+                  {lang === "ar" ? "رقم الهيكل" : "VIN"}
+                </label>
                 <input
                   value={vin}
-                  onChange={function (e) {
-                    setVin(e.target.value);
-                  }}
-                  placeholder="Vehicle VIN"
+                  onChange={(e) => setVin(e.target.value)}
+                  placeholder={
+                    lang === "ar"
+                      ? "رقم هيكل المركبة"
+                      : "Vehicle VIN"
+                  }
                 />
               </div>
             </>
-          ) : null}
+          )}
 
-          {isAnyProperty(category) ? (
+          {/* Property area */}
+          {isAnyProperty(category) && (
             <div className="hz-field">
-              <label>Area (sqft)</label>
+              <label>
+                {lang === "ar"
+                  ? "المساحة (قدم مربع)"
+                  : "Area (sqft)"}
+              </label>
               <input
                 type="number"
                 value={area}
-                onChange={function (e) {
-                  setArea(e.target.value);
-                }}
+                onChange={(e) => setArea(e.target.value)}
               />
             </div>
-          ) : null}
+          )}
 
+          {/* Images */}
           <div className="hz-field hz-field-full">
-            <label>Images</label>
+            <label>{S.images}</label>
             <input
               type="file"
               multiple
               accept="image/*"
               onChange={onImagesChange}
             />
-            {images && images.length ? (
+            {images && images.length > 0 && (
               <div className="hz-images-count">
-                {images.length} file(s) selected
+                {images.length} {S.fileSelected}
               </div>
-            ) : null}
+            )}
           </div>
 
+          {/* Descriptions */}
           <div className="hz-field hz-field-full">
-            <label>Description</label>
+            <label>
+              {lang === "ar"
+                ? "الوصف (إنجليزي)"
+                : "Description (EN)"}
+            </label>
             <textarea
               rows={3}
               value={desc}
-              onChange={function (e) {
-                setDesc(e.target.value);
-              }}
-              placeholder="Details about your listing..."
+              onChange={(e) => setDesc(e.target.value)}
+              placeholder={
+                lang === "ar"
+                  ? "تفاصيل الإعلان بالإنجليزية..."
+                  : "Details about your listing..."
+              }
+            />
+          </div>
+
+          <div className="hz-field hz-field-full">
+            <label>
+              {lang === "ar"
+                ? "الوصف (عربي)"
+                : "Description (AR)"}
+            </label>
+            <textarea
+              rows={3}
+              value={descAr}
+              onChange={(e) => setDescAr(e.target.value)}
+              placeholder={
+                lang === "ar"
+                  ? "تفاصيل الإعلان بالعربية..."
+                  : "Listing details in Arabic (optional)..."
+              }
             />
           </div>
         </div>
@@ -1950,15 +2177,15 @@ function PostDialog(props) {
         <div className="hz-modal-footer">
           <div className="hz-fee-label">
             {fee.amount
-              ? "Posting fee: $" + fee.amount + " (" + fee.reason + ")"
-              : "This category is free to post."}
+              ? `${S.postingFee}: $${fee.amount} (${fee.reason})`
+              : S.freeCategory}
           </div>
           <div className="hz-modal-actions">
             <button className="hz-secondary" onClick={onClose}>
-              Cancel
+              {S.cancel}
             </button>
             <button className="hz-primary" onClick={handleSubmit}>
-              Pay &amp; Post (mock)
+              {S.payPostMock}
             </button>
           </div>
         </div>
@@ -1970,32 +2197,26 @@ function PostDialog(props) {
 /* ROOT APP */
 
 export default function App() {
-  var [lang, setLang] = useState("en");
-  var [activeTab, setActiveTab] = useState("home");
-  var [search, setSearch] = useState("");
-  var [user, setUser] = useState(null);
-  var [accountOpen, setAccountOpen] = useState(false);
-  var [postOpen, setPostOpen] = useState(false);
-  var [favs, setFavs] = useState({});
-  var [activeCategoryKey, setActiveCategoryKey] = useState(null);
-  var [activeSub, setActiveSub] = useState("");
-  var [selectedListing, setSelectedListing] = useState(null);
-
-  // All listings (mock + user-created)
-  var [listings, setListings] = useState(MOCK_LISTINGS);
+  const [lang, setLang] = useState("en");
+  const [activeTab, setActiveTab] = useState("home");
+  const [search, setSearch] = useState("");
+  const [user, setUser] = useState(null);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [postOpen, setPostOpen] = useState(false);
+  const [favs, setFavs] = useState({});
+  const [activeCategoryKey, setActiveCategoryKey] = useState(null);
+  const [activeSub, setActiveSub] = useState("");
+  const [selectedListing, setSelectedListing] = useState(null);
+  const [listings, setListings] = useState(MOCK_LISTINGS);
 
   function toggleFav(id) {
-    setFavs(function (prev) {
-      return { ...prev, [id]: !prev[id] };
-    });
+    setFavs((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
   function openCategory(key) {
     setActiveCategoryKey(key);
-    var cat = CATEGORY_DEFS.find(function (c) {
-      return c.key === key;
-    });
-    var firstSub =
+    const cat = CATEGORY_DEFS.find((c) => c.key === key);
+    const firstSub =
       cat && cat.subcategories && cat.subcategories.length
         ? cat.subcategories[0].key
         : "";
@@ -2018,37 +2239,26 @@ export default function App() {
   }
 
   function handleCreateListing(newListing) {
-    setListings(function (prev) {
-      return [newListing, ...prev];
-    });
+    setListings((prev) => [newListing, ...prev]);
     setActiveTab("home");
     setActiveCategoryKey(null);
     setSelectedListing(null);
   }
 
-  function filteredListingsForCategory() {
-    return listings;
-  }
-
-  var activeCategory =
+  const activeCategory =
     activeCategoryKey &&
-    CATEGORY_DEFS.find(function (c) {
-      return c.key === activeCategoryKey;
-    });
+    CATEGORY_DEFS.find((c) => c.key === activeCategoryKey);
 
-  var favListings = listings.filter(function (l) {
-    return favs[l.id];
-  });
-
-  var showHome = !activeCategory && activeTab === "home";
-  var showFavs = !activeCategory && activeTab === "favs";
+  const favListings = listings.filter((l) => favs[l.id]);
+  const showHome = !activeCategory && activeTab === "home";
+  const showFavs = !activeCategory && activeTab === "favs";
 
   return (
     <div className="hz-root">
       <Header
         q={search}
         setQ={setSearch}
-        onSearch={function () {}}
+        onSearch={() => {}}
         lang={lang}
         setLang={setLang}
       />
@@ -2057,84 +2267,76 @@ export default function App() {
         {selectedListing ? (
           <ListingDetail
             item={selectedListing}
-            onBack={function () {
-              setSelectedListing(null);
-            }}
+            onBack={() => setSelectedListing(null)}
             lang={lang}
           />
         ) : (
           <>
-            {activeCategory ? (
+            {activeCategory && (
               <CategoryPage
                 cat={activeCategory}
-                listings={filteredListingsForCategory()}
+                listings={listings}
                 favs={favs}
                 toggleFav={toggleFav}
                 onBack={handleBackFromCategory}
                 activeSub={activeSub}
                 setActiveSub={setActiveSub}
                 lang={lang}
-                onOpenListing={function (item) {
-                  setSelectedListing(item);
-                }}
+                onOpenListing={(item) => setSelectedListing(item)}
               />
-            ) : null}
+            )}
 
-            {showHome ? (
+            {showHome && (
               <HomeGrid
                 lang={lang}
                 favs={favs}
                 listings={listings}
                 toggleFav={toggleFav}
                 onOpenCategory={openCategory}
-                onOpenListing={function (item) {
-                  setSelectedListing(item);
-                }}
+                onOpenListing={(item) => setSelectedListing(item)}
               />
-            ) : null}
+            )}
 
-            {showFavs ? (
+            {showFavs && (
               <div className="hz-page">
                 <div className="hz-section-header">
                   <h3>{STRINGS[lang].favourites}</h3>
                 </div>
                 <div className="hz-grid">
-                  {favListings.map(function (l) {
-                    return (
-                      <ListingCard
-                        key={l.id}
-                        item={l}
-                        fav={!!favs[l.id]}
-                        onToggleFav={toggleFav}
-                        onOpen={function (item) {
-                          setSelectedListing(item);
-                        }}
-                      />
-                    );
-                  })}
+                  {favListings.map((l) => (
+                    <ListingCard
+                      key={l.id}
+                      item={l}
+                      fav={!!favs[l.id]}
+                      onToggleFav={toggleFav}
+                      onOpen={(item) => setSelectedListing(item)}
+                      lang={lang}
+                    />
+                  ))}
                 </div>
               </div>
-            ) : null}
+            )}
 
-            {activeTab === "account" && user ? (
+            {activeTab === "account" && user && (
               <AccountPage user={user} lang={lang} />
-            ) : null}
+            )}
           </>
         )}
       </main>
 
       <BottomNav
         active={activeTab}
-        setActive={function (tab) {
+        setActive={(tab) => {
           setActiveTab(tab);
-          setActiveCategoryKey(null);
-          setSelectedListing(null);
+          if (tab !== "post") {
+            setActiveCategoryKey(null);
+            setSelectedListing(null);
+          }
         }}
         onPost={handlePostClick}
-        onAccount={function () {
-          if (!user) {
-            setAccountOpen(true);
-          } else {
+        onAccount={() => {
+          if (!user) setAccountOpen(true);
+          else {
             setActiveTab("account");
             setActiveCategoryKey(null);
             setSelectedListing(null);
@@ -2145,17 +2347,14 @@ export default function App() {
 
       <AccountSheet
         open={accountOpen}
-        onClose={function () {
-          setAccountOpen(false);
-        }}
+        onClose={() => setAccountOpen(false)}
         setUser={setUser}
+        lang={lang}
       />
 
       <PostDialog
         open={postOpen}
-        onClose={function () {
-          setPostOpen(false);
-        }}
+        onClose={() => setPostOpen(false)}
         lang={lang}
         onCreateListing={handleCreateListing}
       />
