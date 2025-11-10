@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Search,
   Home,
@@ -7,7 +6,6 @@ import {
   User,
   Car,
   Building2,
-  BedDouble,
   Store,
   Sofa,
   Briefcase,
@@ -27,6 +25,7 @@ import {
   Trash2,
   LogOut,
 } from "lucide-react";
+
 
 import "./App.css";
 
