@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {
   Search,
   Home,
   Heart,
@@ -23,12 +24,12 @@ import React, { useState } from "react";
   Bell,
   Settings,
   Trash2,
-  LogOut,
+  LogOut
 } from "lucide-react";
-
-
-
 import "./App.css";
+
+/* STRINGS */
+
 
 /* STRINGS */
 
