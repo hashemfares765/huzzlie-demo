@@ -995,3 +995,49 @@ body {
 .hz-account-danger svg {
   color: #dc2626;
 }
+
+/* Horizontal filter chips */
+
+.hz-filter-chips-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin: 2px 0 4px;
+}
+
+.hz-filter-chips-scroll::-webkit-scrollbar {
+  height: 3px;
+}
+.hz-filter-chips-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hz-filter-chips-scroll::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+.hz-filter-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  font-size: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: #374151;
+}
+
+.hz-filter-chip-active {
+  background-color: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+
+.hz-filter-active-panel {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

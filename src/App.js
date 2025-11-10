@@ -601,273 +601,339 @@ function MotorsFilters(props) {
   var setFilters = props.setFilters;
   var lang = props.lang;
   var S = STRINGS[lang];
+  var [activeFilter, setActiveFilter] = useState(null);
+
+  function chipClass(key) {
+    return (
+      "hz-filter-chip " +
+      (activeFilter === key ? "hz-filter-chip-active" : "")
+    );
+  }
 
   return (
     <div className="hz-filters">
       <div className="hz-filters-title">{S.motorsFilters}</div>
-      <div className="hz-filters-grid">
-        <div className="hz-filter-block">
-          <label>Brand</label>
-          <select
-            value={filters.brand || ""}
-            onChange={function (e) {
-              var v = e.target.value || undefined;
-              setFilters(function (f) {
-                return { ...f, brand: v };
-              });
-            }}
-          >
-            <option value="">Any</option>
-            {CAR_BRANDS.filter(function (b) {
-              return b !== "__all";
-            }).map(function (b) {
-              return (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              );
-            })}
-          </select>
-        </div>
 
-        <div className="hz-filter-block">
-          <label>Model</label>
-          <input
-            placeholder="e.g. C-Class"
-            value={filters.model || ""}
-            onChange={function (e) {
-              var v = e.target.value || undefined;
-              setFilters(function (f) {
-                return { ...f, model: v };
-              });
-            }}
-          />
-        </div>
+      {/* Horizontal scrollable chips */}
+      <div className="hz-filter-chips-scroll">
+        <button
+          className={chipClass("brand")}
+          onClick={function () {
+            setActiveFilter(activeFilter === "brand" ? null : "brand");
+          }}
+        >
+          Brand {filters.brand ? `· ${filters.brand}` : ""}
+        </button>
 
-        <div className="hz-filter-block">
-          <label>Seller</label>
-          <select
-            value={filters.sellerType || ""}
-            onChange={function (e) {
-              var v = e.target.value || undefined;
-              setFilters(function (f) {
-                return { ...f, sellerType: v };
-              });
-            }}
-          >
-            <option value="">Any</option>
-            <option value="private">Private</option>
-            <option value="dealership">Dealership</option>
-          </select>
-        </div>
+        <button
+          className={chipClass("model")}
+          onClick={function () {
+            setActiveFilter(activeFilter === "model" ? null : "model");
+          }}
+        >
+          Model {filters.model ? `· ${filters.model}` : ""}
+        </button>
 
-        <div className="hz-filter-block">
-          <label>Year from: {filters.yearMin || 1960}</label>
-          <input
-            type="range"
-            min="1960"
-            max="2026"
-            value={filters.yearMin || 1960}
-            onChange={function (e) {
-              var v = Number(e.target.value);
-              setFilters(function (f) {
-                return { ...f, yearMin: v };
-              });
-            }}
-          />
-        </div>
+        <button
+          className={chipClass("sellerType")}
+          onClick={function () {
+            setActiveFilter(
+              activeFilter === "sellerType" ? null : "sellerType"
+            );
+          }}
+        >
+          Seller {filters.sellerType ? `· ${filters.sellerType}` : ""}
+        </button>
 
-        <div className="hz-filter-block">
-          <label>Price ≤ {filters.priceMax || "Any"}</label>
-          <input
-            type="range"
-            min="0"
-            max="200000"
-            step="500"
-            value={filters.priceMax || 0}
-            onChange={function (e) {
-              var v = Number(e.target.value) || undefined;
-              setFilters(function (f) {
-                return {
-                  ...f,
-                  priceMax: v === 0 ? undefined : v,
-                };
-              });
-            }}
-          />
-          <input
-            type="number"
-            placeholder="Max price"
-            value={filters.priceMax || ""}
-            onChange={function (e) {
-              var n = e.target.value ? Number(e.target.value) : undefined;
-              setFilters(function (f) {
-                return { ...f, priceMax: n };
-              });
-            }}
-          />
-        </div>
+        <button
+          className={chipClass("yearMin")}
+          onClick={function () {
+            setActiveFilter(activeFilter === "yearMin" ? null : "yearMin");
+          }}
+        >
+          Min Year {filters.yearMin ? `· ${filters.yearMin}` : ""}
+        </button>
 
-        <div className="hz-filter-block">
-          <label>Mileage ≤ {filters.mileageMax || "Any"} km</label>
-          <input
-            type="range"
-            min="0"
-            max="1000000"
-            step="5000"
-            value={filters.mileageMax || 0}
-            onChange={function (e) {
-              var v = Number(e.target.value) || undefined;
-              setFilters(function (f) {
-                return {
-                  ...f,
-                  mileageMax: v === 0 ? undefined : v,
-                };
-              });
-            }}
-          />
-          <input
-            type="number"
-            placeholder="Max km"
-            value={filters.mileageMax || ""}
-            onChange={function (e) {
-              var n = e.target.value ? Number(e.target.value) : undefined;
-              setFilters(function (f) {
-                return { ...f, mileageMax: n };
-              });
-            }}
-          />
-        </div>
+        <button
+          className={chipClass("priceMax")}
+          onClick={function () {
+            setActiveFilter(activeFilter === "priceMax" ? null : "priceMax");
+          }}
+        >
+          Max Price {filters.priceMax ? `· ${filters.priceMax}` : ""}
+        </button>
+
+        <button
+          className={chipClass("mileageMax")}
+          onClick={function () {
+            setActiveFilter(
+              activeFilter === "mileageMax" ? null : "mileageMax"
+            );
+          }}
+        >
+          Max KM {filters.mileageMax ? `· ${filters.mileageMax}` : ""}
+        </button>
+      </div>
+
+      {/* Active filter control */}
+      <div className="hz-filter-active-panel">
+        {activeFilter === "brand" && (
+          <div className="hz-field">
+            <label>Brand</label>
+            <select
+              value={filters.brand || ""}
+              onChange={function (e) {
+                var v = e.target.value || undefined;
+                setFilters(function (f) {
+                  return { ...f, brand: v };
+                });
+              }}
+            >
+              <option value="">Any</option>
+              {CAR_BRANDS.filter(function (b) {
+                return b !== "__all";
+              }).map(function (b) {
+                return (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
+
+        {activeFilter === "model" && (
+          <div className="hz-field">
+            <label>Model</label>
+            <input
+              placeholder="e.g. C-Class"
+              value={filters.model || ""}
+              onChange={function (e) {
+                var v = e.target.value || undefined;
+                setFilters(function (f) {
+                  return { ...f, model: v };
+                });
+              }}
+            />
+          </div>
+        )}
+
+        {activeFilter === "sellerType" && (
+          <div className="hz-field">
+            <label>Seller</label>
+            <select
+              value={filters.sellerType || ""}
+              onChange={function (e) {
+                var v = e.target.value || undefined;
+                setFilters(function (f) {
+                  return { ...f, sellerType: v };
+                });
+              }}
+            >
+              <option value="">Any</option>
+              <option value="private">Private</option>
+              <option value="dealership">Dealership</option>
+            </select>
+          </div>
+        )}
+
+        {activeFilter === "yearMin" && (
+          <div className="hz-field">
+            <label>Minimum Year</label>
+            <input
+              type="number"
+              min="1960"
+              max="2026"
+              value={filters.yearMin || ""}
+              onChange={function (e) {
+                var v = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, yearMin: v };
+                });
+              }}
+            />
+          </div>
+        )}
+
+        {activeFilter === "priceMax" && (
+          <div className="hz-field">
+            <label>Max Price</label>
+            <input
+              type="number"
+              value={filters.priceMax || ""}
+              onChange={function (e) {
+                var v = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, priceMax: v };
+                });
+              }}
+              placeholder="Max price"
+            />
+          </div>
+        )}
+
+        {activeFilter === "mileageMax" && (
+          <div className="hz-field">
+            <label>Max Mileage (km)</label>
+            <input
+              type="number"
+              value={filters.mileageMax || ""}
+              onChange={function (e) {
+                var v = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, mileageMax: v };
+                });
+              }}
+              placeholder="Max km"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
 
 function PropertyFilters(props) {
   var filters = props.filters;
   var setFilters = props.setFilters;
   var lang = props.lang;
   var S = STRINGS[lang];
+  var [activeFilter, setActiveFilter] = useState(null);
+
+  function chipClass(key) {
+    return (
+      "hz-filter-chip " +
+      (activeFilter === key ? "hz-filter-chip-active" : "")
+    );
+  }
 
   return (
     <div className="hz-filters">
       <div className="hz-filters-title">{S.propertyFilters}</div>
-      <div className="hz-filters-grid">
-        <div className="hz-filter-block">
-          <label>Price ≥ {filters.priceMin || 0}</label>
-          <input
-            type="range"
-            min="0"
-            max="1000000"
-            step="1000"
-            value={filters.priceMin || 0}
-            onChange={function (e) {
-              var v = Number(e.target.value) || 0;
-              setFilters(function (f) {
-                return { ...f, priceMin: v || undefined };
-              });
-            }}
-          />
-          <input
-            type="number"
-            value={filters.priceMin || ""}
-            placeholder="Min price"
-            onChange={function (e) {
-              var n = e.target.value ? Number(e.target.value) : undefined;
-              setFilters(function (f) {
-                return { ...f, priceMin: n };
-              });
-            }}
-          />
-        </div>
 
-        <div className="hz-filter-block">
-          <label>Price ≤ {filters.priceMax || "Any"}</label>
-          <input
-            type="range"
-            min="0"
-            max="2000000"
-            step="5000"
-            value={filters.priceMax || 0}
-            onChange={function (e) {
-              var v = Number(e.target.value) || 0;
-              setFilters(function (f) {
-                return { ...f, priceMax: v || undefined };
-              });
-            }}
-          />
-          <input
-            type="number"
-            value={filters.priceMax || ""}
-            placeholder="Max price"
-            onChange={function (e) {
-              var n = e.target.value ? Number(e.target.value) : undefined;
-              setFilters(function (f) {
-                return { ...f, priceMax: n };
-              });
-            }}
-          />
-        </div>
+      {/* Horizontal chips */}
+      <div className="hz-filter-chips-scroll">
+        <button
+          className={chipClass("priceMin")}
+          onClick={function () {
+            setActiveFilter(
+              activeFilter === "priceMin" ? null : "priceMin"
+            );
+          }}
+        >
+          Min Price {filters.priceMin ? `· ${filters.priceMin}` : ""}
+        </button>
 
-        <div className="hz-filter-block">
-          <label>Area ≥ {filters.areaMin || 0} sqft</label>
-          <input
-            type="range"
-            min="0"
-            max="10000"
-            step="50"
-            value={filters.areaMin || 0}
-            onChange={function (e) {
-              var v = Number(e.target.value) || 0;
-              setFilters(function (f) {
-                return { ...f, areaMin: v || undefined };
-              });
-            }}
-          />
-          <input
-            type="number"
-            value={filters.areaMin || ""}
-            placeholder="Min sqft"
-            onChange={function (e) {
-              var n = e.target.value ? Number(e.target.value) : undefined;
-              setFilters(function (f) {
-                return { ...f, areaMin: n };
-              });
-            }}
-          />
-        </div>
+        <button
+          className={chipClass("priceMax")}
+          onClick={function () {
+            setActiveFilter(
+              activeFilter === "priceMax" ? null : "priceMax"
+            );
+          }}
+        >
+          Max Price {filters.priceMax ? `· ${filters.priceMax}` : ""}
+        </button>
 
-        <div className="hz-filter-block">
-          <label>Area ≤ {filters.areaMax || "Any"} sqft</label>
-          <input
-            type="range"
-            min="0"
-            max="20000"
-            step="50"
-            value={filters.areaMax || 0}
-            onChange={function (e) {
-              var v = Number(e.target.value) || 0;
-              setFilters(function (f) {
-                return { ...f, areaMax: v || undefined };
-              });
-            }}
-          />
-          <input
-            type="number"
-            value={filters.areaMax || ""}
-            placeholder="Max sqft"
-            onChange={function (e) {
-              var n = e.target.value ? Number(e.target.value) : undefined;
-              setFilters(function (f) {
-                return { ...f, areaMax: n };
-              });
-            }}
-          />
-        </div>
+        <button
+          className={chipClass("areaMin")}
+          onClick={function () {
+            setActiveFilter(
+              activeFilter === "areaMin" ? null : "areaMin"
+            );
+          }}
+        >
+          Min Area {filters.areaMin ? `· ${filters.areaMin}` : ""}
+        </button>
+
+        <button
+          className={chipClass("areaMax")}
+          onClick={function () {
+            setActiveFilter(
+              activeFilter === "areaMax" ? null : "areaMax"
+            );
+          }}
+        >
+          Max Area {filters.areaMax ? `· ${filters.areaMax}` : ""}
+        </button>
+      </div>
+
+      {/* Active filter input */}
+      <div className="hz-filter-active-panel">
+        {activeFilter === "priceMin" && (
+          <div className="hz-field">
+            <label>Minimum Price</label>
+            <input
+              type="number"
+              value={filters.priceMin || ""}
+              onChange={function (e) {
+                var n = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, priceMin: n };
+                });
+              }}
+              placeholder="Min price"
+            />
+          </div>
+        )}
+
+        {activeFilter === "priceMax" && (
+          <div className="hz-field">
+            <label>Maximum Price</label>
+            <input
+              type="number"
+              value={filters.priceMax || ""}
+              onChange={function (e) {
+                var n = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, priceMax: n };
+                });
+              }}
+              placeholder="Max price"
+            />
+          </div>
+        )}
+
+        {activeFilter === "areaMin" && (
+          <div className="hz-field">
+            <label>Minimum Area (sqft)</label>
+            <input
+              type="number"
+              value={filters.areaMin || ""}
+              onChange={function (e) {
+                var n = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, areaMin: n };
+                });
+              }}
+              placeholder="Min sqft"
+            />
+          </div>
+        )}
+
+        {activeFilter === "areaMax" && (
+          <div className="hz-field">
+            <label>Maximum Area (sqft)</label>
+            <input
+              type="number"
+              value={filters.areaMax || ""}
+              onChange={function (e) {
+                var n = e.target.value ? Number(e.target.value) : undefined;
+                setFilters(function (f) {
+                  return { ...f, areaMax: n };
+                });
+              }}
+              placeholder="Max sqft"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
 
 /* CATEGORY PAGE (NO BRAND LIST) */
 
