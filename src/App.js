@@ -49,7 +49,7 @@ const STRINGS = {
     createAccountToPost: "Please create an account before placing a listing.",
     adSpace: "Ad space",
     adSpaceDesc: "External banner placement for partners.",
-    
+    brandSelectTitle: "Select a car brand",
     detailsOverview: "Overview",
     detailsShowMore: "Show more",
     detailsContact: "Contact seller",
@@ -264,7 +264,7 @@ const CAR_BRANDS = [
   "Volvo",
 ];
 
-/* MOCK LISTINGS */
+/* MOCK LISTINGS (initial data) */
 
 const MOCK_LISTINGS = [
   {
@@ -397,7 +397,7 @@ export function validateCarListing(listing) {
   });
 }
 
-/* COMPONENTS */
+/* BASIC COMPONENTS */
 
 function AdBanner(props) {
   var S = STRINGS[props.lang || "en"];
@@ -869,7 +869,7 @@ function PropertyFilters(props) {
   );
 }
 
-/* CATEGORY PAGE */
+/* CATEGORY PAGE (NO BRAND LIST) */
 
 function CategoryPage(props) {
   var cat = props.cat;
@@ -887,15 +887,12 @@ function CategoryPage(props) {
   var [filters, setFilters] = useState({});
 
   var filtered = listings.filter(function (l) {
-    // Match category
     if (l.category !== cat.key) return false;
 
-    // Respect active subcategory if defined
-    if (cat.subcategories && cat.subcategories.length) {
-      if (activeSub && l.subcategory !== activeSub) return false;
+    if (cat.subcategories && cat.subcategories.length && activeSub) {
+      if (l.subcategory !== activeSub) return false;
     }
 
-    // Motors-specific filters (cars only)
     if (isMotors) {
       if (l.subcategory !== "cars") return false;
 
@@ -920,7 +917,6 @@ function CategoryPage(props) {
         return false;
     }
 
-    // Property-specific filters
     if (isProp) {
       if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
       if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
@@ -941,17 +937,14 @@ function CategoryPage(props) {
         <h2>{cat.label}</h2>
       </div>
 
-      {/* Simple ad banner */}
       <AdBanner lang={lang} />
 
-      {/* Motors: show current selection text only, no list */}
       {isMotors && (
         <div className="hz-selected-brand">
           {filters.brand ? "Brand: " + filters.brand : S.motorsAllInCars}
         </div>
       )}
 
-      {/* Show relevant filters */}
       {isMotors && (
         <MotorsFilters
           lang={lang}
@@ -968,7 +961,6 @@ function CategoryPage(props) {
         />
       )}
 
-      {/* Listings grid */}
       <div className="hz-grid">
         {filtered.map(function (l) {
           return (
@@ -985,7 +977,6 @@ function CategoryPage(props) {
     </div>
   );
 }
-
 
 /* PROMO ADS CAROUSEL */
 
@@ -1145,13 +1136,13 @@ function HomeGrid(props) {
   var S = STRINGS[lang];
   var favs = props.favs;
   var toggleFav = props.toggleFav;
+  var listings = props.listings;
 
   return (
     <div className="hz-page">
       <div className="hz-cat-grid">
-        {CATEGORY_DEFS.filter(function (c) {
-          return c.key !== "community";
-        }).map(function (c) {
+        {CATEGORY_DEFS.map(function (c) {
+          if (c.key === "community") return null;
           var Icon = c.icon;
           return (
             <button
@@ -1183,7 +1174,7 @@ function HomeGrid(props) {
       </div>
 
       <div className="hz-grid">
-        {MOCK_LISTINGS.map(function (l) {
+        {listings.map(function (l) {
           return (
             <ListingCard
               key={l.id}
@@ -1534,12 +1525,13 @@ function AccountSheet(props) {
   );
 }
 
-/* POST DIALOG */
+/* POST DIALOG - NOW CREATES REAL LISTINGS */
 
 function PostDialog(props) {
   var open = props.open;
   var onClose = props.onClose;
   var lang = props.lang;
+  var onCreateListing = props.onCreateListing;
   var S = STRINGS[lang];
 
   var [category, setCategory] = useState("");
@@ -1553,6 +1545,7 @@ function PostDialog(props) {
   var [sellerType, setSellerType] = useState("");
   var [mileage, setMileage] = useState("");
   var [vin, setVin] = useState("");
+  var [specs, setSpecs] = useState("");
   var [city, setCity] = useState("");
   var [area, setArea] = useState("");
   var [desc, setDesc] = useState("");
@@ -1569,37 +1562,94 @@ function PostDialog(props) {
     setImages(files);
   }
 
+  function resetForm() {
+    setCategory("");
+    setSubcategory("");
+    setTitle("");
+    setPrice("");
+    setWhatsapp("");
+    setBrand("");
+    setModel("");
+    setYear("");
+    setSellerType("");
+    setMileage("");
+    setVin("");
+    setSpecs("");
+    setCity("");
+    setArea("");
+    setDesc("");
+    setImages([]);
+  }
+
   function handleSubmit() {
     if (!title || !category || !subcategory || !whatsapp) {
       alert("Please fill title, category, subcategory & WhatsApp.");
       return;
     }
 
-    var listing = {
+    var baseListing = {
       category: category,
       subcategory: subcategory,
-      brand: brand,
-      model: model,
+      brand: brand || undefined,
+      model: model || undefined,
       year: year ? Number(year) : undefined,
-      sellerType: sellerType,
+      sellerType: sellerType || undefined,
       mileage: mileage ? Number(mileage) : undefined,
-      vin: vin,
+      vin: vin || undefined,
+      specs: specs || undefined,
     };
 
-    if (!validateCarListing(listing)) {
+    if (!validateCarListing(baseListing)) {
       alert(
-        "For Motors > Cars, brand, model, year, seller, mileage & VIN are required."
+        "For Motors > Cars, brand, model, year, specs, seller, mileage & VIN are required."
       );
       return;
     }
 
+    var imgUrls =
+      images && images.length
+        ? images.map(function (file) {
+            return URL.createObjectURL(file);
+          })
+        : [
+            "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
+          ];
+
+    var newListing = {
+      id: "user-" + Date.now(),
+      title: title,
+      price: price ? Number(price) : 0,
+      currency: "USD",
+      category: category,
+      subcategory: subcategory,
+      location: city || "Damascus",
+      areaSqft:
+        isAnyProperty(category) && area ? Number(area) : undefined,
+      whatsapp: whatsapp,
+      brand: baseListing.brand,
+      model: baseListing.model,
+      year: baseListing.year,
+      sellerType: baseListing.sellerType,
+      mileage: baseListing.mileage,
+      vin: baseListing.vin,
+      specs: baseListing.specs,
+      desc: desc,
+      imgs: imgUrls,
+      featured: false,
+    };
+
+    if (typeof onCreateListing === "function") {
+      onCreateListing(newListing);
+    }
+
     alert(
-      "Listing ready. " +
+      "Listing created. " +
         (fee.amount
-          ? "A $" + fee.amount + " fee applies (" + fee.reason + ")."
-          : "This category is free to post.") +
-        " (Prototype only, not actually posted.)"
+          ? "A $" + fee.amount + " fee would apply (" + fee.reason + ") in production."
+          : "This category is free to post.")
     );
+
+    resetForm();
     onClose();
   }
 
@@ -1768,6 +1818,16 @@ function PostDialog(props) {
                 />
               </div>
               <div className="hz-field">
+                <label>Specs</label>
+                <input
+                  value={specs}
+                  onChange={function (e) {
+                    setSpecs(e.target.value);
+                  }}
+                  placeholder="e.g. GCC"
+                />
+              </div>
+              <div className="hz-field">
                 <label>VIN</label>
                 <input
                   value={vin}
@@ -1855,6 +1915,9 @@ export default function App() {
   var [activeSub, setActiveSub] = useState("");
   var [selectedListing, setSelectedListing] = useState(null);
 
+  // All listings (mock + user-created)
+  var [listings, setListings] = useState(MOCK_LISTINGS);
+
   function toggleFav(id) {
     setFavs(function (prev) {
       return { ...prev, [id]: !prev[id] };
@@ -1871,10 +1934,12 @@ export default function App() {
         ? cat.subcategories[0].key
         : "";
     setActiveSub(firstSub);
+    setSelectedListing(null);
   }
 
   function handleBackFromCategory() {
     setActiveCategoryKey(null);
+    setSelectedListing(null);
   }
 
   function handlePostClick() {
@@ -1886,9 +1951,17 @@ export default function App() {
     setPostOpen(true);
   }
 
+  function handleCreateListing(newListing) {
+    setListings(function (prev) {
+      return [newListing, ...prev];
+    });
+    setActiveTab("home");
+    setActiveCategoryKey(null);
+    setSelectedListing(null);
+  }
+
   function filteredListingsForCategory() {
-    // plug search/filter logic here later if needed
-    return MOCK_LISTINGS;
+    return listings;
   }
 
   var activeCategory =
@@ -1897,7 +1970,7 @@ export default function App() {
       return c.key === activeCategoryKey;
     });
 
-  var favListings = MOCK_LISTINGS.filter(function (l) {
+  var favListings = listings.filter(function (l) {
     return favs[l.id];
   });
 
@@ -1945,6 +2018,7 @@ export default function App() {
               <HomeGrid
                 lang={lang}
                 favs={favs}
+                listings={listings}
                 toggleFav={toggleFav}
                 onOpenCategory={openCategory}
                 onOpenListing={function (item) {
@@ -2017,6 +2091,7 @@ export default function App() {
           setPostOpen(false);
         }}
         lang={lang}
+        onCreateListing={handleCreateListing}
       />
     </div>
   );
