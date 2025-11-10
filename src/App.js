@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   MessageCircle,
   Languages,
+  ChevronDown,
   UserCircle,
   Bookmark,
   Shield,
@@ -34,6 +35,7 @@ import "./App.css";
 const STRINGS = {
   en: {
     searchPlaceholder: "Search anything...",
+    search: "Search",
     home: "Home",
     favourites: "Favourites",
     placeListing: "Place Listing",
@@ -42,39 +44,22 @@ const STRINGS = {
     seeAll: "See all",
     feeNote:
       "Cars cost $3 per listing. Properties (rent/sale/off-plan/rooms) cost $10 per listing. Others are free.",
-    motorsFilters: "Motors Filters",
+    carsTitle: "Cars",
+    carsFilters: "Car Filters",
     propertyFilters: "Property Filters",
     createAccountToPost: "Please create an account before placing a listing.",
     adSpace: "Ad space",
     adSpaceDesc: "External banner placement for partners.",
+    brandSelectTitle: "Select a car brand",
     detailsOverview: "Overview",
+    detailsShowMore: "Show more",
     detailsContact: "Contact seller",
-    whatsappMessage: "Hi, I'm interested in your listing:",
-    createAccount: "Create Account",
-    or: "or",
-    cancel: "Cancel",
-    save: "Save",
-    images: "Images",
-    fileSelected: "file(s) selected",
-    postingFee: "Posting fee",
-    freeCategory: "This category is free to post.",
-    payPostMock: "Pay & Post (mock)",
-    myAds: "My Ads",
-    mySearches: "My Searches",
-    joinedOn: "Joined on July 2023",
-    getVerified: "Get Verified",
-    profileInfo: "Profile & Basic Info",
-    phonesAddresses: "Phone Numbers & Addresses",
-    passwordSecurity: "Password & Security",
-    myAdsStatus: "My Ads Status",
-    notificationsSettings: "Notifications & Email Settings",
-    accountSettings: "Account Settings",
-    deactivateDelete: "Deactivate / Delete Account",
-    logout: "Log Out",
-    featured: "Featured",
+    searchResults: "Search results",
+    searchNoResults: "No results found. Try another keyword.",
   },
   ar: {
     searchPlaceholder: "ابحث عن أي شيء...",
+    search: "بحث",
     home: "الرئيسية",
     favourites: "المفضلة",
     placeListing: "إضافة إعلان",
@@ -82,137 +67,162 @@ const STRINGS = {
     latestListings: "أحدث الإعلانات",
     seeAll: "عرض الكل",
     feeNote:
-      "إعلانات السيارات 3$ للإعلان. العقارات (إيجار/بيع/خطة/غرف) 10$ للإعلان. باقي الأقسام مجانية.",
-    motorsFilters: "فلاتر السيارات",
+      "إعلانات السيارات 3$ للإعلان. العقارات (إيجار/بيع/خطة مستقبلية/غرف) 10$ للإعلان. باقي الأقسام مجانية.",
+    carsTitle: "سيارات",
+    carsFilters: "فلاتر السيارات",
     propertyFilters: "فلاتر العقارات",
     createAccountToPost: "يرجى إنشاء حساب قبل إضافة إعلان.",
     adSpace: "مساحة إعلانية",
     adSpaceDesc: "مكان لوضع إعلانات الشركاء.",
+    brandSelectTitle: "اختر ماركة السيارة",
     detailsOverview: "نظرة عامة",
+    detailsShowMore: "عرض المزيد",
     detailsContact: "تواصل مع المعلن",
-    whatsappMessage: "مرحباً، أنا مهتم بالإعلان:",
-    createAccount: "إنشاء حساب",
-    or: "أو",
-    cancel: "إلغاء",
-    save: "حفظ",
-    images: "الصور",
-    fileSelected: "ملف/ملفات محددة",
-    postingFee: "رسوم النشر",
-    freeCategory: "هذا القسم مجاني للنشر.",
-    payPostMock: "ادفع وانشر (تجريبي)",
-    myAds: "إعلاناتي",
-    mySearches: "بحثي",
-    joinedOn: "انضم منذ يوليو 2023",
-    getVerified: "الحصول على التحقق",
-    profileInfo: "الملف الشخصي والمعلومات الأساسية",
-    phonesAddresses: "أرقام الهواتف والعناوين",
-    passwordSecurity: "كلمة المرور والأمان",
-    myAdsStatus: "حالة إعلاناتي",
-    notificationsSettings: "إعدادات الإشعارات والبريد",
-    accountSettings: "إعدادات الحساب",
-    deactivateDelete: "إلغاء / حذف الحساب",
-    logout: "تسجيل الخروج",
-    featured: "مميز",
+    searchResults: "نتائج البحث",
+    searchNoResults: "لا توجد نتائج، جرّب كلمة أخرى.",
   },
 };
 
-/* CATEGORY DEFINITIONS */
+/* LABEL HELPER */
+
+function getLabel(obj, lang) {
+  if (lang === "ar" && obj.labelAr) return obj.labelAr;
+  if (obj.labelEn) return obj.labelEn;
+  return obj.label || "";
+}
+
+/* CATEGORY DEFINITIONS WITH EN/AR LABELS */
 
 const CATEGORY_DEFS = [
   {
     key: "rent",
-    label: "Properties for Rent",
+    labelEn: "Properties for Rent",
     labelAr: "عقارات للإيجار",
     icon: Building2,
     isProperty: true,
     subcategories: [
-      { key: "apartment", label: "Apartments", labelAr: "شقق" },
-      { key: "villa", label: "Villas", labelAr: "فلل" },
-      { key: "townhouse", label: "Townhouses", labelAr: "تاون هاوس" },
-      { key: "room", label: "Rooms", labelAr: "غرف" },
+      { key: "apartment", labelEn: "Apartments", labelAr: "شقق" },
+      { key: "villa", labelEn: "Villas", labelAr: "فلل" },
+      {
+        key: "townhouse",
+        labelEn: "Townhouses",
+        labelAr: "تاون هاوس",
+      },
     ],
   },
   {
     key: "sale",
-    label: "Properties for Sale",
+    labelEn: "Properties for Sale",
     labelAr: "عقارات للبيع",
     icon: Home,
     isProperty: true,
     subcategories: [
-      { key: "apartment", label: "Apartments", labelAr: "شقق" },
-      { key: "villa", label: "Villas", labelAr: "فلل" },
-      { key: "plot", label: "Plots", labelAr: "أراضٍ" },
-      { key: "offplan", label: "Off-plan", labelAr: "على المخطط" },
+      { key: "apartment", labelEn: "Apartments", labelAr: "شقق" },
+      { key: "villa", labelEn: "Villas", labelAr: "فلل" },
+      { key: "plot", labelEn: "Plots", labelAr: "أراضٍ" },
+      { key: "offplan", labelEn: "Off-plan", labelAr: "خطة مستقبلية" },
     ],
   },
   {
     key: "offplan",
-    label: "Off Plan Properties",
+    labelEn: "Off Plan Properties",
     labelAr: "عقارات على المخطط",
     icon: MapPin,
     isProperty: true,
     subcategories: [
-      { key: "apt", label: "Off-plan Apts", labelAr: "شقق على المخطط" },
-      { key: "villa", label: "Off-plan Villas", labelAr: "فلل على المخطط" },
+      {
+        key: "apt",
+        labelEn: "Off-plan Apts",
+        labelAr: "شقق على المخطط",
+      },
+      {
+        key: "villa",
+        labelEn: "Off-plan Villas",
+        labelAr: "فلل على المخطط",
+      },
     ],
   },
+  // Community instead of Rooms for Rent
   {
-    key: "rooms",
-    label: "Rooms for Rent",
-    labelAr: "غرف للإيجار",
-    icon: BedDouble,
-    isProperty: true,
+    key: "community",
+    labelEn: "Community",
+    labelAr: "المجتمع",
+    icon: User,
+    isProperty: false,
     subcategories: [
-      { key: "shared", label: "Shared", labelAr: "مشتركة" },
-      { key: "private", label: "Private", labelAr: "خاصة" },
-      { key: "master", label: "Master", labelAr: "ماستر" },
+      { key: "events", labelEn: "Events", labelAr: "فعاليات" },
+      {
+        key: "activities",
+        labelEn: "Activities",
+        labelAr: "أنشطة",
+      },
+      {
+        key: "volunteering",
+        labelEn: "Volunteering",
+        labelAr: "تطوع",
+      },
+      { key: "other", labelEn: "Other", labelAr: "أخرى" },
     ],
   },
   {
     key: "motors",
-    label: "Motors",
-    labelAr: "المحركات",
+    labelEn: "Cars",
+    labelAr: "سيارات",
     icon: Car,
     isProperty: false,
-    subcategories: [{ key: "cars", label: "Cars", labelAr: "سيارات" }],
+    subcategories: [
+      { key: "cars", labelEn: "Cars", labelAr: "سيارات" },
+    ],
   },
   {
     key: "jobs",
-    label: "Jobs",
+    labelEn: "Jobs",
     labelAr: "وظائف",
     icon: Briefcase,
     isProperty: false,
     subcategories: [
-      { key: "sales", label: "Sales", labelAr: "مبيعات" },
-      { key: "it", label: "IT", labelAr: "تقنية معلومات" },
-      { key: "admin", label: "Admin", labelAr: "إداري" },
-      { key: "marketing", label: "Marketing", labelAr: "تسويق" },
+      { key: "sales", labelEn: "Sales", labelAr: "مبيعات" },
+      { key: "it", labelEn: "IT", labelAr: "تقنية المعلومات" },
+      { key: "admin", labelEn: "Admin", labelAr: "إداري" },
+      {
+        key: "marketing",
+        labelEn: "Marketing",
+        labelAr: "تسويق",
+      },
     ],
   },
   {
     key: "classifieds",
-    label: "Classifieds",
+    labelEn: "Classifieds",
     labelAr: "إعلانات مبوبة",
     icon: Store,
     isProperty: false,
     subcategories: [
-      { key: "electronics", label: "Electronics", labelAr: "إلكترونيات" },
-      { key: "fashion", label: "Fashion", labelAr: "أزياء" },
-      { key: "services", label: "Services", labelAr: "خدمات" },
-      { key: "pets", label: "Pets", labelAr: "حيوانات أليفة" },
+      {
+        key: "electronics",
+        labelEn: "Electronics",
+        labelAr: "إلكترونيات",
+      },
+      { key: "fashion", labelEn: "Fashion", labelAr: "موضة" },
+      { key: "services", labelEn: "Services", labelAr: "خدمات" },
+      { key: "pets", labelEn: "Pets", labelAr: "حيوانات أليفة" },
     ],
   },
   {
     key: "furniture",
-    label: "Furniture & Garden",
+    labelEn: "Furniture & Garden",
     labelAr: "أثاث وحديقة",
     icon: Sofa,
     isProperty: false,
     subcategories: [
-      { key: "sofa", label: "Sofas", labelAr: "كنب" },
-      { key: "bed", label: "Beds", labelAr: "أسرة" },
-      { key: "outdoor", label: "Outdoor", labelAr: "خارجي" },
-      { key: "decor", label: "Décor", labelAr: "ديكور" },
+      { key: "sofa", labelEn: "Sofas", labelAr: "كنب" },
+      { key: "bed", labelEn: "Beds", labelAr: "أسرة" },
+      {
+        key: "outdoor",
+        labelEn: "Outdoor",
+        labelAr: "خارجي",
+      },
+      { key: "decor", labelEn: "Décor", labelAr: "ديكور" },
     ],
   },
 ];
@@ -234,10 +244,10 @@ const SYRIA_CITIES = [
   { en: "Idlib", ar: "إدلب" },
 ];
 
-/* CAR BRANDS */
+/* CAR BRANDS (demo list – extend as needed) */
 
 const CAR_BRANDS = [
-  "__all",
+  "",
   "Abarth",
   "Acura",
   "Alfa Romeo",
@@ -259,7 +269,6 @@ const CAR_BRANDS = [
   "Daewoo",
   "Daihatsu",
   "Dodge",
-  "Dongfeng",
   "Ferrari",
   "Fiat",
   "Ford",
@@ -294,7 +303,6 @@ const CAR_BRANDS = [
   "Opel",
   "Peugeot",
   "Porsche",
-  "Proton",
   "Renault",
   "Rolls-Royce",
   "Seat",
@@ -307,6 +315,122 @@ const CAR_BRANDS = [
   "Toyota",
   "Volkswagen",
   "Volvo",
+];
+
+/* MOCK LISTINGS – EN + AR */
+
+const MOCK_LISTINGS = [
+  {
+    id: "l1",
+    title: "1BR Apartment | Downtown Damascus",
+    titleAr: "شقة غرفة وصالة | وسط دمشق",
+    price: 3000000,
+    currency: "SYP",
+    category: "rent",
+    subcategory: "apartment",
+    location: "Damascus",
+    locationAr: "دمشق",
+    areaSqft: 780,
+    whatsapp: "+963944111222",
+    imgs: [
+      "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
+    ],
+    desc:
+      "Bright 1BR apartment in central Damascus, close to shops and cafés.",
+    descAr:
+      "شقة غرفة وصالة مشرقة في قلب دمشق بالقرب من المحلات والمقاهي.",
+    featured: true,
+  },
+  {
+    id: "l2",
+    title: "2018 Toyota Camry | GCC | Full service",
+    titleAr: "تويوتا كامري 2018 | خليجي | صيانة كاملة",
+    price: 15000,
+    currency: "USD",
+    category: "motors",
+    subcategory: "cars",
+    brand: "Toyota",
+    model: "Camry",
+    year: 2018,
+    mileage: 98000,
+    specs: "GCC",
+    sellerType: "private",
+    location: "Aleppo",
+    locationAr: "حلب",
+    whatsapp: "+963944333444",
+    imgs: [
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
+    ],
+    desc:
+      "Clean Camry with full service history and no major accidents.",
+    descAr:
+      "كامري نظيفة مع سجل صيانة كامل وبدون حوادث كبيرة.",
+    featured: false,
+  },
+  {
+    id: "l3",
+    title: "Modern Sofa | Like New",
+    titleAr: "كنبة عصرية | كالجديدة",
+    price: 400,
+    currency: "USD",
+    category: "furniture",
+    subcategory: "sofa",
+    location: "Homs",
+    locationAr: "حمص",
+    whatsapp: "+963944555666",
+    imgs: [
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop",
+    ],
+    desc: "Comfortable 3-seater sofa, barely used.",
+    descAr: "كنبة مريحة لثلاثة أشخاص، مستخدمة قليلاً جداً.",
+    featured: false,
+  },
+  {
+    id: "l4",
+    title: "Junior Marketing Executive",
+    titleAr: "تنفيذي تسويق مبتدئ",
+    price: 0,
+    currency: "SYP",
+    category: "jobs",
+    subcategory: "marketing",
+    location: "Damascus",
+    locationAr: "دمشق",
+    whatsapp: "+963944777888",
+    imgs: [
+      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop",
+    ],
+    desc: "Entry-level marketing role at a growing agency.",
+    descAr: "وظيفة تسويق للمبتدئين في وكالة نامية.",
+    featured: false,
+  },
+  {
+    id: "l5",
+    title: "2021 Mercedes C-Class | Warranty",
+    titleAr: "مرسيدس C كلاس 2021 | ضمان",
+    price: 129000,
+    currency: "AED",
+    category: "motors",
+    subcategory: "cars",
+    brand: "Mercedes",
+    model: "C-Class",
+    year: 2021,
+    mileage: 42000,
+    specs: "GCC",
+    sellerType: "dealership",
+    location: "Dubai",
+    locationAr: "دبي",
+    whatsapp: "+971581234567",
+    imgs: [
+      "https://images.unsplash.com/photo-1549921296-3b4a6b26b6b4?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1200&auto=format&fit=crop",
+    ],
+    desc:
+      "Dealer-maintained C-Class with remaining warranty and full options.",
+    descAr:
+      "C كلاس بصيانة وكالة مع ضمان ساري ومواصفات كاملة.",
+    featured: true,
+  },
 ];
 
 /* HELPERS */
@@ -331,7 +455,7 @@ function postingFeeFor(categoryKey, subKey) {
 
 function validateCarListing(listing) {
   if (!isCar(listing.category, listing.subcategory)) return true;
-  var required = [
+  const required = [
     "brand",
     "model",
     "year",
@@ -343,140 +467,10 @@ function validateCarListing(listing) {
   return required.every((k) => !!listing[k]);
 }
 
-function getCityName(cityEn, lang) {
-  if (!cityEn) return "";
-  if (lang !== "ar") return cityEn;
-  const found = SYRIA_CITIES.find((c) => c.en === cityEn);
-  return found ? found.ar : cityEn;
-}
-
-function listingTitle(item, lang) {
-  return lang === "ar" && item.titleAr ? item.titleAr : item.title;
-}
-function listingDesc(item, lang) {
-  return lang === "ar" && item.descAr ? item.descAr : item.desc;
-}
-function listingLocation(item, lang) {
-  if (lang === "ar") {
-    if (item.locationAr) return item.locationAr;
-    return getCityName(item.location, "ar");
-  }
-  return item.location;
-}
-
-/* MOCK LISTINGS */
-
-const MOCK_LISTINGS = [
-  {
-    id: "l1",
-    title: "1BR Apartment | Downtown Damascus",
-    titleAr: "شقة غرفة نوم واحدة | وسط دمشق",
-    price: 3000000,
-    currency: "SYP",
-    category: "rent",
-    subcategory: "apartment",
-    location: "Damascus",
-    locationAr: "دمشق",
-    areaSqft: 780,
-    whatsapp: "+963944111222",
-    imgs: [
-      "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Bright 1BR apartment in central Damascus, close to shops and cafés.",
-    descAr:
-      "شقة غرفة نوم واحدة مشرقة في وسط دمشق، قريبة من المحال التجارية والمقاهي.",
-    featured: true,
-  },
-  {
-    id: "l2",
-    title: "2018 Toyota Camry | GCC | Full service",
-    titleAr: "تويوتا كامري 2018 | مواصفات خليجية | سيرفس كامل",
-    price: 15000,
-    currency: "USD",
-    category: "motors",
-    subcategory: "cars",
-    brand: "Toyota",
-    model: "Camry",
-    year: 2018,
-    mileage: 98000,
-    specs: "GCC",
-    sellerType: "private",
-    location: "Aleppo",
-    locationAr: "حلب",
-    whatsapp: "+963944333444",
-    imgs: [
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Clean Camry with full service history and no major accidents.",
-    descAr: "كامري نظيفة مع سجل صيانة كامل وبدون حوادث كبيرة.",
-    featured: false,
-  },
-  {
-    id: "l3",
-    title: "Modern Sofa | Like New",
-    titleAr: "كنبة حديثة | شبه جديدة",
-    price: 400,
-    currency: "USD",
-    category: "furniture",
-    subcategory: "sofa",
-    location: "Homs",
-    locationAr: "حمص",
-    whatsapp: "+963944555666",
-    imgs: [
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Comfortable 3-seater sofa, barely used.",
-    descAr: "كنبة ثلاثية مريحة، استخدام بسيط.",
-    featured: false,
-  },
-  {
-    id: "l4",
-    title: "Junior Marketing Executive",
-    titleAr: "تنفيذي تسويق مبتدئ",
-    price: 0,
-    currency: "SYP",
-    category: "jobs",
-    subcategory: "marketing",
-    location: "Damascus",
-    locationAr: "دمشق",
-    whatsapp: "+963944777888",
-    imgs: [
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Entry-level marketing role at a growing agency.",
-    descAr: "وظيفة تسويق للمبتدئين في وكالة نامية.",
-    featured: false,
-  },
-  {
-    id: "l5",
-    title: "2021 Mercedes C-Class | Warranty",
-    titleAr: "مرسيدس C-Class 2021 | تحت الضمان",
-    price: 129000,
-    currency: "AED",
-    category: "motors",
-    subcategory: "cars",
-    brand: "Mercedes",
-    model: "C-Class",
-    year: 2021,
-    mileage: 42000,
-    specs: "GCC",
-    sellerType: "dealership",
-    location: "Dubai",
-    locationAr: "دبي",
-    whatsapp: "+971581234567",
-    imgs: [
-      "https://images.unsplash.com/photo-1549921296-3b4a6b26b6b4?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Dealer-maintained C-Class with remaining warranty and full options.",
-    descAr: "C-Class من الوكيل مع ضمان ساري ومواصفات كاملة.",
-    featured: true,
-  },
-];
-
 /* BASIC COMPONENTS */
 
 function AdBanner({ lang }) {
-  const S = STRINGS[lang];
+  const S = STRINGS[lang || "en"];
   return (
     <div className="hz-ad">
       <div className="hz-ad-label">{S.adSpace}</div>
@@ -485,15 +479,13 @@ function AdBanner({ lang }) {
   );
 }
 
-function WhatsAppButton({ number, title, lang }) {
+function WhatsAppButton({ number, title }) {
   if (!number) return null;
-  const msg = STRINGS[lang].whatsappMessage;
   const url =
     "https://wa.me/" +
     number.replace(/[^\d+]/g, "") +
     "?text=" +
-    encodeURIComponent(msg + " " + title);
-
+    encodeURIComponent("Hi, I'm interested in your listing: " + title);
   return (
     <a
       href={url}
@@ -503,16 +495,16 @@ function WhatsAppButton({ number, title, lang }) {
       onClick={(e) => e.stopPropagation()}
     >
       <MessageCircle size={14} />
-      <span>{lang === "ar" ? "واتساب" : "WhatsApp"}</span>
+      <span>WhatsApp</span>
     </a>
   );
 }
 
 function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
-  const title = listingTitle(item, lang);
-  const loc = listingLocation(item, lang);
-  const S = STRINGS[lang];
-
+  const localizedTitle =
+    lang === "ar" && item.titleAr ? item.titleAr : item.title;
+  const localizedLocation =
+    lang === "ar" && item.locationAr ? item.locationAr : item.location;
   return (
     <div
       className="hz-card"
@@ -523,7 +515,7 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
       <div className="hz-card-img-wrap">
         <img
           src={item.imgs && item.imgs[0]}
-          alt={title}
+          alt={localizedTitle}
           className="hz-card-img"
         />
         <button
@@ -537,13 +529,11 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
         >
           <Heart size={18} fill={fav ? "currentColor" : "none"} />
         </button>
-        {item.featured && (
-          <div className="hz-badge">{S.featured}</div>
-        )}
+        {item.featured ? <div className="hz-badge">Featured</div> : null}
       </div>
       <div className="hz-card-body">
         <div className="hz-card-title-row">
-          <h3 className="hz-card-title">{title}</h3>
+          <h3 className="hz-card-title">{localizedTitle}</h3>
           <Tag size={14} className="hz-card-tag" />
         </div>
         <div className="hz-card-price-row">
@@ -553,47 +543,19 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
           </span>
           <span className="hz-loc">
             <MapPin size={12} />
-            {loc}
+            {localizedLocation}
           </span>
         </div>
         <div className="hz-card-meta">
-          {item.year && (
-            <span>
-              {lang === "ar" ? "الموديل" : "Year"}: {item.year}
-            </span>
-          )}
-          {item.mileage && (
-            <span>
-              {lang === "ar" ? "المسافة" : "Mileage"}:{" "}
-              {item.mileage.toLocaleString()} km
-            </span>
-          )}
-          {item.specs && (
-            <span>
-              {lang === "ar" ? "المواصفات" : "Specs"}: {item.specs}
-            </span>
-          )}
-          {item.areaSqft && (
-            <span>
-              {lang === "ar" ? "المساحة" : "Area"}: {item.areaSqft} sqft
-            </span>
-          )}
-          {item.sellerType && (
-            <span>
-              {lang === "ar" ? "البائع" : "Seller"}:{" "}
-              {item.sellerType === "private"
-                ? lang === "ar"
-                  ? "شخصي"
-                  : "Private"
-                : item.sellerType === "dealership"
-                ? lang === "ar"
-                  ? "معرض"
-                  : "Dealership"
-                : item.sellerType}
-            </span>
-          )}
+          {item.year ? <span>Year: {item.year}</span> : null}
+          {item.mileage ? (
+            <span>Mileage: {item.mileage.toLocaleString()} km</span>
+          ) : null}
+          {item.specs ? <span>Specs: {item.specs}</span> : null}
+          {item.areaSqft ? <span>Area: {item.areaSqft} sqft</span> : null}
+          {item.sellerType ? <span>Seller: {item.sellerType}</span> : null}
         </div>
-        <WhatsAppButton number={item.whatsapp} title={title} lang={lang} />
+        <WhatsAppButton number={item.whatsapp} title={localizedTitle} />
       </div>
     </div>
   );
@@ -671,251 +633,574 @@ function BottomNav({ active, setActive, onPost, onAccount, lang }) {
     <div className="hz-bottom-nav">
       <Item id="home" icon={Home} label={S.home} />
       <Item id="favs" icon={Heart} label={S.favourites} />
-      <Item
-        id="post"
-        icon={PlusCircle}
-        label={S.placeListing}
-        onClick={onPost}
-      />
-      <Item
-        id="account"
-        icon={User}
-        label={S.account}
-        onClick={onAccount}
-      />
+      <Item id="post" icon={PlusCircle} label={S.placeListing} onClick={onPost} />
+      <Item id="account" icon={User} label={S.account} onClick={onAccount} />
     </div>
   );
 }
 
-/* MOTORS FILTERS – HORIZONTAL CHIPS + PANEL */
+/* MOTORS FILTERS – horizontal chips + dropdown panels */
 
-function MotorsFilters({ filters, setFilters, lang }) {
+function MotorsFilters({ lang, filters, setFilters }) {
   const S = STRINGS[lang];
+  const [activeKey, setActiveKey] = useState(null);
   const isAr = lang === "ar";
-  const [activeFilter, setActiveFilter] = useState(null);
+
+  const label = (en, ar) => (isAr ? ar : en);
+
+  const labels = {
+    brand: label("Brand", "الماركة"),
+    sellerType: label("Seller", "البائع"),
+    price: label("Price", "السعر"),
+    year: label("Year", "السنة"),
+    km: label("Max KM", "أقصى كم"),
+    specs: label("Specs", "المواصفات"),
+  };
 
   function chipClass(key) {
     return (
       "hz-filter-chip " +
-      (activeFilter === key ? "hz-filter-chip-active" : "")
+      (activeKey === key ? "hz-filter-chip-active" : "")
     );
   }
 
+  function openSheet(key) {
+    setActiveKey(key);
+  }
+
+  function closeSheet() {
+    setActiveKey(null);
+  }
+
+  function Sheet({ children, title }) {
+    if (!activeKey) return null;
+    return (
+      <div className="hz-filter-sheet-backdrop" onClick={closeSheet}>
+        <div
+          className="hz-filter-sheet"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="hz-filter-sheet-header">
+            <span>{title}</span>
+            <button
+              className="hz-filter-sheet-done"
+              onClick={closeSheet}
+            >
+              {isAr ? "تم" : "Done"}
+            </button>
+          </div>
+          <div className="hz-filter-sheet-body">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // dynamic title for sheet
+  const sheetTitle =
+    activeKey === "brand"
+      ? labels.brand
+      : activeKey === "sellerType"
+      ? labels.sellerType
+      : activeKey === "price"
+      ? labels.price
+      : activeKey === "year"
+      ? labels.year
+      : activeKey === "km"
+      ? labels.km
+      : activeKey === "specs"
+      ? labels.specs
+      : "";
+
+  // quick summaries for chips
+  const priceSummary =
+    filters.priceMin || filters.priceMax
+      ? `${filters.priceMin || 0} - ${
+          filters.priceMax ? filters.priceMax : label("Any", "أي")
+        }`
+      : "";
+
+  const yearSummary =
+    filters.yearMin || filters.yearMax
+      ? `${filters.yearMin || ""}${
+          filters.yearMax ? " - " + filters.yearMax : "+"
+        }`
+      : "";
+
+  const kmSummary = filters.mileageMax
+    ? `≤ ${filters.mileageMax}`
+    : "";
+
   return (
     <div className="hz-filters">
-      <div className="hz-filters-title">{S.motorsFilters}</div>
+      <div className="hz-filters-title">{S.carsFilters}</div>
 
+      {/* Horizontal filter chips with chevrons */}
       <div className="hz-filter-chips-scroll">
         <button
           className={chipClass("brand")}
-          onClick={() =>
-            setActiveFilter(activeFilter === "brand" ? null : "brand")
-          }
+          onClick={() => openSheet("brand")}
         >
-          {isAr ? "ماركة السيارة" : "Brand"}
-          {filters.brand ? ` · ${filters.brand}` : ""}
+          <span className="hz-filter-chip-label">
+            {labels.brand}
+            {filters.brand ? ` · ${filters.brand}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
 
         <button
           className={chipClass("sellerType")}
-          onClick={() =>
-            setActiveFilter(
-              activeFilter === "sellerType" ? null : "sellerType"
-            )
-          }
+          onClick={() => openSheet("sellerType")}
         >
-          {isAr ? "نوع البائع" : "Seller"}
-          {filters.sellerType
-            ? ` · ${
-                filters.sellerType === "private"
-                  ? isAr
-                    ? "شخصي"
-                    : "Private"
-                  : isAr
-                  ? "معرض"
-                  : "Dealership"
-              }`
-            : ""}
+          <span className="hz-filter-chip-label">
+            {labels.sellerType}
+            {filters.sellerType
+              ? ` · ${
+                  filters.sellerType === "private"
+                    ? label("Private", "فرد")
+                    : label("Dealership", "معرض")
+                }`
+              : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
 
         <button
-          className={chipClass("model")}
-          onClick={() =>
-            setActiveFilter(activeFilter === "model" ? null : "model")
-          }
+          className={chipClass("price")}
+          onClick={() => openSheet("price")}
         >
-          {isAr ? "الطراز" : "Model"}
-          {filters.model ? ` · ${filters.model}` : ""}
+          <span className="hz-filter-chip-label">
+            {labels.price}
+            {priceSummary ? ` · ${priceSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
 
         <button
-          className={chipClass("priceMax")}
-          onClick={() =>
-            setActiveFilter(
-              activeFilter === "priceMax" ? null : "priceMax"
-            )
-          }
+          className={chipClass("year")}
+          onClick={() => openSheet("year")}
         >
-          {isAr ? "أعلى سعر" : "Max Price"}
-          {filters.priceMax ? ` · ${filters.priceMax}` : ""}
+          <span className="hz-filter-chip-label">
+            {labels.year}
+            {yearSummary ? ` · ${yearSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("km")}
+          onClick={() => openSheet("km")}
+        >
+          <span className="hz-filter-chip-label">
+            {labels.km}
+            {kmSummary ? ` · ${kmSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("specs")}
+          onClick={() => openSheet("specs")}
+        >
+          <span className="hz-filter-chip-label">
+            {labels.specs}
+            {filters.specs ? ` · ${filters.specs}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
       </div>
 
-      <div className="hz-filter-active-panel">
-        {activeFilter === "brand" && (
+      {/* Bottom sheet body per filter */}
+      <Sheet title={sheetTitle}>
+        {/* BRAND */}
+        {activeKey === "brand" && (
           <div className="hz-field">
-            <label>{isAr ? "اختر الماركة" : "Select brand"}</label>
+            <label>{labels.brand}</label>
             <select
               value={filters.brand || ""}
-              onChange={(e) => {
-                const v = e.target.value || undefined;
-                setFilters((f) => ({ ...f, brand: v }));
-              }}
+              onChange={(e) =>
+                setFilters((f) => ({
+                  ...f,
+                  brand: e.target.value || undefined,
+                }))
+              }
             >
               <option value="">
-                {isAr ? "أي ماركة" : "Any brand"}
+                {label("Any brand", "أي ماركة")}
               </option>
-              {CAR_BRANDS.filter((b) => b !== "__all").map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
+              {CAR_BRANDS.map((b) =>
+                b ? (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ) : null
+              )}
             </select>
           </div>
         )}
 
-        {activeFilter === "sellerType" && (
+        {/* SELLER */}
+        {activeKey === "sellerType" && (
           <div className="hz-field">
-            <label>{isAr ? "نوع البائع" : "Seller type"}</label>
+            <label>{labels.sellerType}</label>
             <select
               value={filters.sellerType || ""}
-              onChange={(e) => {
-                const v = e.target.value || undefined;
-                setFilters((f) => ({ ...f, sellerType: v }));
-              }}
+              onChange={(e) =>
+                setFilters((f) => ({
+                  ...f,
+                  sellerType: e.target.value || undefined,
+                }))
+              }
             >
               <option value="">
-                {isAr ? "أي" : "Any"}
+                {label("Any seller", "أي بائع")}
               </option>
               <option value="private">
-                {isAr ? "شخصي" : "Private"}
+                {label("Private", "فرد")}
               </option>
               <option value="dealership">
-                {isAr ? "معرض" : "Dealership"}
+                {label("Dealership", "معرض")}
               </option>
             </select>
           </div>
         )}
 
-        {activeFilter === "model" && (
+        {/* PRICE RANGE (min+max + dual slider style) */}
+        {activeKey === "price" && (
           <div className="hz-field">
-            <label>{isAr ? "اسم الطراز" : "Model name"}</label>
-            <input
-              value={filters.model || ""}
-              onChange={(e) => {
-                const v = e.target.value || undefined;
-                setFilters((f) => ({ ...f, model: v }));
-              }}
-              placeholder={isAr ? "مثال: C-Class" : "e.g. C-Class"}
-            />
+            <label>{labels.price}</label>
+            <div className="hz-range-row">
+              <div className="hz-range-inputs">
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={filters.priceMin || ""}
+                  onChange={(e) => {
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
+                    setFilters((f) => ({
+                      ...f,
+                      priceMin: v,
+                    }));
+                  }}
+                  placeholder={label("Min", "أدنى")}
+                />
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={filters.priceMax || ""}
+                  onChange={(e) => {
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
+                    setFilters((f) => ({
+                      ...f,
+                      priceMax: v,
+                    }));
+                  }}
+                  placeholder={label("Max", "أعلى")}
+                />
+              </div>
+              <div className="hz-range-slider-wrap">
+                <input
+                  type="range"
+                  min="0"
+                  max="200000"
+                  value={filters.priceMin || 0}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => ({
+                      ...f,
+                      priceMin:
+                        f.priceMax && v > f.priceMax
+                          ? f.priceMax
+                          : v,
+                    }));
+                  }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="200000"
+                  value={filters.priceMax || 200000}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => ({
+                      ...f,
+                      priceMax:
+                        f.priceMin && v < f.priceMin
+                          ? f.priceMin
+                          : v,
+                    }));
+                  }}
+                />
+              </div>
+            </div>
           </div>
         )}
 
-        {activeFilter === "priceMax" && (
+        {/* YEAR RANGE */}
+        {activeKey === "year" && (
           <div className="hz-field">
-            <label>
-              {isAr ? "أقصى سعر (بالدولار/العملة المعروضة)" : "Maximum price"}
-            </label>
-            <input
-              type="number"
-              value={filters.priceMax || ""}
-              onChange={(e) => {
-                const n = e.target.value
-                  ? Number(e.target.value)
-                  : undefined;
-                setFilters((f) => ({ ...f, priceMax: n }));
-              }}
-              placeholder={isAr ? "أدخل أقصى سعر" : "Enter max price"}
-            />
+            <label>{labels.year}</label>
+            <div className="hz-range-row">
+              <div className="hz-range-inputs">
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={filters.yearMin || ""}
+                  onChange={(e) => {
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
+                    setFilters((f) => ({ ...f, yearMin: v }));
+                  }}
+                  placeholder={label("From", "من")}
+                />
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={filters.yearMax || ""}
+                  onChange={(e) => {
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
+                    setFilters((f) => ({ ...f, yearMax: v }));
+                  }}
+                  placeholder={label("To", "إلى")}
+                />
+              </div>
+              <div className="hz-range-slider-wrap">
+                <input
+                  type="range"
+                  min="1980"
+                  max={new Date().getFullYear()}
+                  value={filters.yearMin || 1980}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => ({
+                      ...f,
+                      yearMin:
+                        f.yearMax && v > f.yearMax
+                          ? f.yearMax
+                          : v,
+                    }));
+                  }}
+                />
+                <input
+                  type="range"
+                  min="1980"
+                  max={new Date().getFullYear()}
+                  value={
+                    filters.yearMax ||
+                    new Date().getFullYear()
+                  }
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => ({
+                      ...f,
+                      yearMax:
+                        f.yearMin && v < f.yearMin
+                          ? f.yearMin
+                          : v,
+                    }));
+                  }}
+                />
+              </div>
+            </div>
           </div>
         )}
-      </div>
+
+        {/* MAX KM */}
+        {activeKey === "km" && (
+          <div className="hz-field">
+            <label>{labels.km}</label>
+            <div className="hz-range-row">
+              <input
+                type="number"
+                className="hz-input-scroller"
+                value={filters.mileageMax || ""}
+                onChange={(e) => {
+                  const v = e.target.value
+                    ? Number(e.target.value)
+                    : undefined;
+                  setFilters((f) => ({
+                    ...f,
+                    mileageMax: v,
+                  }));
+                }}
+                placeholder={label(
+                  "Max kilometers",
+                  "أقصى عدد كيلومترات"
+                )}
+              />
+              <div className="hz-range-slider-wrap">
+                <input
+                  type="range"
+                  min="0"
+                  max="500000"
+                  value={filters.mileageMax || 500000}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => ({
+                      ...f,
+                      mileageMax: v,
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SPECS OPTIONS */}
+        {activeKey === "specs" && (
+          <div className="hz-field">
+            <label>{labels.specs}</label>
+            <div className="hz-specs-options">
+              {["GCC", "EU", "USA", "Japan"].map((s) => (
+                <button
+                  key={s}
+                  className={
+                    "hz-spec-pill " +
+                    (filters.specs === s
+                      ? "hz-spec-pill-active"
+                      : "")
+                  }
+                  onClick={() =>
+                    setFilters((f) => ({
+                      ...f,
+                      specs: f.specs === s ? undefined : s,
+                    }))
+                  }
+                >
+                  {s === "Japan"
+                    ? label("Japan", "ياباني")
+                    : s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </Sheet>
     </div>
   );
 }
 
-/* PROPERTY FILTERS – SAME PATTERN */
+
+/* PROPERTY FILTERS */
 
 function PropertyFilters({ filters, setFilters, lang }) {
   const S = STRINGS[lang];
-  const [activeFilter, setActiveFilter] = useState(null);
+  const [activeKey, setActiveKey] = useState(null);
+  const isAr = lang === "ar";
 
   function chipClass(key) {
     return (
       "hz-filter-chip " +
-      (activeFilter === key ? "hz-filter-chip-active" : "")
+      (activeKey === key ? "hz-filter-chip-active" : "")
     );
   }
+
+  function openSheet(key) {
+    setActiveKey(key);
+  }
+
+  function closeSheet() {
+    setActiveKey(null);
+  }
+
+  function Sheet({ children, title }) {
+    if (!activeKey) return null;
+    return (
+      <div className="hz-filter-sheet-backdrop" onClick={closeSheet}>
+        <div
+          className="hz-filter-sheet"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="hz-filter-sheet-header">
+            <span>{title}</span>
+            <button
+              className="hz-filter-sheet-done"
+              onClick={closeSheet}
+            >
+              {isAr ? "تم" : "Done"}
+            </button>
+          </div>
+          <div className="hz-filter-sheet-body">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const sheetTitle =
+    activeKey === "priceMin"
+      ? isAr
+        ? "الحد الأدنى للسعر"
+        : "Minimum Price"
+      : activeKey === "priceMax"
+      ? isAr
+        ? "الحد الأعلى للسعر"
+        : "Maximum Price"
+      : activeKey === "areaMin"
+      ? isAr
+        ? "الحد الأدنى للمساحة"
+        : "Minimum Area"
+      : activeKey === "areaMax"
+      ? isAr
+        ? "الحد الأعلى للمساحة"
+        : "Maximum Area"
+      : "";
 
   return (
     <div className="hz-filters">
       <div className="hz-filters-title">{S.propertyFilters}</div>
 
+      {/* Horizontal scrollable chips */}
       <div className="hz-filter-chips-scroll">
         <button
           className={chipClass("priceMin")}
-          onClick={() =>
-            setActiveFilter(
-              activeFilter === "priceMin" ? null : "priceMin"
-            )
-          }
+          onClick={() => openSheet("priceMin")}
         >
-          {lang === "ar" ? "أدنى سعر" : "Min Price"}
+          {isAr ? "أدنى سعر" : "Min Price"}
           {filters.priceMin ? ` · ${filters.priceMin}` : ""}
         </button>
+
         <button
           className={chipClass("priceMax")}
-          onClick={() =>
-            setActiveFilter(
-              activeFilter === "priceMax" ? null : "priceMax"
-            )
-          }
+          onClick={() => openSheet("priceMax")}
         >
-          {lang === "ar" ? "أعلى سعر" : "Max Price"}
+          {isAr ? "أعلى سعر" : "Max Price"}
           {filters.priceMax ? ` · ${filters.priceMax}` : ""}
         </button>
+
         <button
           className={chipClass("areaMin")}
-          onClick={() =>
-            setActiveFilter(
-              activeFilter === "areaMin" ? null : "areaMin"
-            )
-          }
+          onClick={() => openSheet("areaMin")}
         >
-          {lang === "ar" ? "أقل مساحة" : "Min Area"}
+          {isAr ? "أقل مساحة" : "Min Area"}
           {filters.areaMin ? ` · ${filters.areaMin}` : ""}
         </button>
+
         <button
           className={chipClass("areaMax")}
-          onClick={() =>
-            setActiveFilter(
-              activeFilter === "areaMax" ? null : "areaMax"
-            )
-          }
+          onClick={() => openSheet("areaMax")}
         >
-          {lang === "ar" ? "أكبر مساحة" : "Max Area"}
+          {isAr ? "أكبر مساحة" : "Max Area"}
           {filters.areaMax ? ` · ${filters.areaMax}` : ""}
         </button>
       </div>
 
-      <div className="hz-filter-active-panel">
-        {activeFilter === "priceMin" && (
+      {/* Bottom sheet */}
+      <Sheet title={sheetTitle}>
+        {activeKey === "priceMin" && (
           <div className="hz-field">
             <label>
-              {lang === "ar" ? "أدنى سعر" : "Minimum Price"}
+              {isAr ? "الحد الأدنى للسعر" : "Minimum Price"}
             </label>
             <input
               type="number"
+              className="hz-input-scroller"
               value={filters.priceMin || ""}
               onChange={(e) => {
                 const n = e.target.value
@@ -923,18 +1208,19 @@ function PropertyFilters({ filters, setFilters, lang }) {
                   : undefined;
                 setFilters((f) => ({ ...f, priceMin: n }));
               }}
-              placeholder={lang === "ar" ? "أدنى سعر" : "Min price"}
+              placeholder={isAr ? "أدنى سعر" : "Min price"}
             />
           </div>
         )}
 
-        {activeFilter === "priceMax" && (
+        {activeKey === "priceMax" && (
           <div className="hz-field">
             <label>
-              {lang === "ar" ? "أعلى سعر" : "Maximum Price"}
+              {isAr ? "الحد الأعلى للسعر" : "Maximum Price"}
             </label>
             <input
               type="number"
+              className="hz-input-scroller"
               value={filters.priceMax || ""}
               onChange={(e) => {
                 const n = e.target.value
@@ -942,20 +1228,21 @@ function PropertyFilters({ filters, setFilters, lang }) {
                   : undefined;
                 setFilters((f) => ({ ...f, priceMax: n }));
               }}
-              placeholder={lang === "ar" ? "أعلى سعر" : "Max price"}
+              placeholder={isAr ? "أعلى سعر" : "Max price"}
             />
           </div>
         )}
 
-        {activeFilter === "areaMin" && (
+        {activeKey === "areaMin" && (
           <div className="hz-field">
             <label>
-              {lang === "ar"
-                ? "أقل مساحة (قدم مربع)"
+              {isAr
+                ? "الحد الأدنى للمساحة (قدم²)"
                 : "Minimum Area (sqft)"}
             </label>
             <input
               type="number"
+              className="hz-input-scroller"
               value={filters.areaMin || ""}
               onChange={(e) => {
                 const n = e.target.value
@@ -963,22 +1250,21 @@ function PropertyFilters({ filters, setFilters, lang }) {
                   : undefined;
                 setFilters((f) => ({ ...f, areaMin: n }));
               }}
-              placeholder={
-                lang === "ar" ? "أقل مساحة" : "Min sqft"
-              }
+              placeholder={isAr ? "أقل مساحة" : "Min sqft"}
             />
           </div>
         )}
 
-        {activeFilter === "areaMax" && (
+        {activeKey === "areaMax" && (
           <div className="hz-field">
             <label>
-              {lang === "ar"
-                ? "أكبر مساحة (قدم مربع)"
+              {isAr
+                ? "الحد الأعلى للمساحة (قدم²)"
                 : "Maximum Area (sqft)"}
             </label>
             <input
               type="number"
+              className="hz-input-scroller"
               value={filters.areaMax || ""}
               onChange={(e) => {
                 const n = e.target.value
@@ -986,16 +1272,15 @@ function PropertyFilters({ filters, setFilters, lang }) {
                   : undefined;
                 setFilters((f) => ({ ...f, areaMax: n }));
               }}
-              placeholder={
-                lang === "ar" ? "أكبر مساحة" : "Max sqft"
-              }
+              placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
             />
           </div>
         )}
-      </div>
+      </Sheet>
     </div>
   );
 }
+
 
 /* CATEGORY PAGE */
 
@@ -1006,7 +1291,6 @@ function CategoryPage({
   toggleFav,
   onBack,
   activeSub,
-  setActiveSub,
   lang,
   onOpenListing,
 }) {
@@ -1021,26 +1305,32 @@ function CategoryPage({
       if (l.subcategory !== activeSub) return false;
     }
 
-    if (isMotors) {
+        if (isMotors) {
       if (l.subcategory !== "cars") return false;
 
       if (filters.brand && l.brand !== filters.brand) return false;
 
-      if (
-        filters.model &&
-        (!l.model ||
-          l.model.toLowerCase().indexOf(filters.model.toLowerCase()) ===
-            -1)
-      ) {
-        return false;
-      }
-
       if (filters.sellerType && l.sellerType !== filters.sellerType)
+        return false;
+
+      if (filters.priceMin && (l.price || 0) < filters.priceMin)
         return false;
 
       if (filters.priceMax && (l.price || 0) > filters.priceMax)
         return false;
+
+      if (filters.yearMin && (l.year || 0) < filters.yearMin)
+        return false;
+
+      if (filters.yearMax && (l.year || 0) > filters.yearMax)
+        return false;
+
+      if (filters.mileageMax && (l.mileage || 0) > filters.mileageMax)
+        return false;
+
+      if (filters.specs && l.specs !== filters.specs) return false;
     }
+
 
     if (isProp) {
       if (filters.priceMin && (l.price || 0) < filters.priceMin)
@@ -1056,39 +1346,16 @@ function CategoryPage({
     return true;
   });
 
-  const title = lang === "ar" ? cat.labelAr || cat.label : cat.label;
-
   return (
     <div className="hz-page">
       <div className="hz-page-header">
         <button className="hz-back-btn" onClick={onBack}>
           <ChevronLeft />
         </button>
-        <h2>{title}</h2>
+        <h2>{getLabel(cat, lang)}</h2>
       </div>
 
       <AdBanner lang={lang} />
-
-      {cat.subcategories && cat.subcategories.length > 1 && (
-        <div className="hz-filter-chips-scroll">
-          {cat.subcategories.map((s) => {
-            const label = lang === "ar" ? s.labelAr || s.label : s.label;
-            const isActive = activeSub === s.key;
-            return (
-              <button
-                key={s.key}
-                className={
-                  "hz-filter-chip " +
-                  (isActive ? "hz-filter-chip-active" : "")
-                }
-                onClick={() => setActiveSub(s.key)}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      )}
 
       {isMotors && (
         <MotorsFilters
@@ -1122,48 +1389,39 @@ function CategoryPage({
   );
 }
 
-/* PROMO CAROUSEL – 3 ADS (ChatGPT, Ferrari, Syriatel) */
+/* PROMO CAROUSEL */
 
 const PROMO_ADS = [
   {
     id: "chatgpt",
-    titleEn: "ChatGPT for Smarter Listings",
-    titleAr: "ChatGPT لإعلانات أذكى",
-    descEn: "Use AI to write better titles, descriptions & replies.",
-    descAr: "استخدم الذكاء الاصطناعي لصياغة عناوين ووصف أفضل.",
-    ctaEn: "Open ChatGPT",
-    ctaAr: "افتح ChatGPT",
+    title: "ChatGPT for Smarter Listings",
+    desc: "Use AI to write stronger titles, descriptions & replies.",
+    cta: "Open ChatGPT",
     bg: "linear-gradient(135deg, #111827, #4b5563)",
     accent: "#22c55e",
     url: "https://chat.openai.com",
   },
   {
     id: "ferrari",
-    titleEn: "Ferrari – The Ultimate Drive",
-    titleAr: "فيراري – قمة القيادة",
-    descEn: "Explore the official Ferrari world of performance & design.",
-    descAr: "اكتشف عالم فيراري من الأداء والفخامة.",
-    ctaEn: "Visit Ferrari",
-    ctaAr: "زيارة الموقع",
+    title: "Ferrari – The Ultimate Drive",
+    desc: "Explore the official Ferrari world of performance & design.",
+    cta: "Visit Ferrari",
     bg: "linear-gradient(135deg, #450a0a, #b91c1c)",
     accent: "#fecaca",
     url: "https://www.ferrari.com",
   },
   {
     id: "syriatel",
-    titleEn: "Syriatel Online Services",
-    titleAr: "خدمات سيرياتيل أونلاين",
-    descEn: "Check offers, recharge & manage your line online.",
-    descAr: "تحقق من العروض، اشحن وأدر خطك عبر الإنترنت.",
-    ctaEn: "Go to Syriatel",
-    ctaAr: "زيارة سيرياتيل",
+    title: "Syriatel Online Services",
+    desc: "Check offers, recharge & manage your line online.",
+    cta: "Go to Syriatel",
     bg: "linear-gradient(135deg, #1d4ed8, #38bdf8)",
     accent: "#eff6ff",
     url: "https://www.syriatel.sy",
   },
 ];
 
-function PromoCarousel({ lang }) {
+function PromoCarousel() {
   const [active, setActive] = useState(0);
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
@@ -1176,7 +1434,6 @@ function PromoCarousel({ lang }) {
   }
 
   function handleClick(url) {
-    if (!url) return;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
@@ -1192,7 +1449,8 @@ function PromoCarousel({ lang }) {
   function onTouchEnd() {
     if (touchStartX == null || touchEndX == null) return;
     const diff = touchStartX - touchEndX;
-    if (Math.abs(diff) > 40) {
+    const threshold = 40;
+    if (Math.abs(diff) > threshold) {
       if (diff > 0) goTo(active + 1);
       else goTo(active - 1);
     }
@@ -1210,37 +1468,29 @@ function PromoCarousel({ lang }) {
       <div
         className="hz-promo-track"
         style={{
-          transform: `translateX(-${active * 100}%)`,
-          width: `${PROMO_ADS.length * 100}%`,
+          transform: "translateX(-" + active * 100 + "%)",
+          width: PROMO_ADS.length * 100 + "%",
         }}
       >
-        {PROMO_ADS.map((ad) => {
-          const title =
-            lang === "ar" ? ad.titleAr || ad.titleEn : ad.titleEn;
-          const desc =
-            lang === "ar" ? ad.descAr || ad.descEn : ad.descEn;
-          const cta = lang === "ar" ? ad.ctaAr || ad.ctaEn : ad.ctaEn;
-
-          return (
-            <div
-              key={ad.id}
-              className="hz-promo-slide"
-              style={{ background: ad.bg }}
-              onClick={() => handleClick(ad.url)}
-            >
-              <div className="hz-promo-content">
-                <div className="hz-promo-title">{title}</div>
-                <div className="hz-promo-desc">{desc}</div>
-                <div
-                  className="hz-promo-cta"
-                  style={{ backgroundColor: ad.accent }}
-                >
-                  {cta}
-                </div>
+        {PROMO_ADS.map((ad) => (
+          <div
+            key={ad.id}
+            className="hz-promo-slide"
+            style={{ background: ad.bg }}
+            onClick={() => handleClick(ad.url)}
+          >
+            <div className="hz-promo-content">
+              <div className="hz-promo-title">{ad.title}</div>
+              <div className="hz-promo-desc">{ad.desc}</div>
+              <div
+                className="hz-promo-cta"
+                style={{ backgroundColor: ad.accent }}
+              >
+                {ad.cta}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="hz-promo-controls">
@@ -1301,7 +1551,6 @@ function HomeGrid({
       <div className="hz-cat-grid">
         {CATEGORY_DEFS.map((c) => {
           const Icon = c.icon;
-          const label = lang === "ar" ? c.labelAr || c.label : c.label;
           return (
             <button
               key={c.key}
@@ -1312,15 +1561,15 @@ function HomeGrid({
                 <Icon size={22} />
               </div>
               <div className="hz-cat-label-wrap">
-                <span>{label}</span>
+                <span>{getLabel(c, lang)}</span>
               </div>
-              <ChevronRight size={18} />
+              <ChevronRight size={18} className="hz-cat-arrow" />
             </button>
           );
         })}
       </div>
 
-      <PromoCarousel lang={lang} />
+      <PromoCarousel />
 
       <div className="hz-fee-note">{S.feeNote}</div>
 
@@ -1349,9 +1598,12 @@ function HomeGrid({
 
 function ListingDetail({ item, onBack, lang }) {
   const S = STRINGS[lang];
-  const title = listingTitle(item, lang);
-  const loc = listingLocation(item, lang);
-  const desc = listingDesc(item, lang);
+  const localizedTitle =
+    lang === "ar" && item.titleAr ? item.titleAr : item.title;
+  const localizedDesc =
+    lang === "ar" && item.descAr ? item.descAr : item.desc;
+  const localizedLocation =
+    lang === "ar" && item.locationAr ? item.locationAr : item.location;
 
   return (
     <div className="hz-detail">
@@ -1363,7 +1615,7 @@ function ListingDetail({ item, onBack, lang }) {
         {item.imgs && item.imgs.length > 0 && (
           <img
             src={item.imgs[0]}
-            alt={title}
+            alt={localizedTitle}
             className="hz-detail-img"
           />
         )}
@@ -1387,34 +1639,19 @@ function ListingDetail({ item, onBack, lang }) {
           {item.currency}{" "}
           {item.price != null ? item.price.toLocaleString() : ""}
         </div>
-        <div className="hz-detail-title">{title}</div>
+        <div className="hz-detail-title">{localizedTitle}</div>
 
         <div className="hz-detail-meta-row">
-          {item.year && (
-            <span>
-              {lang === "ar" ? "الموديل" : "Year"} {item.year}
-            </span>
-          )}
+          {item.year && <span>{item.year}</span>}
           {item.mileage != null && (
-            <span>
-              {lang === "ar" ? "المسافة" : "Mileage"}{" "}
-              {item.mileage.toLocaleString()} km
-            </span>
+            <span>{item.mileage.toLocaleString()} km</span>
           )}
-          {item.specs && (
-            <span>
-              {lang === "ar" ? "المواصفات" : "Specs"} {item.specs}
-            </span>
-          )}
-          {item.areaSqft && (
-            <span>
-              {lang === "ar" ? "المساحة" : "Area"} {item.areaSqft} sqft
-            </span>
-          )}
-          {loc && (
+          {item.specs && <span>{item.specs}</span>}
+          {item.areaSqft && <span>{item.areaSqft} sqft</span>}
+          {localizedLocation && (
             <span className="hz-detail-loc">
               <MapPin size={12} />
-              {loc}
+              {localizedLocation}
             </span>
           )}
         </div>
@@ -1426,49 +1663,37 @@ function ListingDetail({ item, onBack, lang }) {
         <div className="hz-detail-overview">
           {item.brand && (
             <div className="hz-detail-row">
-              <span>{lang === "ar" ? "الماركة" : "Brand"}</span>
+              <span>Brand</span>
               <span>{item.brand}</span>
             </div>
           )}
           {item.model && (
             <div className="hz-detail-row">
-              <span>{lang === "ar" ? "الطراز" : "Model"}</span>
+              <span>Model</span>
               <span>{item.model}</span>
             </div>
           )}
           {item.sellerType && (
             <div className="hz-detail-row">
-              <span>{lang === "ar" ? "نوع البائع" : "Seller"}</span>
-              <span>
-                {item.sellerType === "private"
-                  ? lang === "ar"
-                    ? "شخصي"
-                    : "Private"
-                  : item.sellerType === "dealership"
-                  ? lang === "ar"
-                    ? "معرض"
-                    : "Dealership"
-                  : item.sellerType}
-              </span>
+              <span>Seller</span>
+              <span>{item.sellerType}</span>
             </div>
           )}
           {item.areaSqft && (
             <div className="hz-detail-row">
-              <span>{lang === "ar" ? "المساحة" : "Area"}</span>
+              <span>Area</span>
               <span>{item.areaSqft} sqft</span>
             </div>
           )}
         </div>
 
         <div className="hz-detail-desc">
-          {desc ||
-            (lang === "ar"
-              ? "ستظهر هنا تفاصيل الإعلان التي يضيفها صاحب الإعلان."
-              : "Listing description will appear here with all relevant details provided by the seller.")}
+          {localizedDesc ||
+            "Listing description will appear here with all relevant details provided by the seller."}
         </div>
 
         <div className="hz-detail-contact">
-          <WhatsAppButton number={item.whatsapp} title={title} lang={lang} />
+          <WhatsAppButton number={item.whatsapp} title={localizedTitle} />
         </div>
       </div>
     </div>
@@ -1477,15 +1702,8 @@ function ListingDetail({ item, onBack, lang }) {
 
 /* ACCOUNT PAGE */
 
-function AccountPage({ user, lang }) {
-  const S = STRINGS[lang];
-  const displayName =
-    (user && user.name) ||
-    (lang === "ar" ? "مستخدم هَزلي" : "Huzzlie User");
-
-  function demo(msgEn, msgAr) {
-    alert(lang === "ar" ? msgAr : msgEn);
-  }
+function AccountPage({ user }) {
+  const displayName = (user && user.name) || "Huzzlie User";
 
   return (
     <div className="hz-page hz-account">
@@ -1495,145 +1713,118 @@ function AccountPage({ user, lang }) {
         </div>
         <div className="hz-account-main">
           <div className="hz-account-name">{displayName}</div>
-          <div className="hz-account-joined">{S.joinedOn}</div>
+          <div className="hz-account-joined">Joined on July 2023</div>
         </div>
         <button
           className="hz-account-verify"
-          onClick={() =>
-            demo(
-              "Verification flow coming soon (demo).",
-              "ميزة التحقق قادمة قريباً (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("Verification flow coming soon (demo).");
+          }}
         >
-          {S.getVerified}
+          Get Verified
         </button>
       </div>
 
       <div className="hz-account-actions">
         <button
           className="hz-account-action"
-          onClick={() =>
-            demo("My Ads section (demo).", "قسم إعلاناتي (تجريبي).")
-          }
+          onClick={() => {
+            alert("My Ads section (demo).");
+          }}
         >
           <Bookmark size={20} />
-          <span>{S.myAds}</span>
+          <span>My Ads</span>
         </button>
         <button
           className="hz-account-action"
-          onClick={() =>
-            demo(
-              "My Searches section (demo).",
-              "قسم عمليات البحث (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("My Searches section (demo).");
+          }}
         >
           <Search size={20} />
-          <span>{S.mySearches}</span>
+          <span>My Searches</span>
         </button>
       </div>
 
       <div className="hz-account-list">
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo(
-              "Edit basic info (demo).",
-              "تعديل المعلومات الأساسية (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("Edit basic info (demo).");
+          }}
         >
           <User size={18} />
-          <span>{S.profileInfo}</span>
+          <span>Profile & Basic Info</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo(
-              "Manage phone numbers & addresses (demo).",
-              "إدارة أرقام الهواتف والعناوين (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("Manage phone numbers & addresses (demo).");
+          }}
         >
           <Phone size={18} />
-          <span>{S.phonesAddresses}</span>
+          <span>Phone Numbers & Addresses</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo(
-              "Change password & security settings (demo).",
-              "تغيير كلمة المرور والأمان (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("Change password & security settings (demo).");
+          }}
         >
           <Shield size={18} />
-          <span>{S.passwordSecurity}</span>
+          <span>Password & Security</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo(
-              "View ads status (demo).",
-              "عرض حالة الإعلانات (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("View ads status (demo).");
+          }}
         >
           <Bookmark size={18} />
-          <span>{S.myAdsStatus}</span>
+          <span>My Ads Status</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo(
-              "Notifications settings (demo).",
-              "إعدادات الإشعارات والبريد (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("Notifications settings (demo).");
+          }}
         >
           <Bell size={18} />
-          <span>{S.notificationsSettings}</span>
+          <span>Notifications & Email Settings</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo(
-              "General account settings (demo).",
-              "إعدادات الحساب العامة (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("General account settings (demo).");
+          }}
         >
           <Settings size={18} />
-          <span>{S.accountSettings}</span>
+          <span>Account Settings</span>
         </button>
 
         <button
           className="hz-account-item hz-account-danger"
-          onClick={() =>
-            demo(
-              "Deactivate / delete flow (demo).",
-              "إلغاء / حذف الحساب (تجريبي)."
-            )
-          }
+          onClick={() => {
+            alert("Deactivate / delete flow (demo).");
+          }}
         >
           <Trash2 size={18} />
-          <span>{S.deactivateDelete}</span>
+          <span>Deactivate / Delete Account</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() =>
-            demo("Logged out (demo).", "تم تسجيل الخروج (تجريبي).")
-          }
+          onClick={() => {
+            alert("Logged out (demo).");
+          }}
         >
           <LogOut size={18} />
-          <span>{S.logout}</span>
+          <span>Log Out</span>
         </button>
       </div>
     </div>
@@ -1642,20 +1833,24 @@ function AccountPage({ user, lang }) {
 
 /* ACCOUNT SHEET */
 
-function AccountSheet({ open, onClose, setUser, lang }) {
-  const S = STRINGS[lang];
+function AccountSheet({ open, onClose, setUser }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
   if (!open) return null;
 
+  const providers = [
+    { key: "google", label: "Continue with Google" },
+    {
+      key: "microsoft",
+      label: "Continue with Microsoft (Hotmail/Outlook)",
+    },
+    { key: "apple", label: "Continue with Apple" },
+  ];
+
   function completeWithProvider(key) {
-    const displayName =
-      name ||
-      (lang === "ar"
-        ? `مستخدم ${key.toUpperCase()}`
-        : `${key.toUpperCase()} User`);
-    const displayEmail = email || `${key}@huzzlie.com`;
+    const displayName = name || key.toUpperCase() + " User";
+    const displayEmail = email || key + "@huzzlie.com";
     setUser({ name: displayName, email: displayEmail });
     onClose();
   }
@@ -1663,7 +1858,7 @@ function AccountSheet({ open, onClose, setUser, lang }) {
   function completeManual() {
     if (!name && !email) return;
     setUser({
-      name: name || (lang === "ar" ? "مستخدم هَزلي" : "Huzzlie User"),
+      name: name || "Huzzlie User",
       email: email || "user@huzzlie.com",
     });
     onClose();
@@ -1673,50 +1868,32 @@ function AccountSheet({ open, onClose, setUser, lang }) {
     <div className="hz-modal-backdrop">
       <div className="hz-modal">
         <div className="hz-modal-header">
-          <h3>{S.createAccount}</h3>
+          <h3>Create Account</h3>
           <button className="hz-close" onClick={onClose}>
             ×
           </button>
         </div>
         <div className="hz-modal-body">
-          <button
-            className="hz-provider-btn"
-            onClick={() => completeWithProvider("google")}
-          >
-            {lang === "ar"
-              ? "متابعة باستخدام Google"
-              : "Continue with Google"}
-          </button>
-          <button
-            className="hz-provider-btn"
-            onClick={() => completeWithProvider("microsoft")}
-          >
-            {lang === "ar"
-              ? "متابعة باستخدام Microsoft"
-              : "Continue with Microsoft (Hotmail/Outlook)"}
-          </button>
-          <button
-            className="hz-provider-btn"
-            onClick={() => completeWithProvider("apple")}
-          >
-            {lang === "ar"
-              ? "متابعة باستخدام Apple"
-              : "Continue with Apple"}
-          </button>
-          <div className="hz-or">{S.or}</div>
-
+          {providers.map((p) => (
+            <button
+              key={p.key}
+              className="hz-provider-btn"
+              onClick={() => completeWithProvider(p.key)}
+            >
+              {p.label}
+            </button>
+          ))}
+          <div className="hz-or">or</div>
           <div className="hz-field">
-            <label>{lang === "ar" ? "الاسم" : "Name"}</label>
+            <label>Name</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={lang === "ar" ? "اسمك" : "Your name"}
+              placeholder="Your name"
             />
           </div>
           <div className="hz-field">
-            <label>
-              {lang === "ar" ? "البريد الإلكتروني" : "Email"}
-            </label>
+            <label>Email</label>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -1726,10 +1903,10 @@ function AccountSheet({ open, onClose, setUser, lang }) {
         </div>
         <div className="hz-modal-footer">
           <button className="hz-secondary" onClick={onClose}>
-            {S.cancel}
+            Cancel
           </button>
           <button className="hz-primary" onClick={completeManual}>
-            {S.save}
+            Save
           </button>
         </div>
       </div>
@@ -1761,10 +1938,10 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
   const [descAr, setDescAr] = useState("");
   const [images, setImages] = useState([]);
 
+  if (!open) return null;
+
   const catDef = CATEGORY_DEFS.find((c) => c.key === category);
   const fee = postingFeeFor(category, subcategory);
-
-  if (!open) return null;
 
   function onImagesChange(e) {
     const files = Array.prototype.slice.call(e.target.files || []);
@@ -1794,11 +1971,7 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
 
   function handleSubmit() {
     if (!title || !category || !subcategory || !whatsapp) {
-      alert(
-        lang === "ar"
-          ? "يرجى تعبئة العنوان، الفئة، القسم الفرعي ورقم الواتساب."
-          : "Please fill title, category, subcategory & WhatsApp."
-      );
+      alert("Please fill title, category, subcategory & WhatsApp.");
       return;
     }
 
@@ -1816,9 +1989,7 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
 
     if (!validateCarListing(baseListing)) {
       alert(
-        lang === "ar"
-          ? "في قسم السيارات، الماركة والطراز والموديل والمواصفات ونوع البائع والمسافة ورقم الهيكل مطلوبة."
-          : "For Motors > Cars, brand, model, year, specs, seller, mileage & VIN are required."
+        "For Cars, brand, model, year, specs, seller, mileage & VIN are required."
       );
       return;
     }
@@ -1839,7 +2010,8 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
       category,
       subcategory,
       location: city || "Damascus",
-      locationAr: getCityName(city || "Damascus", "ar"),
+      locationAr:
+        SYRIA_CITIES.find((c) => c.en === city)?.ar || undefined,
       areaSqft: isAnyProperty(category) && area ? Number(area) : undefined,
       whatsapp,
       brand: baseListing.brand,
@@ -1855,21 +2027,20 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
       featured: false,
     };
 
-    if (onCreateListing) onCreateListing(newListing);
-
-    if (fee.amount) {
-      alert(
-        lang === "ar"
-          ? `تم إنشاء الإعلان. سيتم احتساب رسوم ${fee.amount}$ (${fee.reason}) في النسخة النهائية.`
-          : `Listing created. A $${fee.amount} fee would apply (${fee.reason}) in production.`
-      );
-    } else {
-      alert(
-        lang === "ar"
-          ? "تم إنشاء الإعلان. هذا القسم مجاني للنشر."
-          : "Listing created. This category is free to post."
-      );
+    if (typeof onCreateListing === "function") {
+      onCreateListing(newListing);
     }
+
+    alert(
+      "Listing created. " +
+        (fee.amount
+          ? "A $" +
+            fee.amount +
+            " fee would apply (" +
+            fee.reason +
+            ") in production."
+          : "This category is free to post.")
+    );
 
     resetForm();
     onClose();
@@ -1884,11 +2055,9 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
             ×
           </button>
         </div>
-
         <div className="hz-modal-body hz-modal-grid">
-          {/* Category */}
           <div className="hz-field">
-            <label>{lang === "ar" ? "الفئة" : "Category"}</label>
+            <label>Category</label>
             <select
               value={category}
               onChange={(e) => {
@@ -1897,21 +2066,20 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
               }}
             >
               <option value="">
-                {lang === "ar" ? "اختر الفئة" : "Select category"}
+                {lang === "ar"
+                  ? "اختر القسم"
+                  : "Select category"}
               </option>
               {CATEGORY_DEFS.map((c) => (
                 <option key={c.key} value={c.key}>
-                  {lang === "ar" ? c.labelAr || c.label : c.label}
+                  {getLabel(c, lang)}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Subcategory */}
           <div className="hz-field">
-            <label>
-              {lang === "ar" ? "القسم الفرعي" : "Subcategory"}
-            </label>
+            <label>Subcategory</label>
             <select
               value={subcategory}
               onChange={(e) => setSubcategory(e.target.value)}
@@ -1923,67 +2091,49 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
                     ? "اختر القسم الفرعي"
                     : "Select subcategory"
                   : lang === "ar"
-                  ? "اختر الفئة أولاً"
+                  ? "اختر القسم أولاً"
                   : "Select category first"}
               </option>
               {catDef &&
+                catDef.subcategories &&
                 catDef.subcategories.map((s) => (
                   <option key={s.key} value={s.key}>
-                    {lang === "ar" ? s.labelAr || s.label : s.label}
+                    {getLabel(s, lang)}
                   </option>
                 ))}
             </select>
           </div>
 
-          {/* Titles */}
           <div className="hz-field">
-            <label>
-              {lang === "ar" ? "العنوان (إنجليزي)" : "Title (EN)"}
-            </label>
+            <label>Title (EN)</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={
-                lang === "ar"
-                  ? "عنوان الإعلان بالإنجليزية"
-                  : "Listing title"
-              }
+              placeholder="Listing title"
             />
           </div>
 
           <div className="hz-field">
-            <label>
-              {lang === "ar" ? "العنوان (عربي)" : "Title (AR)"}
-            </label>
+            <label>Title (AR)</label>
             <input
               value={titleAr}
               onChange={(e) => setTitleAr(e.target.value)}
-              placeholder={
-                lang === "ar"
-                  ? "عنوان الإعلان بالعربية (اختياري)"
-                  : "Listing title in Arabic (optional)"
-              }
+              placeholder="عنوان الإعلان بالعربية"
             />
           </div>
 
-          {/* Price */}
           <div className="hz-field">
-            <label>
-              {lang === "ar"
-                ? "السعر (اختياري)"
-                : "Price (optional)"}
-            </label>
+            <label>Price (optional)</label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder={lang === "ar" ? "السعر" : "Price"}
+              placeholder="Price"
             />
           </div>
 
-          {/* WhatsApp */}
           <div className="hz-field">
-            <label>{lang === "ar" ? "رقم واتساب" : "WhatsApp"}</label>
+            <label>WhatsApp</label>
             <input
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
@@ -1991,9 +2141,8 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
             />
           </div>
 
-          {/* City */}
           <div className="hz-field">
-            <label>{lang === "ar" ? "المدينة" : "City"}</label>
+            <label>City</label>
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
@@ -2009,35 +2158,26 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
             </select>
           </div>
 
-          {/* Car specific */}
           {isCar(category, subcategory) && (
             <>
               <div className="hz-field">
-                <label>{lang === "ar" ? "الماركة" : "Brand"}</label>
+                <label>Brand</label>
                 <input
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  placeholder={
-                    lang === "ar"
-                      ? "مثال: Mercedes"
-                      : "e.g. Mercedes"
-                  }
+                  placeholder="e.g. Mercedes"
                 />
               </div>
               <div className="hz-field">
-                <label>{lang === "ar" ? "الطراز" : "Model"}</label>
+                <label>Model</label>
                 <input
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  placeholder={
-                    lang === "ar"
-                      ? "مثال: C-Class"
-                      : "e.g. C-Class"
-                  }
+                  placeholder="e.g. C-Class"
                 />
               </div>
               <div className="hz-field">
-                <label>{lang === "ar" ? "الموديل" : "Year"}</label>
+                <label>Year</label>
                 <input
                   type="number"
                   value={year}
@@ -2045,18 +2185,18 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
                 />
               </div>
               <div className="hz-field">
-                <label>
-                  {lang === "ar" ? "نوع البائع" : "Seller"}
-                </label>
+                <label>Seller</label>
                 <select
                   value={sellerType}
                   onChange={(e) => setSellerType(e.target.value)}
                 >
                   <option value="">
-                    {lang === "ar" ? "اختر" : "Select"}
+                    {lang === "ar"
+                      ? "اختر نوع البائع"
+                      : "Select"}
                   </option>
                   <option value="private">
-                    {lang === "ar" ? "شخصي" : "Private"}
+                    {lang === "ar" ? "فرد" : "Private"}
                   </option>
                   <option value="dealership">
                     {lang === "ar" ? "معرض" : "Dealership"}
@@ -2064,11 +2204,7 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
                 </select>
               </div>
               <div className="hz-field">
-                <label>
-                  {lang === "ar"
-                    ? "المسافة (كم)"
-                    : "Mileage (km)"}
-                </label>
+                <label>Mileage (km)</label>
                 <input
                   type="number"
                   value={mileage}
@@ -2076,41 +2212,28 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
                 />
               </div>
               <div className="hz-field">
-                <label>
-                  {lang === "ar" ? "المواصفات" : "Specs"}
-                </label>
+                <label>Specs</label>
                 <input
                   value={specs}
                   onChange={(e) => setSpecs(e.target.value)}
-                  placeholder={
-                    lang === "ar" ? "مثال: GCC" : "e.g. GCC"
-                  }
+                  placeholder="e.g. GCC"
                 />
               </div>
               <div className="hz-field">
-                <label>
-                  {lang === "ar" ? "رقم الهيكل" : "VIN"}
-                </label>
+                <label>VIN</label>
                 <input
                   value={vin}
                   onChange={(e) => setVin(e.target.value)}
-                  placeholder={
-                    lang === "ar"
-                      ? "رقم هيكل المركبة"
-                      : "Vehicle VIN"
-                  }
+                  placeholder="Vehicle VIN"
                 />
               </div>
             </>
           )}
 
-          {/* Property area */}
           {isAnyProperty(category) && (
             <div className="hz-field">
               <label>
-                {lang === "ar"
-                  ? "المساحة (قدم مربع)"
-                  : "Area (sqft)"}
+                {lang === "ar" ? "المساحة (قدم²)" : "Area (sqft)"}
               </label>
               <input
                 type="number"
@@ -2120,56 +2243,38 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
             </div>
           )}
 
-          {/* Images */}
           <div className="hz-field hz-field-full">
-            <label>{S.images}</label>
+            <label>Images</label>
             <input
               type="file"
               multiple
               accept="image/*"
               onChange={onImagesChange}
             />
-            {images && images.length > 0 && (
+            {images && images.length ? (
               <div className="hz-images-count">
-                {images.length} {S.fileSelected}
+                {images.length} file(s) selected
               </div>
-            )}
+            ) : null}
           </div>
 
-          {/* Descriptions */}
           <div className="hz-field hz-field-full">
-            <label>
-              {lang === "ar"
-                ? "الوصف (إنجليزي)"
-                : "Description (EN)"}
-            </label>
+            <label>Description (EN)</label>
             <textarea
               rows={3}
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
-              placeholder={
-                lang === "ar"
-                  ? "تفاصيل الإعلان بالإنجليزية..."
-                  : "Details about your listing..."
-              }
+              placeholder="Details about your listing..."
             />
           </div>
 
           <div className="hz-field hz-field-full">
-            <label>
-              {lang === "ar"
-                ? "الوصف (عربي)"
-                : "Description (AR)"}
-            </label>
+            <label>Description (AR)</label>
             <textarea
               rows={3}
               value={descAr}
               onChange={(e) => setDescAr(e.target.value)}
-              placeholder={
-                lang === "ar"
-                  ? "تفاصيل الإعلان بالعربية..."
-                  : "Listing details in Arabic (optional)..."
-              }
+              placeholder="تفاصيل الإعلان بالعربية..."
             />
           </div>
         </div>
@@ -2177,15 +2282,15 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
         <div className="hz-modal-footer">
           <div className="hz-fee-label">
             {fee.amount
-              ? `${S.postingFee}: $${fee.amount} (${fee.reason})`
-              : S.freeCategory}
+              ? "Posting fee: $" + fee.amount + " (" + fee.reason + ")"
+              : "This category is free to post."}
           </div>
           <div className="hz-modal-actions">
             <button className="hz-secondary" onClick={onClose}>
-              {S.cancel}
+              Cancel
             </button>
             <button className="hz-primary" onClick={handleSubmit}>
-              {S.payPostMock}
+              Pay &amp; Post (mock)
             </button>
           </div>
         </div>
@@ -2200,6 +2305,7 @@ export default function App() {
   const [lang, setLang] = useState("en");
   const [activeTab, setActiveTab] = useState("home");
   const [search, setSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(null);
   const [accountOpen, setAccountOpen] = useState(false);
   const [postOpen, setPostOpen] = useState(false);
@@ -2222,6 +2328,7 @@ export default function App() {
         : "";
     setActiveSub(firstSub);
     setSelectedListing(null);
+    setSearchTerm("");
   }
 
   function handleBackFromCategory() {
@@ -2245,11 +2352,42 @@ export default function App() {
     setSelectedListing(null);
   }
 
+  function handleSearch() {
+    const term = search.trim().toLowerCase();
+    setSearchTerm(term);
+    setActiveCategoryKey(null);
+    setSelectedListing(null);
+    setActiveTab("home");
+  }
+
   const activeCategory =
     activeCategoryKey &&
     CATEGORY_DEFS.find((c) => c.key === activeCategoryKey);
 
   const favListings = listings.filter((l) => favs[l.id]);
+
+  const searchResults = searchTerm
+    ? listings.filter((l) => {
+        const term = searchTerm;
+        const fields = [
+          l.title,
+          l.titleAr,
+          l.desc,
+          l.descAr,
+          l.brand,
+          l.model,
+          l.location,
+          l.locationAr,
+          l.category,
+          l.subcategory,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return fields.includes(term);
+      })
+    : [];
+
   const showHome = !activeCategory && activeTab === "home";
   const showFavs = !activeCategory && activeTab === "favs";
 
@@ -2258,7 +2396,7 @@ export default function App() {
       <Header
         q={search}
         setQ={setSearch}
-        onSearch={() => {}}
+        onSearch={handleSearch}
         lang={lang}
         setLang={setLang}
       />
@@ -2272,7 +2410,7 @@ export default function App() {
           />
         ) : (
           <>
-            {activeCategory && (
+            {activeCategory ? (
               <CategoryPage
                 cat={activeCategory}
                 listings={listings}
@@ -2280,13 +2418,40 @@ export default function App() {
                 toggleFav={toggleFav}
                 onBack={handleBackFromCategory}
                 activeSub={activeSub}
-                setActiveSub={setActiveSub}
                 lang={lang}
                 onOpenListing={(item) => setSelectedListing(item)}
               />
+            ) : null}
+
+            {!activeCategory && searchTerm && (
+              <div className="hz-page">
+                <div className="hz-section-header">
+                  <h3>
+                    {STRINGS[lang].searchResults} "{search}"
+                  </h3>
+                </div>
+                {searchResults.length ? (
+                  <div className="hz-grid">
+                    {searchResults.map((l) => (
+                      <ListingCard
+                        key={l.id}
+                        item={l}
+                        fav={!!favs[l.id]}
+                        onToggleFav={toggleFav}
+                        onOpen={(item) => setSelectedListing(item)}
+                        lang={lang}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="hz-no-results">
+                    {STRINGS[lang].searchNoResults}
+                  </div>
+                )}
+              </div>
             )}
 
-            {showHome && (
+            {showHome && !searchTerm ? (
               <HomeGrid
                 lang={lang}
                 favs={favs}
@@ -2295,9 +2460,9 @@ export default function App() {
                 onOpenCategory={openCategory}
                 onOpenListing={(item) => setSelectedListing(item)}
               />
-            )}
+            ) : null}
 
-            {showFavs && (
+            {showFavs ? (
               <div className="hz-page">
                 <div className="hz-section-header">
                   <h3>{STRINGS[lang].favourites}</h3>
@@ -2315,11 +2480,11 @@ export default function App() {
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
 
-            {activeTab === "account" && user && (
-              <AccountPage user={user} lang={lang} />
-            )}
+            {activeTab === "account" && user ? (
+              <AccountPage user={user} />
+            ) : null}
           </>
         )}
       </main>
@@ -2331,15 +2496,20 @@ export default function App() {
           if (tab !== "post") {
             setActiveCategoryKey(null);
             setSelectedListing(null);
+            if (tab !== "home") {
+              setSearchTerm("");
+            }
           }
         }}
         onPost={handlePostClick}
         onAccount={() => {
-          if (!user) setAccountOpen(true);
-          else {
+          if (!user) {
+            setAccountOpen(true);
+          } else {
             setActiveTab("account");
             setActiveCategoryKey(null);
             setSelectedListing(null);
+            setSearchTerm("");
           }
         }}
         lang={lang}
@@ -2349,7 +2519,6 @@ export default function App() {
         open={accountOpen}
         onClose={() => setAccountOpen(false)}
         setUser={setUser}
-        lang={lang}
       />
 
       <PostDialog
