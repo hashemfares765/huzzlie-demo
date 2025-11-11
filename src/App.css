@@ -615,6 +615,8 @@ body {
 
 /* Range + inputs */
 
+/* Range layout + dual slider */
+
 .hz-range-row {
   display: flex;
   flex-direction: column;
@@ -637,42 +639,88 @@ body {
   font-size: 12px;
 }
 
+/* Slider wrapper */
+
 .hz-range-slider-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 4px;
+  position: relative;
+  width: 100%;
+  padding: 10px 0 4px;
 }
 
-.hz-range-slider-wrap input[type="range"] {
-  width: 100%;
-  margin: 0;
-  -webkit-appearance: none;
-  appearance: none;
+/* Base track */
+
+.hz-range-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
   height: 6px;
+  transform: translateY(-50%);
   border-radius: 999px;
   background-color: #e5e7eb;
-  outline: none;
-  pointer-events: auto;
 }
+
+/* Active selected range */
+
+.hz-range-range {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background-color: #16a34a;
+}
+
+/* Actual range inputs (two stacked, both draggable) */
+
+.hz-range-slider-wrap input[type="range"] {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Hide default tracks */
+
+.hz-range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+.hz-range-slider-wrap input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
+/* Thumbs: big & easy to grab */
 
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 18px;
   height: 18px;
-  border-radius: 999px;
+  border-radius: 50%;
   background-color: #16a34a;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
   cursor: pointer;
 }
-
 .hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
-  border-radius: 999px;
+  border-radius: 50%;
   background-color: #16a34a;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
   cursor: pointer;
 }
+
 
 /* Specs pills */
 
