@@ -613,7 +613,7 @@ body {
   font-size: 11px;
 }
 
-/* Range + dual slider */
+/* Range layout + dual slider – FINAL, TOUCH-FRIENDLY */
 
 .hz-range-row {
   display: flex;
@@ -637,110 +637,100 @@ body {
   font-size: 12px;
 }
 
-/* WRAP */
+/* Wrapper */
 
 .hz-range-slider-wrap {
   position: relative;
   width: 100%;
-  padding: 18px 0 6px;
+  padding: 14px 0 2px;
 }
 
-/* BASE TRACK */
+/* Base track */
 
 .hz-range-track {
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
-  height: 6px;
   transform: translateY(-50%);
+  height: 6px;
   border-radius: 999px;
   background-color: #e5e7eb;
   pointer-events: none;
   z-index: 1;
 }
 
-/* ACTIVE RANGE */
+/* Active selected segment */
 
 .hz-range-range {
   position: absolute;
   top: 50%;
-  height: 6px;
   transform: translateY(-50%);
+  height: 6px;
   border-radius: 999px;
   background-color: #16a34a;
   pointer-events: none;
   z-index: 2;
 }
 
-/* RANGE INPUTS */
+/* Ranges: overlap, BUT only thumbs are interactive (fixes iOS Safari) */
 
 .hz-range-slider-wrap input[type="range"] {
   position: absolute;
-  left: 0;
-  right: 0;
   top: 50%;
-  transform: translateY(-50%);
+  left: 0;
   width: 100%;
+  transform: translateY(-50%);
   margin: 0;
   padding: 0;
   background: transparent;
   border: none;
-  outline: none;
-  z-index: 3;
-  pointer-events: auto;
-  touch-action: pan-x;
   -webkit-appearance: none;
   appearance: none;
+  z-index: 3;
+
+  /* important bits */
+  pointer-events: none;       /* the track itself does NOT eat touches */
 }
 
-/* Hide default track (Chrome/Safari) */
-.hz-range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  background: transparent;
-  border: none;
-}
-
-/* Hide default track (Firefox) */
-.hz-range-slider-wrap input[type="range"]::-moz-range-track {
-  height: 6px;
-  background: transparent;
-  border: none;
-}
-
-/* THUMBS — BIGGER HIT AREA FOR MOBILE */
-
+/* Safari/Chrome thumb */
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 26px;
-  height: 26px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background-color: #16a34a;
-  border: 3px solid #ffffff;
-  box-shadow: 0 0 4px rgba(15, 23, 42, 0.45);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
   cursor: pointer;
-  margin-top: -10px; /* centers thumb on track in Safari */
+
+  pointer-events: auto;       /* ✅ thumb IS draggable */
 }
 
+/* Firefox thumb */
 .hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
-  width: 26px;
-  height: 26px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background-color: #16a34a;
-  border: 3px solid #ffffff;
-  box-shadow: 0 0 4px rgba(15, 23, 42, 0.45);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
   cursor: pointer;
+
+  pointer-events: auto;       /* ✅ thumb IS draggable */
 }
 
-/* SAFARI / IOS TWEAK:
-   Ensures taps near thumb grab it correctly and don't scroll sheet instead.
-*/
-@supports (-webkit-touch-callout: none) {
-  .hz-range-slider-wrap input[type="range"] {
-    touch-action: none;
-  }
+/* Hide native tracks (we draw our own) */
+.hz-range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
 }
+.hz-range-slider-wrap input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
 
 
 /* Specs pills */
