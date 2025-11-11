@@ -613,8 +613,6 @@ body {
   font-size: 11px;
 }
 
-/* Range + inputs */
-
 /* Range layout + dual slider */
 
 .hz-range-row {
@@ -658,9 +656,11 @@ body {
   transform: translateY(-50%);
   border-radius: 999px;
   background-color: #e5e7eb;
+  pointer-events: none;
+  z-index: 1;
 }
 
-/* Active selected range */
+/* Active selected segment */
 
 .hz-range-range {
   position: absolute;
@@ -669,9 +669,15 @@ body {
   transform: translateY(-50%);
   border-radius: 999px;
   background-color: #16a34a;
+  pointer-events: none;
+  z-index: 2;
 }
 
-/* Actual range inputs (two stacked, both draggable) */
+/* Overlapping range inputs:
+   - Only thumbs are interactive
+   - Fixes "tap only, no drag" on mobile because
+     the full-width elements don't eat events over each other.
+*/
 
 .hz-range-slider-wrap input[type="range"] {
   position: absolute;
@@ -682,12 +688,15 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  background: none;
+  background: transparent;
   -webkit-appearance: none;
   appearance: none;
+  z-index: 3;
+  pointer-events: none;   /* <== IMPORTANT */
+  touch-action: none;     /* let slider handle the gesture */
 }
 
-/* Hide default tracks */
+/* Hide native track */
 
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
@@ -698,7 +707,7 @@ body {
   background: transparent;
 }
 
-/* Thumbs: big & easy to grab */
+/* Thumbs: centered, draggable, modern */
 
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -710,7 +719,9 @@ body {
   border: 2px solid #ffffff;
   box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
   cursor: pointer;
+  pointer-events: auto;   /* <== only thumb gets events */
 }
+
 .hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
@@ -719,7 +730,11 @@ body {
   border: 2px solid #ffffff;
   box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
   cursor: pointer;
+  pointer-events: auto;   /* <== only thumb gets events */
 }
+
+
+
 
 
 /* Specs pills */
