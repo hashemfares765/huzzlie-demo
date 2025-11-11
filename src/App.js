@@ -81,7 +81,7 @@ const STRINGS = {
   },
 };
 
-/* LABEL HELPER */
+/* HELPERS */
 
 function getLabel(obj, lang) {
   if (lang === "ar" && obj.labelAr) return obj.labelAr;
@@ -101,11 +101,7 @@ const CATEGORY_DEFS = [
     subcategories: [
       { key: "apartment", labelEn: "Apartments", labelAr: "شقق" },
       { key: "villa", labelEn: "Villas", labelAr: "فلل" },
-      {
-        key: "townhouse",
-        labelEn: "Townhouses",
-        labelAr: "تاون هاوس",
-      },
+      { key: "townhouse", labelEn: "Townhouses", labelAr: "تاون هاوس" },
     ],
   },
   {
@@ -128,16 +124,8 @@ const CATEGORY_DEFS = [
     icon: MapPin,
     isProperty: true,
     subcategories: [
-      {
-        key: "apt",
-        labelEn: "Off-plan Apts",
-        labelAr: "شقق على المخطط",
-      },
-      {
-        key: "villa",
-        labelEn: "Off-plan Villas",
-        labelAr: "فلل على المخطط",
-      },
+      { key: "apt", labelEn: "Off-plan Apts", labelAr: "شقق على المخطط" },
+      { key: "villa", labelEn: "Off-plan Villas", labelAr: "فلل على المخطط" },
     ],
   },
   {
@@ -154,7 +142,7 @@ const CATEGORY_DEFS = [
     ],
   },
   {
-    key: "motors",
+    key: "motors", // internal key stays motors
     labelEn: "Cars",
     labelAr: "سيارات",
     icon: Car,
@@ -404,7 +392,7 @@ const MOCK_LISTINGS = [
   },
 ];
 
-/* HELPERS */
+/* CATEGORY HELPERS */
 
 function isCar(categoryKey, subKey) {
   return categoryKey === "motors" && subKey === "cars";
@@ -444,10 +432,8 @@ function AdBanner({ lang }) {
   const S = STRINGS[lang || "en"];
   return (
     <div className="hz-ad">
-      <div>
-        <div className="hz-ad-label">{S.adSpace}</div>
-        <div className="hz-ad-text">{S.adSpaceDesc}</div>
-      </div>
+      <div className="hz-ad-label">{S.adSpace}</div>
+      <div className="hz-ad-text">{S.adSpaceDesc}</div>
     </div>
   );
 }
@@ -478,7 +464,6 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
     lang === "ar" && item.titleAr ? item.titleAr : item.title;
   const localizedLocation =
     lang === "ar" && item.locationAr ? item.locationAr : item.location;
-
   return (
     <div
       className="hz-card"
@@ -487,13 +472,11 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
       }}
     >
       <div className="hz-card-img-wrap">
-        {item.imgs && item.imgs[0] && (
-          <img
-            src={item.imgs[0]}
-            alt={localizedTitle}
-            className="hz-card-img"
-          />
-        )}
+        <img
+          src={item.imgs && item.imgs[0]}
+          alt={localizedTitle}
+          className="hz-card-img"
+        />
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -610,7 +593,7 @@ function BottomNav({ active, setActive, onPost, onAccount, lang }) {
   );
 }
 
-/* MOTORS FILTERS */
+/* MOTORS FILTERS – fixed */
 
 function MotorsFilters({ lang, filters, setFilters }) {
   const S = STRINGS[lang];
@@ -660,7 +643,9 @@ function MotorsFilters({ lang, filters, setFilters }) {
 
   const priceSummary =
     filters.priceMin || filters.priceMax
-      ? `${filters.priceMin || 0} - ${filters.priceMax || label("Any", "أي")}`
+      ? `${filters.priceMin || 0} - ${
+          filters.priceMax || label("Any", "أي")
+        }`
       : "";
 
   const yearSummary =
@@ -672,12 +657,10 @@ function MotorsFilters({ lang, filters, setFilters }) {
 
   const kmSummary = filters.mileageMax ? `≤ ${filters.mileageMax}` : "";
 
-  /** FIXED SHEET: prevents accidental close while typing/dragging **/
   function Sheet({ children }) {
     if (!activeKey) return null;
 
     const handleBackdropClick = (e) => {
-      // Only close if the actual backdrop is clicked, not any child
       if (e.target === e.currentTarget) {
         closeSheet();
       }
@@ -714,7 +697,6 @@ function MotorsFilters({ lang, filters, setFilters }) {
     <div className="hz-filters">
       <div className="hz-filters-title">{S.carsFilters}</div>
 
-      {/* Chips */}
       <div className="hz-filter-chips-scroll">
         {/* Brand */}
         <button
@@ -770,7 +752,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
-        {/* KM */}
+        {/* Max KM */}
         <button
           className={chipClass("km")}
           onClick={() => openSheet("km")}
@@ -795,7 +777,6 @@ function MotorsFilters({ lang, filters, setFilters }) {
         </button>
       </div>
 
-      {/* Bottom sheet content */}
       <Sheet>
         {/* BRAND */}
         {activeKey === "brand" && (
@@ -837,9 +818,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
               }
             >
               <option value="">{label("Any seller", "أي بائع")}</option>
-              <option value="private">
-                {label("Private", "فرد")}
-              </option>
+              <option value="private">{label("Private", "فرد")}</option>
               <option value="dealership">
                 {label("Dealership", "معرض")}
               </option>
@@ -858,11 +837,10 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   className="hz-input-scroller"
                   value={filters.priceMin ?? ""}
                   onChange={(e) => {
-                    const v = e.target.value === "" ? undefined : Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      priceMin: v,
-                    }));
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
+                    setFilters((f) => ({ ...f, priceMin: v }));
                   }}
                   placeholder={label("Min", "أدنى")}
                 />
@@ -871,18 +849,15 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   className="hz-input-scroller"
                   value={filters.priceMax ?? ""}
                   onChange={(e) => {
-                    const v = e.target.value === "" ? undefined : Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      priceMax: v,
-                    }));
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
+                    setFilters((f) => ({ ...f, priceMax: v }));
                   }}
                   placeholder={label("Max", "أعلى")}
                 />
               </div>
-
               <div className="hz-range-slider-wrap">
-                {/* Min slider */}
                 <input
                   type="range"
                   min="0"
@@ -893,14 +868,10 @@ function MotorsFilters({ lang, filters, setFilters }) {
                     const v = Number(e.target.value);
                     setFilters((f) => {
                       const max = f.priceMax ?? 200000;
-                      return {
-                        ...f,
-                        priceMin: v > max ? max : v,
-                      };
+                      return { ...f, priceMin: v > max ? max : v };
                     });
                   }}
                 />
-                {/* Max slider */}
                 <input
                   type="range"
                   min="0"
@@ -911,10 +882,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
                     const v = Number(e.target.value);
                     setFilters((f) => {
                       const min = f.priceMin ?? 0;
-                      return {
-                        ...f,
-                        priceMax: v < min ? min : v,
-                      };
+                      return { ...f, priceMax: v < min ? min : v };
                     });
                   }}
                 />
@@ -934,7 +902,9 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   className="hz-input-scroller"
                   value={filters.yearMin ?? ""}
                   onChange={(e) => {
-                    const v = e.target.value === "" ? undefined : Number(e.target.value);
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
                     setFilters((f) => ({ ...f, yearMin: v }));
                   }}
                   placeholder={label("From", "من")}
@@ -944,13 +914,14 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   className="hz-input-scroller"
                   value={filters.yearMax ?? ""}
                   onChange={(e) => {
-                    const v = e.target.value === "" ? undefined : Number(e.target.value);
+                    const v = e.target.value
+                      ? Number(e.target.value)
+                      : undefined;
                     setFilters((f) => ({ ...f, yearMax: v }));
                   }}
                   placeholder={label("To", "إلى")}
                 />
               </div>
-
               <div className="hz-range-slider-wrap">
                 <input
                   type="range"
@@ -960,11 +931,9 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   onChange={(e) => {
                     const v = Number(e.target.value);
                     setFilters((f) => {
-                      const max = f.yearMax ?? new Date().getFullYear();
-                      return {
-                        ...f,
-                        yearMin: v > max ? max : v,
-                      };
+                      const max =
+                        f.yearMax ?? new Date().getFullYear();
+                      return { ...f, yearMin: v > max ? max : v };
                     });
                   }}
                 />
@@ -977,10 +946,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
                     const v = Number(e.target.value);
                     setFilters((f) => {
                       const min = f.yearMin ?? 1980;
-                      return {
-                        ...f,
-                        yearMax: v < min ? min : v,
-                      };
+                      return { ...f, yearMax: v < min ? min : v };
                     });
                   }}
                 />
@@ -999,13 +965,15 @@ function MotorsFilters({ lang, filters, setFilters }) {
                 className="hz-input-scroller"
                 value={filters.mileageMax ?? ""}
                 onChange={(e) => {
-                  const v = e.target.value === "" ? undefined : Number(e.target.value);
-                  setFilters((f) => ({
-                    ...f,
-                    mileageMax: v,
-                  }));
+                  const v = e.target.value
+                    ? Number(e.target.value)
+                    : undefined;
+                  setFilters((f) => ({ ...f, mileageMax: v }));
                 }}
-                placeholder={label("Max kilometers", "أقصى عدد كيلومترات")}
+                placeholder={label(
+                  "Max kilometers",
+                  "أقصى عدد كيلومترات"
+                )}
               />
               <div className="hz-range-slider-wrap">
                 <input
@@ -1016,10 +984,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   value={filters.mileageMax ?? 500000}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      mileageMax: v,
-                    }));
+                    setFilters((f) => ({ ...f, mileageMax: v }));
                   }}
                 />
               </div>
@@ -1037,7 +1002,9 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   key={s}
                   className={
                     "hz-spec-pill " +
-                    (filters.specs === s ? "hz-spec-pill-active" : "")
+                    (filters.specs === s
+                      ? "hz-spec-pill-active"
+                      : "")
                   }
                   onClick={() =>
                     setFilters((f) => ({
@@ -1046,7 +1013,9 @@ function MotorsFilters({ lang, filters, setFilters }) {
                     }))
                   }
                 >
-                  {s === "Japan" ? label("Japan", "ياباني") : s}
+                  {s === "Japan"
+                    ? label("Japan", "ياباني")
+                    : s}
                 </button>
               ))}
             </div>
@@ -1057,7 +1026,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
   );
 }
 
-/* PROPERTY FILTERS */
+/* PROPERTY FILTERS – fixed */
 
 function PropertyFilters({ filters, setFilters, lang }) {
   const S = STRINGS[lang];
@@ -1183,8 +1152,9 @@ function PropertyFilters({ filters, setFilters, lang }) {
               className="hz-input-scroller"
               value={filters.priceMin ?? ""}
               onChange={(e) => {
-                const n =
-                  e.target.value === "" ? undefined : Number(e.target.value);
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
                 setFilters((f) => ({ ...f, priceMin: n }));
               }}
               placeholder={isAr ? "أدنى سعر" : "Min price"}
@@ -1202,8 +1172,9 @@ function PropertyFilters({ filters, setFilters, lang }) {
               className="hz-input-scroller"
               value={filters.priceMax ?? ""}
               onChange={(e) => {
-                const n =
-                  e.target.value === "" ? undefined : Number(e.target.value);
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
                 setFilters((f) => ({ ...f, priceMax: n }));
               }}
               placeholder={isAr ? "أعلى سعر" : "Max price"}
@@ -1223,8 +1194,9 @@ function PropertyFilters({ filters, setFilters, lang }) {
               className="hz-input-scroller"
               value={filters.areaMin ?? ""}
               onChange={(e) => {
-                const n =
-                  e.target.value === "" ? undefined : Number(e.target.value);
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
                 setFilters((f) => ({ ...f, areaMin: n }));
               }}
               placeholder={isAr ? "أقل مساحة" : "Min sqft"}
@@ -1244,8 +1216,9 @@ function PropertyFilters({ filters, setFilters, lang }) {
               className="hz-input-scroller"
               value={filters.areaMax ?? ""}
               onChange={(e) => {
-                const n =
-                  e.target.value === "" ? undefined : Number(e.target.value);
+                const n = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
                 setFilters((f) => ({ ...f, areaMax: n }));
               }}
               placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
@@ -1282,24 +1255,31 @@ function CategoryPage({
 
     if (isMotors) {
       if (l.subcategory !== "cars") return false;
-
       if (filters.brand && l.brand !== filters.brand) return false;
       if (filters.sellerType && l.sellerType !== filters.sellerType)
         return false;
-      if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
-      if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
-      if (filters.yearMin && (l.year || 0) < filters.yearMin) return false;
-      if (filters.yearMax && (l.year || 0) > filters.yearMax) return false;
+      if (filters.priceMin && (l.price || 0) < filters.priceMin)
+        return false;
+      if (filters.priceMax && (l.price || 0) > filters.priceMax)
+        return false;
+      if (filters.yearMin && (l.year || 0) < filters.yearMin)
+        return false;
+      if (filters.yearMax && (l.year || 0) > filters.yearMax)
+        return false;
       if (filters.mileageMax && (l.mileage || 0) > filters.mileageMax)
         return false;
       if (filters.specs && l.specs !== filters.specs) return false;
     }
 
     if (isProp) {
-      if (filters.priceMin && (l.price || 0) < filters.priceMin) return false;
-      if (filters.priceMax && (l.price || 0) > filters.priceMax) return false;
-      if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin) return false;
-      if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax) return false;
+      if (filters.priceMin && (l.price || 0) < filters.priceMin)
+        return false;
+      if (filters.priceMax && (l.price || 0) > filters.priceMax)
+        return false;
+      if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin)
+        return false;
+      if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax)
+        return false;
     }
 
     return true;
@@ -1427,8 +1407,8 @@ function PromoCarousel() {
       <div
         className="hz-promo-track"
         style={{
-          transform: "translateX(-" + active * 100 + "%)",
-          width: PROMO_ADS.length * 100 + "%",
+          transform: `translateX(-${active * 100}%)`,
+          width: `${PROMO_ADS.length * 100}%`,
         }}
       >
         {PROMO_ADS.map((ad) => (
@@ -2148,7 +2128,9 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
                   onChange={(e) => setSellerType(e.target.value)}
                 >
                   <option value="">
-                    {lang === "ar" ? "اختر نوع البائع" : "Select"}
+                    {lang === "ar"
+                      ? "اختر نوع البائع"
+                      : "Select"}
                   </option>
                   <option value="private">
                     {lang === "ar" ? "فرد" : "Private"}
@@ -2447,13 +2429,19 @@ export default function App() {
       <BottomNav
         active={activeTab}
         setActive={(tab) => {
+          if (tab === "post") {
+            handlePostClick();
+            return;
+          }
           setActiveTab(tab);
-          if (tab !== "post") {
+          if (tab !== "home") {
             setActiveCategoryKey(null);
             setSelectedListing(null);
-            if (tab !== "home") {
-              setSearchTerm("");
-            }
+            setSearchTerm("");
+          }
+          if (tab === "home") {
+            setActiveCategoryKey(null);
+            setSelectedListing(null);
           }
         }}
         onPost={handlePostClick}

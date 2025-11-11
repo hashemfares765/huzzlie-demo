@@ -1,4 +1,3 @@
-/* Reset + safe area */
 html,
 body,
 #root {
@@ -8,7 +7,6 @@ body,
   background-color: #f6fdf8;
 }
 
-/* Prevent horizontal scroll */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     -system-ui, sans-serif;
@@ -16,7 +14,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Root wrapper */
 .hz-root {
   min-height: 100vh;
   background-color: #f6fdf8;
@@ -25,6 +22,7 @@ body {
 }
 
 /* Header */
+
 .hz-header {
   position: sticky;
   top: 0;
@@ -35,7 +33,6 @@ body {
   padding-top: env(safe-area-inset-top);
 }
 
-/* Header inner */
 .hz-header-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -46,6 +43,7 @@ body {
 }
 
 /* Logo */
+
 .hz-logo-dot {
   width: 32px;
   height: 32px;
@@ -61,6 +59,7 @@ body {
 }
 
 /* Search bar */
+
 .hz-search-wrap {
   flex: 1;
   display: flex;
@@ -99,6 +98,7 @@ body {
 }
 
 /* Header actions */
+
 .hz-header-actions {
   display: flex;
   gap: 6px;
@@ -119,18 +119,19 @@ body {
 }
 
 /* Main */
+
 .hz-main {
   max-width: 1100px;
   margin: 0 auto;
   padding: 10px 16px 80px;
 }
 
-/* Page */
 .hz-page {
   width: 100%;
 }
 
 /* Page header */
+
 .hz-page-header {
   display: flex;
   align-items: center;
@@ -157,6 +158,7 @@ body {
 }
 
 /* Ad banner */
+
 .hz-ad {
   margin: 4px 0 10px;
   padding: 8px 12px;
@@ -177,6 +179,7 @@ body {
 }
 
 /* Category grid */
+
 .hz-cat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -210,6 +213,7 @@ body {
 .hz-cat-arrow {
   color: #111827;
 }
+
 .hz-fee-note {
   margin: 4px 0 10px;
   font-size: 11px;
@@ -305,6 +309,7 @@ body {
 }
 
 /* Section header */
+
 .hz-section-header {
   margin-top: 6px;
   margin-bottom: 6px;
@@ -327,6 +332,7 @@ body {
 }
 
 /* Grid */
+
 .hz-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -339,6 +345,7 @@ body {
 }
 
 /* Cards */
+
 .hz-card {
   background-color: #ffffff;
   border-radius: 18px;
@@ -453,6 +460,7 @@ body {
 }
 
 /* Filters wrapper */
+
 .hz-filters {
   margin-top: 8px;
   margin-bottom: 6px;
@@ -468,7 +476,7 @@ body {
   margin-bottom: 4px;
 }
 
-/* Horizontal chips */
+/* Chips */
 
 .hz-filter-chips-scroll {
   display: flex;
@@ -503,13 +511,20 @@ body {
   color: #ffffff;
   border-color: #16a34a;
 }
-
-/* Active panel */
-.hz-filter-active-panel {
-  margin-top: 4px;
-  display: flex;
-  flex-direction: column;
+.hz-filter-chip-label {
+  display: inline-flex;
+  align-items: center;
   gap: 4px;
+}
+.hz-filter-chip-arrow {
+  width: 10px;
+  height: 10px;
+  opacity: 0.6;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.hz-filter-chip-active .hz-filter-chip-arrow {
+  transform: rotate(180deg);
+  opacity: 1;
 }
 
 /* Generic fields */
@@ -535,17 +550,155 @@ body {
   color: #111827;
 }
 
-/* Inline fields for ranges */
+/* Bottom sheet (single, final version) */
 
-.hz-inline-fields {
+.hz-filter-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.35);
   display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 80;
+}
+
+.hz-filter-sheet {
+  width: 100%;
+  max-width: 640px;
+  max-height: 80vh;
+  background-color: #ffffff;
+  border-radius: 18px 18px 0 0;
+  padding: 16px 18px 24px;
+  box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.16);
+  animation: hz-filter-sheet-in 0.22s ease-out;
+  overflow-y: auto;
+}
+
+@keyframes hz-filter-sheet-in {
+  from {
+    transform: translateY(22px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.hz-filter-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.hz-filter-sheet-done {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: none;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.hz-filter-sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 11px;
+}
+
+/* Range + inputs */
+
+.hz-range-row {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
 }
-.hz-inline-fields input {
+
+.hz-range-inputs {
+  display: flex;
+  gap: 8px;
+}
+
+.hz-range-inputs input {
   flex: 1;
 }
 
-/* Brand list (optional) */
+.hz-input-scroller {
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+}
+
+.hz-range-slider-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.hz-range-slider-wrap input[type="range"] {
+  width: 100%;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background-color: #e5e7eb;
+  outline: none;
+  pointer-events: auto;
+}
+
+.hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background-color: #16a34a;
+  cursor: pointer;
+}
+
+.hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background-color: #16a34a;
+  cursor: pointer;
+}
+
+/* Specs pills */
+
+.hz-specs-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.hz-spec-pill {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  font-size: 10px;
+  cursor: pointer;
+  color: #374151;
+}
+.hz-spec-pill-active {
+  background-color: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+
+/* Brand list (if used later) */
+
 .hz-brand-list-title {
   font-size: 12px;
   font-weight: 600;
@@ -844,7 +997,7 @@ body {
   gap: 8px;
 }
 
-/* Account page */
+/* Account */
 
 .hz-account {
   margin-top: 6px;
@@ -954,262 +1107,3 @@ body {
   font-size: 12px;
   color: #6b7280;
 }
-/* --- Filter Bottom Sheet (for chips interaction) --- */
-
-.hz-filter-sheet-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.35);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 80;
-}
-
-.hz-filter-sheet {
-  width: 100%;
-  max-width: 640px;
-  background-color: #ffffff;
-  border-radius: 18px 18px 0 0;
-  padding: 10px 14px 14px;
-  box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.14);
-  animation: hz-filter-sheet-in 0.22s ease-out;
-}
-
-@keyframes hz-filter-sheet-in {
-  from {
-    transform: translateY(18px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.hz-filter-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.hz-filter-sheet-done {
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: none;
-  background-color: #16a34a;
-  color: #ffffff;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-.hz-filter-sheet-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 11px;
-}
-
-/* Make number inputs feel like scroll pickers on mobile */
-.hz-input-scroller {
-  padding: 6px 8px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  font-size: 12px;
-}
-
-/* Inline fields for ranges */
-.hz-inline-fields {
-  display: flex;
-  gap: 8px;
-}
-
-.hz-inline-fields input {
-  flex: 1;
-}
-
-/* Ensure cat arrows are dark, not blue */
-.hz-cat-arrow {
-  color: #111827;
-}
-/* --- Filter Bottom Sheet + Chip Arrows + Range look --- */
-
-.hz-filter-sheet-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.35);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 80;
-}
-
-.hz-filter-sheet {
-  width: 100%;
-  max-width: 640px;
-  max-height: 80vh;
-  background-color: #ffffff;
-  border-radius: 18px 18px 0 0;
-  padding: 16px 18px 24px;
-  box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.16);
-  animation: hz-filter-sheet-in 0.22s ease-out;
-  overflow-y: auto;
-}
-
-@keyframes hz-filter-sheet-in {
-  from {
-    transform: translateY(22px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.hz-filter-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.hz-filter-sheet-done {
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: none;
-  background-color: #16a34a;
-  color: #ffffff;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.hz-filter-sheet-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 11px;
-}
-
-/* Chip label + arrow */
-
-.hz-filter-chip-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.hz-filter-chip-arrow {
-  width: 10px;
-  height: 10px;
-  opacity: 0.6;
-  transition: transform 0.18s ease, opacity 0.18s ease;
-}
-
-.hz-filter-chip-active .hz-filter-chip-arrow {
-  transform: rotate(180deg);
-  opacity: 1;
-}
-
-/* Range layout */
-
-.hz-range-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.hz-range-inputs {
-  display: flex;
-  gap: 8px;
-}
-
-.hz-range-inputs input {
-  flex: 1;
-}
-
-/* Number inputs */
-
-.hz-input-scroller {
-  padding: 6px 8px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  font-size: 12px;
-}
-
-/* Smooth sliders (easy to drag) */
-
-.hz-range-slider-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 4px;
-}
-
-.hz-range-slider-wrap input[type="range"] {
-  width: 100%;
-  margin: 0;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 6px;
-  border-radius: 999px;
-  background-color: #e5e7eb;
-  outline: none;
-  touch-action: none;       /* ✅ full horizontal drag freedom */
-  pointer-events: auto;     /* ✅ ensures it actually grabs touch events */
-}
-
-
-.hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background-color: #16a34a;
-  cursor: pointer;
-}
-
-.hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background-color: #16a34a;
-  cursor: pointer;
-}
-
-/* Specs pills */
-
-.hz-specs-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.hz-spec-pill {
-  padding: 5px 10px;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-  font-size: 10px;
-  cursor: pointer;
-  color: #374151;
-}
-
-.hz-spec-pill-active {
-  background-color: #16a34a;
-  color: #ffffff;
-  border-color: #16a34a;
-}
-
-
