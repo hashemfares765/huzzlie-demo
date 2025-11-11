@@ -677,10 +677,15 @@ function MotorsFilters({ lang, filters, setFilters }) {
     if (!activeKey) return null;
     return (
       <div className="hz-filter-sheet-backdrop" onClick={closeSheet}>
-        <div
-          className="hz-filter-sheet"
-          onClick={(e) => e.stopPropagation()}
-        >
+              <div
+        className="hz-filter-sheet"
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
+
+
           <div className="hz-filter-sheet-header">
             <span>{title}</span>
             <button
@@ -1115,10 +1120,15 @@ function PropertyFilters({ filters, setFilters, lang }) {
     if (!activeKey) return null;
     return (
       <div className="hz-filter-sheet-backdrop" onClick={closeSheet}>
-        <div
-          className="hz-filter-sheet"
-          onClick={(e) => e.stopPropagation()}
-        >
+              <div
+        className="hz-filter-sheet"
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
+
+
           <div className="hz-filter-sheet-header">
             <span>{title}</span>
             <button
