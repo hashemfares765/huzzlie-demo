@@ -658,13 +658,6 @@ function MotorsFilters({ lang, filters, setFilters }) {
     specs: label("Specs", "المواصفات"),
   };
 
-  function chipClass(key) {
-    return (
-      "hz-filter-chip " +
-      (activeKey === key ? "hz-filter-chip-active" : "")
-    );
-  }
-
   function openSheet(key) {
     setActiveKey(key);
   }
@@ -673,35 +666,14 @@ function MotorsFilters({ lang, filters, setFilters }) {
     setActiveKey(null);
   }
 
-  function Sheet({ children, title }) {
-    if (!activeKey) return null;
+  function chipClass(key) {
     return (
-      <div className="hz-filter-sheet-backdrop" onClick={closeSheet}>
-              <div
-        className="hz-filter-sheet"
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-      >
-
-
-          <div className="hz-filter-sheet-header">
-            <span>{title}</span>
-            <button
-              className="hz-filter-sheet-done"
-              onClick={closeSheet}
-            >
-              {isAr ? "تم" : "Done"}
-            </button>
-          </div>
-          <div className="hz-filter-sheet-body">{children}</div>
-        </div>
-      </div>
+      "hz-filter-chip " +
+      (activeKey === key ? "hz-filter-chip-active" : "")
     );
   }
 
-  // dynamic title for sheet
+  // titles for sheet
   const sheetTitle =
     activeKey === "brand"
       ? labels.brand
@@ -717,11 +689,11 @@ function MotorsFilters({ lang, filters, setFilters }) {
       ? labels.specs
       : "";
 
-  // quick summaries for chips
+  // chip summaries
   const priceSummary =
     filters.priceMin || filters.priceMax
       ? `${filters.priceMin || 0} - ${
-          filters.priceMax ? filters.priceMax : label("Any", "أي")
+          filters.priceMax || label("Any", "أي")
         }`
       : "";
 
@@ -736,12 +708,42 @@ function MotorsFilters({ lang, filters, setFilters }) {
     ? `≤ ${filters.mileageMax}`
     : "";
 
+  // Reusable bottom sheet
+  function Sheet({ children }) {
+    if (!activeKey) return null;
+    return (
+      <div
+        className="hz-filter-sheet-backdrop"
+        onClick={closeSheet}
+      >
+        <div
+          className="hz-filter-sheet"
+          onClick={(e) => e.stopPropagation()} // keep clicks inside
+        >
+          <div className="hz-filter-sheet-header">
+            <span>{sheetTitle}</span>
+            <button
+              className="hz-filter-sheet-done"
+              onClick={closeSheet}
+            >
+              {isAr ? "تم" : "Done"}
+            </button>
+          </div>
+          <div className="hz-filter-sheet-body">
+            {children}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="hz-filters">
       <div className="hz-filters-title">{S.carsFilters}</div>
 
-      {/* Horizontal filter chips with chevrons */}
+      {/* Horizontal scrollable chips */}
       <div className="hz-filter-chips-scroll">
+        {/* Brand */}
         <button
           className={chipClass("brand")}
           onClick={() => openSheet("brand")}
@@ -753,6 +755,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Seller */}
         <button
           className={chipClass("sellerType")}
           onClick={() => openSheet("sellerType")}
@@ -770,6 +773,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Price */}
         <button
           className={chipClass("price")}
           onClick={() => openSheet("price")}
@@ -781,6 +785,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Year */}
         <button
           className={chipClass("year")}
           onClick={() => openSheet("year")}
@@ -792,6 +797,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Max KM */}
         <button
           className={chipClass("km")}
           onClick={() => openSheet("km")}
@@ -803,6 +809,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Specs */}
         <button
           className={chipClass("specs")}
           onClick={() => openSheet("specs")}
@@ -815,8 +822,8 @@ function MotorsFilters({ lang, filters, setFilters }) {
         </button>
       </div>
 
-      {/* Bottom sheet body per filter */}
-      <Sheet title={sheetTitle}>
+      {/* Bottom sheet content */}
+      <Sheet>
         {/* BRAND */}
         {activeKey === "brand" && (
           <div className="hz-field">
@@ -870,7 +877,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </div>
         )}
 
-        {/* PRICE RANGE (min+max + dual slider style) */}
+        {/* PRICE: min+max + smooth sliders */}
         {activeKey === "price" && (
           <div className="hz-field">
             <label>{labels.price}</label>
@@ -907,37 +914,40 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   placeholder={label("Max", "أعلى")}
                 />
               </div>
+
               <div className="hz-range-slider-wrap">
                 <input
                   type="range"
                   min="0"
                   max="200000"
+                  step="1000"
                   value={filters.priceMin || 0}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      priceMin:
-                        f.priceMax && v > f.priceMax
-                          ? f.priceMax
-                          : v,
-                    }));
+                    setFilters((f) => {
+                      const max = f.priceMax || 200000;
+                      return {
+                        ...f,
+                        priceMin: v > max ? max : v,
+                      };
+                    });
                   }}
                 />
                 <input
                   type="range"
                   min="0"
                   max="200000"
+                  step="1000"
                   value={filters.priceMax || 200000}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      priceMax:
-                        f.priceMin && v < f.priceMin
-                          ? f.priceMin
-                          : v,
-                    }));
+                    setFilters((f) => {
+                      const min = f.priceMin || 0;
+                      return {
+                        ...f,
+                        priceMax: v < min ? min : v,
+                      };
+                    });
                   }}
                 />
               </div>
@@ -945,7 +955,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </div>
         )}
 
-        {/* YEAR RANGE */}
+        {/* YEAR: min+max + sliders */}
         {activeKey === "year" && (
           <div className="hz-field">
             <label>{labels.year}</label>
@@ -976,6 +986,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   placeholder={label("To", "إلى")}
                 />
               </div>
+
               <div className="hz-range-slider-wrap">
                 <input
                   type="range"
@@ -984,13 +995,14 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   value={filters.yearMin || 1980}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      yearMin:
-                        f.yearMax && v > f.yearMax
-                          ? f.yearMax
-                          : v,
-                    }));
+                    setFilters((f) => {
+                      const max =
+                        f.yearMax || new Date().getFullYear();
+                      return {
+                        ...f,
+                        yearMin: v > max ? max : v,
+                      };
+                    });
                   }}
                 />
                 <input
@@ -1003,13 +1015,13 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   }
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      yearMax:
-                        f.yearMin && v < f.yearMin
-                          ? f.yearMin
-                          : v,
-                    }));
+                    setFilters((f) => {
+                      const min = f.yearMin || 1980;
+                      return {
+                        ...f,
+                        yearMax: v < min ? min : v,
+                      };
+                    });
                   }}
                 />
               </div>
@@ -1045,6 +1057,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
                   type="range"
                   min="0"
                   max="500000"
+                  step="1000"
                   value={filters.mileageMax || 500000}
                   onChange={(e) => {
                     const v = Number(e.target.value);
@@ -1059,7 +1072,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </div>
         )}
 
-        {/* SPECS OPTIONS */}
+        {/* SPECS (tap options) */}
         {activeKey === "specs" && (
           <div className="hz-field">
             <label>{labels.specs}</label>
@@ -1092,6 +1105,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
     </div>
   );
 }
+
 
 
 /* PROPERTY FILTERS */

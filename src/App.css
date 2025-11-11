@@ -1052,13 +1052,13 @@ body {
 .hz-filter-sheet {
   width: 100%;
   max-width: 640px;
-  max-height: 80vh;              /* taller, like Dubizzle */
+  max-height: 80vh;
   background-color: #ffffff;
   border-radius: 18px 18px 0 0;
-  padding: 16px 18px 24px;       /* comfy padding */
+  padding: 16px 18px 24px;
   box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.16);
   animation: hz-filter-sheet-in 0.22s ease-out;
-  overflow-y: auto;              /* scroll if content is tall */
+  overflow-y: auto;
 }
 
 @keyframes hz-filter-sheet-in {
@@ -1100,7 +1100,7 @@ body {
   font-size: 11px;
 }
 
-/* Chip label with arrow */
+/* Chip label + arrow */
 
 .hz-filter-chip-label {
   display: inline-flex;
@@ -1120,7 +1120,7 @@ body {
   opacity: 1;
 }
 
-/* Range-style layout */
+/* Range layout */
 
 .hz-range-row {
   display: flex;
@@ -1137,6 +1137,8 @@ body {
   flex: 1;
 }
 
+/* Number inputs */
+
 .hz-input-scroller {
   padding: 6px 8px;
   border-radius: 10px;
@@ -1144,16 +1146,15 @@ body {
   font-size: 12px;
 }
 
-/* Normal responsive sliders (no weird pointer-events) */
+/* Smooth sliders (easy to drag) */
 
 .hz-range-slider-wrap {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-top: 6px;
+  gap: 4px;
+  padding-top: 4px;
 }
 
-/* Smooth, easy-to-drag sliders */
 .hz-range-slider-wrap input[type="range"] {
   width: 100%;
   margin: 0;
@@ -1163,7 +1164,7 @@ body {
   border-radius: 999px;
   background-color: #e5e7eb;
   outline: none;
-  touch-action: pan-y; /* allows horizontal dragging nicely on mobile */
+  touch-action: pan-y;
 }
 
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
@@ -1183,7 +1184,6 @@ body {
   background-color: #16a34a;
   cursor: pointer;
 }
-
 
 /* Specs pills */
 
@@ -1209,4 +1209,5 @@ body {
   color: #ffffff;
   border-color: #16a34a;
 }
+
 
