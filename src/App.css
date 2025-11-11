@@ -1164,8 +1164,10 @@ body {
   border-radius: 999px;
   background-color: #e5e7eb;
   outline: none;
-  touch-action: pan-y;
+  touch-action: none;       /* ✅ full horizontal drag freedom */
+  pointer-events: auto;     /* ✅ ensures it actually grabs touch events */
 }
+
 
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
