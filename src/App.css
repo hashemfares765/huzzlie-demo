@@ -550,7 +550,7 @@ body {
   color: #111827;
 }
 
-/* Bottom sheet (single, final version) */
+/* Bottom sheet */
 
 .hz-filter-sheet-backdrop {
   position: fixed;
@@ -559,7 +559,7 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  z-index: 80;
+  z-index: 999; /* high to be above everything */
 }
 
 .hz-filter-sheet {
@@ -613,7 +613,7 @@ body {
   font-size: 11px;
 }
 
-/* Range layout + dual slider */
+/* Range + dual slider */
 
 .hz-range-row {
   display: flex;
@@ -637,15 +637,15 @@ body {
   font-size: 12px;
 }
 
-/* Slider wrapper */
+/* WRAP */
 
 .hz-range-slider-wrap {
   position: relative;
   width: 100%;
-  padding: 10px 0 4px;
+  padding: 18px 0 6px;
 }
 
-/* Base track */
+/* BASE TRACK */
 
 .hz-range-track {
   position: absolute;
@@ -660,7 +660,7 @@ body {
   z-index: 1;
 }
 
-/* Active selected segment */
+/* ACTIVE RANGE */
 
 .hz-range-range {
   position: absolute;
@@ -673,11 +673,7 @@ body {
   z-index: 2;
 }
 
-/* Overlapping range inputs:
-   - Only thumbs are interactive
-   - Fixes "tap only, no drag" on mobile because
-     the full-width elements don't eat events over each other.
-*/
+/* RANGE INPUTS */
 
 .hz-range-slider-wrap input[type="range"] {
   position: absolute;
@@ -689,52 +685,62 @@ body {
   margin: 0;
   padding: 0;
   background: transparent;
+  border: none;
+  outline: none;
+  z-index: 3;
+  pointer-events: auto;
+  touch-action: pan-x;
   -webkit-appearance: none;
   appearance: none;
-  z-index: 3;
-  pointer-events: none;   /* <== IMPORTANT */
-  touch-action: none;     /* let slider handle the gesture */
 }
 
-/* Hide native track */
-
+/* Hide default track (Chrome/Safari) */
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
   background: transparent;
+  border: none;
 }
+
+/* Hide default track (Firefox) */
 .hz-range-slider-wrap input[type="range"]::-moz-range-track {
   height: 6px;
   background: transparent;
+  border: none;
 }
 
-/* Thumbs: centered, draggable, modern */
+/* THUMBS — BIGGER HIT AREA FOR MOBILE */
 
 .hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background-color: #16a34a;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.45);
   cursor: pointer;
-  pointer-events: auto;   /* <== only thumb gets events */
+  margin-top: -10px; /* centers thumb on track in Safari */
 }
 
 .hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background-color: #16a34a;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.45);
   cursor: pointer;
-  pointer-events: auto;   /* <== only thumb gets events */
 }
 
-
-
+/* SAFARI / IOS TWEAK:
+   Ensures taps near thumb grab it correctly and don't scroll sheet instead.
+*/
+@supports (-webkit-touch-callout: none) {
+  .hz-range-slider-wrap input[type="range"] {
+    touch-action: none;
+  }
+}
 
 
 /* Specs pills */

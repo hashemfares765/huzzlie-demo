@@ -142,7 +142,7 @@ const CATEGORY_DEFS = [
     ],
   },
   {
-    key: "motors", // internal key stays motors
+    key: "motors",
     labelEn: "Cars",
     labelAr: "سيارات",
     icon: Car,
@@ -392,7 +392,7 @@ const MOCK_LISTINGS = [
   },
 ];
 
-/* CATEGORY HELPERS */
+/* BASIC HELPERS */
 
 function isCar(categoryKey, subKey) {
   return categoryKey === "motors" && subKey === "cars";
@@ -426,7 +426,7 @@ function validateCarListing(listing) {
   return required.every((k) => !!listing[k]);
 }
 
-/* BASIC COMPONENTS */
+/* COMPONENTS */
 
 function AdBanner({ lang }) {
   const S = STRINGS[lang || "en"];
@@ -497,7 +497,8 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
         </div>
         <div className="hz-card-price-row">
           <span className="hz-price">
-            {item.currency} {item.price != null ? item.price.toLocaleString() : ""}
+            {item.currency}{" "}
+            {item.price != null ? item.price.toLocaleString() : ""}
           </span>
           <span className="hz-loc">
             <MapPin size={12} />
@@ -589,821 +590,6 @@ function BottomNav({ active, setActive, onPost, onAccount, lang }) {
       <Item id="favs" icon={Heart} label={S.favourites} />
       <Item id="post" icon={PlusCircle} label={S.placeListing} onClick={onPost} />
       <Item id="account" icon={User} label={S.account} onClick={onAccount} />
-    </div>
-  );
-}
-
-/* MOTORS FILTERS – fixed */
-
-/* MOTORS FILTERS – fixed: solid bottom sheet + real dual sliders */
-
-/* MOTORS FILTERS – final fixed: no random close, draggable sliders */
-
-/* MOTORS FILTERS – final */
-
-function MotorsFilters({ lang, filters, setFilters }) {
-  const S = STRINGS[lang];
-  const [activeKey, setActiveKey] = useState(null);
-  const isAr = lang === "ar";
-  const t = (en, ar) => (isAr ? ar : en);
-
-  const LABELS = {
-    brand: t("Brand", "الماركة"),
-    sellerType: t("Seller", "البائع"),
-    price: t("Price", "السعر"),
-    year: t("Year", "السنة"),
-    km: t("Max KM", "أقصى كم"),
-    specs: t("Specs", "المواصفات"),
-  };
-
-  const PRICE_MIN = 0;
-  const PRICE_MAX = 200000;
-  const YEAR_MIN = 1980;
-  const YEAR_MAX = new Date().getFullYear();
-  const KM_MIN = 0;
-  const KM_MAX = 500000;
-
-  // Normalized values (stable, controlled)
-  const priceMin = filters.priceMin ?? PRICE_MIN;
-  const priceMax = filters.priceMax ?? PRICE_MAX;
-  const yearMin = filters.yearMin ?? YEAR_MIN;
-  const yearMax = filters.yearMax ?? YEAR_MAX;
-  const kmMax = filters.mileageMax ?? KM_MAX;
-
-  // Chip summaries
-  const priceSummary =
-    priceMin !== PRICE_MIN || priceMax !== PRICE_MAX
-      ? `${priceMin} - ${priceMax === PRICE_MAX ? t("Any", "أي") : priceMax}`
-      : "";
-
-  const yearSummary =
-    yearMin !== YEAR_MIN || yearMax !== YEAR_MAX
-      ? `${yearMin}${yearMax !== YEAR_MAX ? " - " + yearMax : "+"}`
-      : "";
-
-  const kmSummary = kmMax !== KM_MAX ? `≤ ${kmMax.toLocaleString()}` : "";
-
-  // Active sheet title
-  const sheetTitle =
-    activeKey === "brand"
-      ? LABELS.brand
-      : activeKey === "sellerType"
-      ? LABELS.sellerType
-      : activeKey === "price"
-      ? LABELS.price
-      : activeKey === "year"
-      ? LABELS.year
-      : activeKey === "km"
-      ? LABELS.km
-      : activeKey === "specs"
-      ? LABELS.specs
-      : "";
-
-  const chipClass = (key) =>
-    "hz-filter-chip " +
-    (activeKey === key ? "hz-filter-chip-active" : "");
-
-  const openSheet = (key) => setActiveKey(key);
-  const closeSheet = () => setActiveKey(null);
-
-  // Slider fill positions
-  const priceLeft = (priceMin / PRICE_MAX) * 100;
-  const priceRight = 100 - (priceMax / PRICE_MAX) * 100;
-
-  const yearLeft =
-    ((yearMin - YEAR_MIN) / (YEAR_MAX - YEAR_MIN)) * 100;
-  const yearRight =
-    100 -
-    ((yearMax - YEAR_MIN) / (YEAR_MAX - YEAR_MIN)) * 100;
-
-  const kmLeft = 0;
-  const kmRight = 100 - (kmMax / KM_MAX) * 100;
-
-  // Bottom sheet (NO backdrop auto-close → keyboard stays)
-  function Sheet({ children }) {
-    if (!activeKey) return null;
-    return (
-      <div className="hz-filter-sheet-backdrop">
-        <div
-          className="hz-filter-sheet"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="hz-filter-sheet-header">
-            <span>{sheetTitle}</span>
-            <button
-              className="hz-filter-sheet-done"
-              onClick={closeSheet}
-            >
-              {isAr ? "تم" : "Done"}
-            </button>
-          </div>
-          <div className="hz-filter-sheet-body">{children}</div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="hz-filters">
-      <div className="hz-filters-title">{S.carsFilters}</div>
-
-      {/* Filter chips */}
-      <div className="hz-filter-chips-scroll">
-        <button
-          className={chipClass("brand")}
-          onClick={() => openSheet("brand")}
-        >
-          <span className="hz-filter-chip-label">
-            {LABELS.brand}
-            {filters.brand ? ` · ${filters.brand}` : ""}
-            <ChevronDown className="hz-filter-chip-arrow" />
-          </span>
-        </button>
-
-        <button
-          className={chipClass("sellerType")}
-          onClick={() => openSheet("sellerType")}
-        >
-          <span className="hz-filter-chip-label">
-            {LABELS.sellerType}
-            {filters.sellerType
-              ? ` · ${
-                  filters.sellerType === "private"
-                    ? t("Private", "فرد")
-                    : t("Dealership", "معرض")
-                }`
-              : ""}
-            <ChevronDown className="hz-filter-chip-arrow" />
-          </span>
-        </button>
-
-        <button
-          className={chipClass("price")}
-          onClick={() => openSheet("price")}
-        >
-          <span className="hz-filter-chip-label">
-            {LABELS.price}
-            {priceSummary ? ` · ${priceSummary}` : ""}
-            <ChevronDown className="hz-filter-chip-arrow" />
-          </span>
-        </button>
-
-        <button
-          className={chipClass("year")}
-          onClick={() => openSheet("year")}
-        >
-          <span className="hz-filter-chip-label">
-            {LABELS.year}
-            {yearSummary ? ` · ${yearSummary}` : ""}
-            <ChevronDown className="hz-filter-chip-arrow" />
-          </span>
-        </button>
-
-        <button
-          className={chipClass("km")}
-          onClick={() => openSheet("km")}
-        >
-          <span className="hz-filter-chip-label">
-            {LABELS.km}
-            {kmSummary ? ` · ${kmSummary}` : ""}
-            <ChevronDown className="hz-filter-chip-arrow" />
-          </span>
-        </button>
-
-        <button
-          className={chipClass("specs")}
-          onClick={() => openSheet("specs")}
-        >
-          <span className="hz-filter-chip-label">
-            {LABELS.specs}
-            {filters.specs ? ` · ${filters.specs}` : ""}
-            <ChevronDown className="hz-filter-chip-arrow" />
-          </span>
-        </button>
-      </div>
-
-      {/* Bottom sheet content */}
-      <Sheet>
-        {/* BRAND */}
-        {activeKey === "brand" && (
-          <div className="hz-field">
-            <label>{LABELS.brand}</label>
-            <select
-              value={filters.brand || ""}
-              onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  brand: e.target.value || undefined,
-                }))
-              }
-            >
-              <option value="">{t("Any brand", "أي ماركة")}</option>
-              {CAR_BRANDS.map(
-                (b) =>
-                  b && (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  )
-              )}
-            </select>
-          </div>
-        )}
-
-        {/* SELLER */}
-        {activeKey === "sellerType" && (
-          <div className="hz-field">
-            <label>{LABELS.sellerType}</label>
-            <select
-              value={filters.sellerType || ""} 
-              onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  sellerType: e.target.value || undefined,
-                }))
-              }
-            >
-              <option value="">{t("Any seller", "أي بائع")}</option>
-              <option value="private">{t("Private", "فرد")}</option>
-              <option value="dealership">{t("Dealership", "معرض")}</option>
-            </select>
-          </div>
-        )}
-
-        {/* PRICE */}
-        {activeKey === "price" && (
-          <div className="hz-field">
-            <label>{LABELS.price}</label>
-            <div className="hz-range-row">
-              <div className="hz-range-inputs">
-                <input
-                  type="number"
-                  className="hz-input-scroller"
-                  value={priceMin === PRICE_MIN ? "" : priceMin}
-                  onChange={(e) => {
-                    const v = e.target.value
-                      ? Number(e.target.value)
-                      : PRICE_MIN;
-                    setFilters((f) => {
-                      const max = f.priceMax ?? PRICE_MAX;
-                      return {
-                        ...f,
-                        priceMin: Math.min(
-                          Math.max(PRICE_MIN, v),
-                          max
-                        ),
-                      };
-                    });
-                  }}
-                  placeholder={t("Min", "أدنى")}
-                />
-                <input
-                  type="number"
-                  className="hz-input-scroller"
-                  value={priceMax === PRICE_MAX ? "" : priceMax}
-                  onChange={(e) => {
-                    const v = e.target.value
-                      ? Number(e.target.value)
-                      : PRICE_MAX;
-                    setFilters((f) => {
-                      const min = f.priceMin ?? PRICE_MIN;
-                      return {
-                        ...f,
-                        priceMax: Math.max(
-                          min,
-                          Math.min(PRICE_MAX, v)
-                        ),
-                      };
-                    });
-                  }}
-                  placeholder={t("Max", "أعلى")}
-                />
-              </div>
-
-              <div className="hz-range-slider-wrap">
-                <div className="hz-range-track" />
-                <div
-                  className="hz-range-range"
-                  style={{ left: `${priceLeft}%`, right: `${priceRight}%` }}
-                />
-                <input
-                  type="range"
-                  min={PRICE_MIN}
-                  max={PRICE_MAX}
-                  value={priceMin}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setFilters((f) => {
-                      const max = f.priceMax ?? PRICE_MAX;
-                      return {
-                        ...f,
-                        priceMin: Math.min(v, max),
-                      };
-                    });
-                  }}
-                />
-                <input
-                  type="range"
-                  min={PRICE_MIN}
-                  max={PRICE_MAX}
-                  value={priceMax}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setFilters((f) => {
-                      const min = f.priceMin ?? PRICE_MIN;
-                      return {
-                        ...f,
-                        priceMax: Math.max(v, min),
-                      };
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* YEAR */}
-        {activeKey === "year" && (
-          <div className="hz-field">
-            <label>{LABELS.year}</label>
-            <div className="hz-range-row">
-              <div className="hz-range-inputs">
-                <input
-                  type="number"
-                  className="hz-input-scroller"
-                  value={yearMin === YEAR_MIN ? "" : yearMin}
-                  onChange={(e) => {
-                    const v = e.target.value
-                      ? Number(e.target.value)
-                      : YEAR_MIN;
-                    setFilters((f) => {
-                      const max = f.yearMax ?? YEAR_MAX;
-                      return {
-                        ...f,
-                        yearMin: Math.min(
-                          Math.max(YEAR_MIN, v),
-                          max
-                        ),
-                      };
-                    });
-                  }}
-                  placeholder={t("From", "من")}
-                />
-                <input
-                  type="number"
-                  className="hz-input-scroller"
-                  value={yearMax === YEAR_MAX ? "" : yearMax}
-                  onChange={(e) => {
-                    const v = e.target.value
-                      ? Number(e.target.value)
-                      : YEAR_MAX;
-                    setFilters((f) => {
-                      const min = f.yearMin ?? YEAR_MIN;
-                      return {
-                        ...f,
-                        yearMax: Math.max(
-                          min,
-                          Math.min(YEAR_MAX, v)
-                        ),
-                      };
-                    });
-                  }}
-                  placeholder={t("To", "إلى")}
-                />
-              </div>
-
-              <div className="hz-range-slider-wrap">
-                <div className="hz-range-track" />
-                <div
-                  className="hz-range-range"
-                  style={{ left: `${yearLeft}%`, right: `${yearRight}%` }}
-                />
-                <input
-                  type="range"
-                  min={YEAR_MIN}
-                  max={YEAR_MAX}
-                  value={yearMin}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setFilters((f) => {
-                      const max = f.yearMax ?? YEAR_MAX;
-                      return {
-                        ...f,
-                        yearMin: Math.min(v, max),
-                      };
-                    });
-                  }}
-                />
-                <input
-                  type="range"
-                  min={YEAR_MIN}
-                  max={YEAR_MAX}
-                  value={yearMax}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setFilters((f) => {
-                      const min = f.yearMin ?? YEAR_MIN;
-                      return {
-                        ...f,
-                        yearMax: Math.max(v, min),
-                      };
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* MAX KM */}
-        {activeKey === "km" && (
-          <div className="hz-field">
-            <label>{LABELS.km}</label>
-            <div className="hz-range-row">
-              <input
-                type="number"
-                className="hz-input-scroller"
-                value={kmMax === KM_MAX ? "" : kmMax}
-                onChange={(e) => {
-                  const v = e.target.value
-                    ? Number(e.target.value)
-                    : KM_MAX;
-                  setFilters((f) => ({
-                    ...f,
-                    mileageMax: Math.min(
-                      Math.max(KM_MIN, v),
-                      KM_MAX
-                    ),
-                  }));
-                }}
-                placeholder={t(
-                  "Max kilometers",
-                  "أقصى عدد كيلومترات"
-                )}
-              />
-
-              <div className="hz-range-slider-wrap">
-                <div className="hz-range-track" />
-                <div
-                  className="hz-range-range"
-                  style={{ left: `${kmLeft}%`, right: `${kmRight}%` }}
-                />
-                <input
-                  type="range"
-                  min={KM_MIN}
-                  max={KM_MAX}
-                  value={kmMax}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setFilters((f) => ({
-                      ...f,
-                      mileageMax: Math.min(
-                        Math.max(KM_MIN, v),
-                        KM_MAX
-                      ),
-                    }));
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* SPECS */}
-        {activeKey === "specs" && (
-          <div className="hz-field">
-            <label>{LABELS.specs}</label>
-            <div className="hz-specs-options">
-              {["GCC", "EU", "USA", "Japan"].map((s) => (
-                <button
-                  key={s}
-                  className={
-                    "hz-spec-pill " +
-                    (filters.specs === s
-                      ? "hz-spec-pill-active"
-                      : "")
-                  }
-                  onClick={() =>
-                    setFilters((f) => ({
-                      ...f,
-                      specs: f.specs === s ? undefined : s,
-                    }))
-                  }
-                >
-                  {s === "Japan" ? t("Japan", "ياباني") : s}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </Sheet>
-    </div>
-  );
-}
-
-
-
-
-
-/* PROPERTY FILTERS – fixed */
-
-function PropertyFilters({ filters, setFilters, lang }) {
-  const S = STRINGS[lang];
-  const [activeKey, setActiveKey] = useState(null);
-  const isAr = lang === "ar";
-
-  function chipClass(key) {
-    return (
-      "hz-filter-chip " +
-      (activeKey === key ? "hz-filter-chip-active" : "")
-    );
-  }
-
-  function openSheet(key) {
-    setActiveKey(key);
-  }
-
-  function closeSheet() {
-    setActiveKey(null);
-  }
-
-  function Sheet({ children, title }) {
-    if (!activeKey) return null;
-
-    const handleBackdropClick = (e) => {
-      if (e.target === e.currentTarget) {
-        closeSheet();
-      }
-    };
-
-    return (
-      <div
-        className="hz-filter-sheet-backdrop"
-        onClick={handleBackdropClick}
-      >
-        <div
-          className="hz-filter-sheet"
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-        >
-          <div className="hz-filter-sheet-header">
-            <span>{title}</span>
-            <button
-              className="hz-filter-sheet-done"
-              onClick={closeSheet}
-            >
-              {isAr ? "تم" : "Done"}
-            </button>
-          </div>
-          <div className="hz-filter-sheet-body">{children}</div>
-        </div>
-      </div>
-    );
-  }
-
-  const sheetTitle =
-    activeKey === "priceMin"
-      ? isAr
-        ? "الحد الأدنى للسعر"
-        : "Minimum Price"
-      : activeKey === "priceMax"
-      ? isAr
-        ? "الحد الأعلى للسعر"
-        : "Maximum Price"
-      : activeKey === "areaMin"
-      ? isAr
-        ? "الحد الأدنى للمساحة"
-        : "Minimum Area"
-      : activeKey === "areaMax"
-      ? isAr
-        ? "الحد الأعلى للمساحة"
-        : "Maximum Area"
-      : "";
-
-  return (
-    <div className="hz-filters">
-      <div className="hz-filters-title">{S.propertyFilters}</div>
-
-      <div className="hz-filter-chips-scroll">
-        <button
-          className={chipClass("priceMin")}
-          onClick={() => openSheet("priceMin")}
-        >
-          {isAr ? "أدنى سعر" : "Min Price"}
-          {filters.priceMin ? ` · ${filters.priceMin}` : ""}
-        </button>
-
-        <button
-          className={chipClass("priceMax")}
-          onClick={() => openSheet("priceMax")}
-        >
-          {isAr ? "أعلى سعر" : "Max Price"}
-          {filters.priceMax ? ` · ${filters.priceMax}` : ""}
-        </button>
-
-        <button
-          className={chipClass("areaMin")}
-          onClick={() => openSheet("areaMin")}
-        >
-          {isAr ? "أقل مساحة" : "Min Area"}
-          {filters.areaMin ? ` · ${filters.areaMin}` : ""}
-        </button>
-
-        <button
-          className={chipClass("areaMax")}
-          onClick={() => openSheet("areaMax")}
-        >
-          {isAr ? "أكبر مساحة" : "Max Area"}
-          {filters.areaMax ? ` · ${filters.areaMax}` : ""}
-        </button>
-      </div>
-
-      <Sheet title={sheetTitle}>
-        {activeKey === "priceMin" && (
-          <div className="hz-field">
-            <label>
-              {isAr ? "الحد الأدنى للسعر" : "Minimum Price"}
-            </label>
-            <input
-              type="number"
-              className="hz-input-scroller"
-              value={filters.priceMin ?? ""}
-              onChange={(e) => {
-                const n = e.target.value
-                  ? Number(e.target.value)
-                  : undefined;
-                setFilters((f) => ({ ...f, priceMin: n }));
-              }}
-              placeholder={isAr ? "أدنى سعر" : "Min price"}
-            />
-          </div>
-        )}
-
-        {activeKey === "priceMax" && (
-          <div className="hz-field">
-            <label>
-              {isAr ? "الحد الأعلى للسعر" : "Maximum Price"}
-            </label>
-            <input
-              type="number"
-              className="hz-input-scroller"
-              value={filters.priceMax ?? ""}
-              onChange={(e) => {
-                const n = e.target.value
-                  ? Number(e.target.value)
-                  : undefined;
-                setFilters((f) => ({ ...f, priceMax: n }));
-              }}
-              placeholder={isAr ? "أعلى سعر" : "Max price"}
-            />
-          </div>
-        )}
-
-        {activeKey === "areaMin" && (
-          <div className="hz-field">
-            <label>
-              {isAr
-                ? "الحد الأدنى للمساحة (قدم²)"
-                : "Minimum Area (sqft)"}
-            </label>
-            <input
-              type="number"
-              className="hz-input-scroller"
-              value={filters.areaMin ?? ""}
-              onChange={(e) => {
-                const n = e.target.value
-                  ? Number(e.target.value)
-                  : undefined;
-                setFilters((f) => ({ ...f, areaMin: n }));
-              }}
-              placeholder={isAr ? "أقل مساحة" : "Min sqft"}
-            />
-          </div>
-        )}
-
-        {activeKey === "areaMax" && (
-          <div className="hz-field">
-            <label>
-              {isAr
-                ? "الحد الأعلى للمساحة (قدم²)"
-                : "Maximum Area (sqft)"}
-            </label>
-            <input
-              type="number"
-              className="hz-input-scroller"
-              value={filters.areaMax ?? ""}
-              onChange={(e) => {
-                const n = e.target.value
-                  ? Number(e.target.value)
-                  : undefined;
-                setFilters((f) => ({ ...f, areaMax: n }));
-              }}
-              placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
-            />
-          </div>
-        )}
-      </Sheet>
-    </div>
-  );
-}
-
-/* CATEGORY PAGE */
-
-function CategoryPage({
-  cat,
-  listings,
-  favs,
-  toggleFav,
-  onBack,
-  activeSub,
-  lang,
-  onOpenListing,
-}) {
-  const isMotors = cat.key === "motors";
-  const isProp = !!cat.isProperty;
-  const [filters, setFilters] = useState({});
-
-  const filtered = listings.filter((l) => {
-    if (l.category !== cat.key) return false;
-
-    if (cat.subcategories && cat.subcategories.length && activeSub) {
-      if (l.subcategory !== activeSub) return false;
-    }
-
-    if (isMotors) {
-      if (l.subcategory !== "cars") return false;
-      if (filters.brand && l.brand !== filters.brand) return false;
-      if (filters.sellerType && l.sellerType !== filters.sellerType)
-        return false;
-      if (filters.priceMin && (l.price || 0) < filters.priceMin)
-        return false;
-      if (filters.priceMax && (l.price || 0) > filters.priceMax)
-        return false;
-      if (filters.yearMin && (l.year || 0) < filters.yearMin)
-        return false;
-      if (filters.yearMax && (l.year || 0) > filters.yearMax)
-        return false;
-      if (filters.mileageMax && (l.mileage || 0) > filters.mileageMax)
-        return false;
-      if (filters.specs && l.specs !== filters.specs) return false;
-    }
-
-    if (isProp) {
-      if (filters.priceMin && (l.price || 0) < filters.priceMin)
-        return false;
-      if (filters.priceMax && (l.price || 0) > filters.priceMax)
-        return false;
-      if (filters.areaMin && (l.areaSqft || 0) < filters.areaMin)
-        return false;
-      if (filters.areaMax && (l.areaSqft || 0) > filters.areaMax)
-        return false;
-    }
-
-    return true;
-  });
-
-  return (
-    <div className="hz-page">
-      <div className="hz-page-header">
-        <button className="hz-back-btn" onClick={onBack}>
-          <ChevronLeft />
-        </button>
-        <h2>{getLabel(cat, lang)}</h2>
-      </div>
-
-      <AdBanner lang={lang} />
-
-      {isMotors && (
-        <MotorsFilters
-          lang={lang}
-          filters={filters}
-          setFilters={setFilters}
-        />
-      )}
-
-      {isProp && (
-        <PropertyFilters
-          lang={lang}
-          filters={filters}
-          setFilters={setFilters}
-        />
-      )}
-
-      <div className="hz-grid">
-        {filtered.map((l) => (
-          <ListingCard
-            key={l.id}
-            item={l}
-            fav={!!favs[l.id]}
-            onToggleFav={toggleFav}
-            onOpen={onOpenListing}
-            lang={lang}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -1548,6 +734,851 @@ function PromoCarousel() {
         >
           <ChevronRight size={16} />
         </button>
+      </div>
+    </div>
+  );
+}
+
+/* MOTORS FILTERS – CLEAN, WORKING */
+
+function MotorsFilters({ lang, filters, setFilters }) {
+  const S = STRINGS[lang];
+  const [activeKey, setActiveKey] = useState(null);
+  const isAr = lang === "ar";
+
+  const t = (en, ar) => (isAr ? ar : en);
+
+  const LABELS = {
+    brand: t("Brand", "الماركة"),
+    sellerType: t("Seller", "البائع"),
+    price: t("Price (USD)", "السعر (دولار)"),
+    year: t("Year", "السنة"),
+    km: t("Max KM", "أقصى كم"),
+    specs: t("Specs", "المواصفات"),
+  };
+
+  const PRICE_MIN = 0;
+  const PRICE_MAX = 200000;
+  const YEAR_MIN = 1980;
+  const YEAR_MAX = new Date().getFullYear();
+  const KM_MIN = 0;
+  const KM_MAX = 500000;
+
+  // normalised values (stable controlled)
+  const priceMin = filters.priceMin ?? PRICE_MIN;
+  const priceMax = filters.priceMax ?? PRICE_MAX;
+  const yearMin = filters.yearMin ?? YEAR_MIN;
+  const yearMax = filters.yearMax ?? YEAR_MAX;
+  const kmMax = filters.mileageMax ?? KM_MAX;
+
+  const sheetTitle =
+    activeKey === "brand"
+      ? LABELS.brand
+      : activeKey === "sellerType"
+      ? LABELS.sellerType
+      : activeKey === "price"
+      ? LABELS.price
+      : activeKey === "year"
+      ? LABELS.year
+      : activeKey === "km"
+      ? LABELS.km
+      : activeKey === "specs"
+      ? LABELS.specs
+      : "";
+
+  const priceSummary =
+    priceMin !== PRICE_MIN || priceMax !== PRICE_MAX
+      ? `${priceMin} - ${priceMax === PRICE_MAX ? t("Any", "أي") : priceMax}`
+      : "";
+
+  const yearSummary =
+    yearMin !== YEAR_MIN || yearMax !== YEAR_MAX
+      ? `${yearMin}${yearMax !== YEAR_MAX ? " - " + yearMax : "+"}`
+      : "";
+
+  const kmSummary = kmMax !== KM_MAX ? `≤ ${kmMax.toLocaleString()}` : "";
+
+  function chipClass(key) {
+    return (
+      "hz-filter-chip " +
+      (activeKey === key ? "hz-filter-chip-active" : "")
+    );
+  }
+
+  function openSheet(key) {
+    setActiveKey(key);
+  }
+
+  function closeSheet() {
+    setActiveKey(null);
+  }
+
+  function Sheet({ children }) {
+    if (!activeKey) return null;
+    return (
+      <div
+        className="hz-filter-sheet-backdrop"
+        onClick={(e) => {
+          // close only if clicking outside the sheet
+          if (e.target === e.currentTarget) closeSheet();
+        }}
+      >
+        <div
+          className="hz-filter-sheet"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="hz-filter-sheet-header">
+            <span>{sheetTitle}</span>
+            <button
+              className="hz-filter-sheet-done"
+              onClick={closeSheet}
+            >
+              {isAr ? "تم" : "Done"}
+            </button>
+          </div>
+          <div className="hz-filter-sheet-body">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // positions for green bar
+  const priceLeft = (priceMin / PRICE_MAX) * 100;
+  const priceRight = 100 - (priceMax / PRICE_MAX) * 100;
+
+  const yearLeft =
+    ((yearMin - YEAR_MIN) / (YEAR_MAX - YEAR_MIN)) * 100;
+  const yearRight =
+    100 -
+    ((yearMax - YEAR_MIN) / (YEAR_MAX - YEAR_MIN)) * 100;
+
+  const kmLeft = 0;
+  const kmRight = 100 - (kmMax / KM_MAX) * 100;
+
+  return (
+    <div className="hz-filters">
+      <div className="hz-filters-title">{S.carsFilters}</div>
+
+      <div className="hz-filter-chips-scroll">
+        <button
+          className={chipClass("brand")}
+          onClick={() => openSheet("brand")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.brand}
+            {filters.brand ? ` · ${filters.brand}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("sellerType")}
+          onClick={() => openSheet("sellerType")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.sellerType}
+            {filters.sellerType
+              ? ` · ${
+                  filters.sellerType === "private"
+                    ? t("Private", "فرد")
+                    : t("Dealership", "معرض")
+                }`
+              : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("price")}
+          onClick={() => openSheet("price")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.price}
+            {priceSummary ? ` · ${priceSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("year")}
+          onClick={() => openSheet("year")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.year}
+            {yearSummary ? ` · ${yearSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("km")}
+          onClick={() => openSheet("km")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.km}
+            {kmSummary ? ` · ${kmSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        <button
+          className={chipClass("specs")}
+          onClick={() => openSheet("specs")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.specs}
+            {filters.specs ? ` · ${filters.specs}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+      </div>
+
+      <Sheet>
+        {/* BRAND */}
+        {activeKey === "brand" && (
+          <div className="hz-field">
+            <label>{LABELS.brand}</label>
+            <select
+              value={filters.brand || ""}
+              onChange={(e) =>
+                setFilters((f) => ({
+                  ...f,
+                  brand: e.target.value || undefined,
+                }))
+              }
+            >
+              <option value="">{t("Any brand", "أي ماركة")}</option>
+              {CAR_BRANDS.map(
+                (b) =>
+                  b && (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  )
+              )}
+            </select>
+          </div>
+        )}
+
+        {/* SELLER TYPE */}
+        {activeKey === "sellerType" && (
+          <div className="hz-field">
+            <label>{LABELS.sellerType}</label>
+            <select
+              value={filters.sellerType || ""}
+              onChange={(e) =>
+                setFilters((f) => ({
+                  ...f,
+                  sellerType: e.target.value || undefined,
+                }))
+              }
+            >
+              <option value="">{t("Any seller", "أي بائع")}</option>
+              <option value="private">{t("Private", "فرد")}</option>
+              <option value="dealership">
+                {t("Dealership", "معرض")}
+              </option>
+            </select>
+          </div>
+        )}
+
+        {/* PRICE – dual slider + inputs */}
+        {activeKey === "price" && (
+          <div className="hz-field">
+            <label>{LABELS.price}</label>
+            <div className="hz-range-row">
+              <div className="hz-range-inputs">
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={priceMin === PRICE_MIN ? "" : priceMin}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const v = raw === "" ? PRICE_MIN : Number(raw);
+                    setFilters((f) => {
+                      const max = f.priceMax ?? PRICE_MAX;
+                      return {
+                        ...f,
+                        priceMin: Math.min(
+                          Math.max(PRICE_MIN, v),
+                          max
+                        ),
+                      };
+                    });
+                  }}
+                  placeholder={t("Min", "أدنى")}
+                />
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={priceMax === PRICE_MAX ? "" : priceMax}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const v = raw === "" ? PRICE_MAX : Number(raw);
+                    setFilters((f) => {
+                      const min = f.priceMin ?? PRICE_MIN;
+                      return {
+                        ...f,
+                        priceMax: Math.max(
+                          min,
+                          Math.min(PRICE_MAX, v)
+                        ),
+                      };
+                    });
+                  }}
+                  placeholder={t("Max", "أعلى")}
+                />
+              </div>
+
+              <div className="hz-range-slider-wrap">
+                <div className="hz-range-track" />
+                <div
+                  className="hz-range-range"
+                  style={{
+                    left: `${priceLeft}%`,
+                    right: `${priceRight}%`,
+                  }}
+                />
+                {/* left thumb */}
+                <input
+                  type="range"
+                  min={PRICE_MIN}
+                  max={PRICE_MAX}
+                  value={priceMin}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => {
+                      const max = f.priceMax ?? PRICE_MAX;
+                      return {
+                        ...f,
+                        priceMin: Math.min(v, max),
+                      };
+                    });
+                  }}
+                />
+                {/* right thumb */}
+                <input
+                  type="range"
+                  min={PRICE_MIN}
+                  max={PRICE_MAX}
+                  value={priceMax}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => {
+                      const min = f.priceMin ?? PRICE_MIN;
+                      return {
+                        ...f,
+                        priceMax: Math.max(v, min),
+                      };
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* YEAR – dual slider + inputs */}
+        {activeKey === "year" && (
+          <div className="hz-field">
+            <label>{LABELS.year}</label>
+            <div className="hz-range-row">
+              <div className="hz-range-inputs">
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={yearMin === YEAR_MIN ? "" : yearMin}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const v = raw === "" ? YEAR_MIN : Number(raw);
+                    setFilters((f) => {
+                      const max = f.yearMax ?? YEAR_MAX;
+                      return {
+                        ...f,
+                        yearMin: Math.min(
+                          Math.max(YEAR_MIN, v),
+                          max
+                        ),
+                      };
+                    });
+                  }}
+                  placeholder={t("From", "من")}
+                />
+                <input
+                  type="number"
+                  className="hz-input-scroller"
+                  value={yearMax === YEAR_MAX ? "" : yearMax}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const v = raw === "" ? YEAR_MAX : Number(raw);
+                    setFilters((f) => {
+                      const min = f.yearMin ?? YEAR_MIN;
+                      return {
+                        ...f,
+                        yearMax: Math.max(
+                          min,
+                          Math.min(YEAR_MAX, v)
+                        ),
+                      };
+                    });
+                  }}
+                  placeholder={t("To", "إلى")}
+                />
+              </div>
+
+              <div className="hz-range-slider-wrap">
+                <div className="hz-range-track" />
+                <div
+                  className="hz-range-range"
+                  style={{
+                    left: `${yearLeft}%`,
+                    right: `${yearRight}%`,
+                  }}
+                />
+                <input
+                  type="range"
+                  min={YEAR_MIN}
+                  max={YEAR_MAX}
+                  value={yearMin}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => {
+                      const max = f.yearMax ?? YEAR_MAX;
+                      return {
+                        ...f,
+                        yearMin: Math.min(v, max),
+                      };
+                    });
+                  }}
+                />
+                <input
+                  type="range"
+                  min={YEAR_MIN}
+                  max={YEAR_MAX}
+                  value={yearMax}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => {
+                      const min = f.yearMin ?? YEAR_MIN;
+                      return {
+                        ...f,
+                        yearMax: Math.max(v, min),
+                      };
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MAX KM */}
+        {activeKey === "km" && (
+          <div className="hz-field">
+            <label>{LABELS.km}</label>
+            <div className="hz-range-row">
+              <input
+                type="number"
+                className="hz-input-scroller"
+                value={kmMax === KM_MAX ? "" : kmMax}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const v = raw === "" ? KM_MAX : Number(raw);
+                  setFilters((f) => ({
+                    ...f,
+                    mileageMax: Math.min(
+                      Math.max(KM_MIN, v),
+                      KM_MAX
+                    ),
+                  }));
+                }}
+                placeholder={t(
+                  "Max kilometers",
+                  "أقصى عدد كيلومترات"
+                )}
+              />
+              <div className="hz-range-slider-wrap">
+                <div className="hz-range-track" />
+                <div
+                  className="hz-range-range"
+                  style={{
+                    left: `${kmLeft}%`,
+                    right: `${kmRight}%`,
+                  }}
+                />
+                <input
+                  type="range"
+                  min={KM_MIN}
+                  max={KM_MAX}
+                  value={kmMax}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((f) => ({
+                      ...f,
+                      mileageMax: Math.min(
+                        Math.max(KM_MIN, v),
+                        KM_MAX
+                      ),
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SPECS */}
+        {activeKey === "specs" && (
+          <div className="hz-field">
+            <label>{LABELS.specs}</label>
+            <div className="hz-specs-options">
+              {["GCC", "EU", "USA", "Japan"].map((s) => (
+                <button
+                  key={s}
+                  className={
+                    "hz-spec-pill " +
+                    (filters.specs === s
+                      ? "hz-spec-pill-active"
+                      : "")
+                  }
+                  onClick={() =>
+                    setFilters((f) => ({
+                      ...f,
+                      specs: f.specs === s ? undefined : s,
+                    }))
+                  }
+                >
+                  {s === "Japan" ? t("Japan", "ياباني") : s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </Sheet>
+    </div>
+  );
+}
+
+/* PROPERTY FILTERS (unchanged logic, simple inputs) */
+
+function PropertyFilters({ filters, setFilters, lang }) {
+  const S = STRINGS[lang];
+  const [activeKey, setActiveKey] = useState(null);
+  const isAr = lang === "ar";
+
+  function chipClass(key) {
+    return (
+      "hz-filter-chip " +
+      (activeKey === key ? "hz-filter-chip-active" : "")
+    );
+  }
+
+  function openSheet(key) {
+    setActiveKey(key);
+  }
+
+  function closeSheet() {
+    setActiveKey(null);
+  }
+
+  function Sheet({ children, title }) {
+    if (!activeKey) return null;
+    return (
+      <div
+        className="hz-filter-sheet-backdrop"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) closeSheet();
+        }}
+      >
+        <div
+          className="hz-filter-sheet"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="hz-filter-sheet-header">
+            <span>{title}</span>
+            <button
+              className="hz-filter-sheet-done"
+              onClick={closeSheet}
+            >
+              {isAr ? "تم" : "Done"}
+            </button>
+          </div>
+          <div className="hz-filter-sheet-body">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const sheetTitle =
+    activeKey === "priceMin"
+      ? isAr
+        ? "الحد الأدنى للسعر"
+        : "Minimum Price"
+      : activeKey === "priceMax"
+      ? isAr
+        ? "الحد الأعلى للسعر"
+        : "Maximum Price"
+      : activeKey === "areaMin"
+      ? isAr
+        ? "الحد الأدنى للمساحة"
+        : "Minimum Area"
+      : activeKey === "areaMax"
+      ? isAr
+        ? "الحد الأعلى للمساحة"
+        : "Maximum Area"
+      : "";
+
+  return (
+    <div className="hz-filters">
+      <div className="hz-filters-title">{S.propertyFilters}</div>
+
+      <div className="hz-filter-chips-scroll">
+        <button
+          className={chipClass("priceMin")}
+          onClick={() => openSheet("priceMin")}
+        >
+          {isAr ? "أدنى سعر" : "Min Price"}
+          {filters.priceMin ? ` · ${filters.priceMin}` : ""}
+        </button>
+
+        <button
+          className={chipClass("priceMax")}
+          onClick={() => openSheet("priceMax")}
+        >
+          {isAr ? "أعلى سعر" : "Max Price"}
+          {filters.priceMax ? ` · ${filters.priceMax}` : ""}
+        </button>
+
+        <button
+          className={chipClass("areaMin")}
+          onClick={() => openSheet("areaMin")}
+        >
+          {isAr ? "أقل مساحة" : "Min Area"}
+          {filters.areaMin ? ` · ${filters.areaMin}` : ""}
+        </button>
+
+        <button
+          className={chipClass("areaMax")}
+          onClick={() => openSheet("areaMax")}
+        >
+          {isAr ? "أكبر مساحة" : "Max Area"}
+          {filters.areaMax ? ` · ${filters.areaMax}` : ""}
+        </button>
+      </div>
+
+      <Sheet title={sheetTitle}>
+        {activeKey === "priceMin" && (
+          <div className="hz-field">
+            <label>
+              {isAr ? "الحد الأدنى للسعر" : "Minimum Price"}
+            </label>
+            <input
+              type="number"
+              className="hz-input-scroller"
+              value={filters.priceMin ?? ""}
+              onChange={(e) => {
+                const n =
+                  e.target.value === ""
+                    ? undefined
+                    : Number(e.target.value);
+                setFilters((f) => ({ ...f, priceMin: n }));
+              }}
+              placeholder={isAr ? "أدنى سعر" : "Min price"}
+            />
+          </div>
+        )}
+
+        {activeKey === "priceMax" && (
+          <div className="hz-field">
+            <label>
+              {isAr ? "الحد الأعلى للسعر" : "Maximum Price"}
+            </label>
+            <input
+              type="number"
+              className="hz-input-scroller"
+              value={filters.priceMax ?? ""}
+              onChange={(e) => {
+                const n =
+                  e.target.value === ""
+                    ? undefined
+                    : Number(e.target.value);
+                setFilters((f) => ({ ...f, priceMax: n }));
+              }}
+              placeholder={isAr ? "أعلى سعر" : "Max price"}
+            />
+          </div>
+        )}
+
+        {activeKey === "areaMin" && (
+          <div className="hz-field">
+            <label>
+              {isAr
+                ? "الحد الأدنى للمساحة (قدم²)"
+                : "Minimum Area (sqft)"}
+            </label>
+            <input
+              type="number"
+              className="hz-input-scroller"
+              value={filters.areaMin ?? ""}
+              onChange={(e) => {
+                const n =
+                  e.target.value === ""
+                    ? undefined
+                    : Number(e.target.value);
+                setFilters((f) => ({ ...f, areaMin: n }));
+              }}
+              placeholder={isAr ? "أقل مساحة" : "Min sqft"}
+            />
+          </div>
+        )}
+
+        {activeKey === "areaMax" && (
+          <div className="hz-field">
+            <label>
+              {isAr
+                ? "الحد الأعلى للمساحة (قدم²)"
+                : "Maximum Area (sqft)"}
+            </label>
+            <input
+              type="number"
+              className="hz-input-scroller"
+              value={filters.areaMax ?? ""}
+              onChange={(e) => {
+                const n =
+                  e.target.value === ""
+                    ? undefined
+                    : Number(e.target.value);
+                setFilters((f) => ({ ...f, areaMax: n }));
+              }}
+              placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
+            />
+          </div>
+        )}
+      </Sheet>
+    </div>
+  );
+}
+
+/* CATEGORY PAGE */
+
+function CategoryPage({
+  cat,
+  listings,
+  favs,
+  toggleFav,
+  onBack,
+  activeSub,
+  lang,
+  onOpenListing,
+}) {
+  const isMotors = cat.key === "motors";
+  const isProp = !!cat.isProperty;
+  const [filters, setFilters] = useState({});
+
+  const filtered = listings.filter((l) => {
+    if (l.category !== cat.key) return false;
+
+    if (cat.subcategories && cat.subcategories.length && activeSub) {
+      if (l.subcategory !== activeSub) return false;
+    }
+
+    if (isMotors) {
+      if (l.subcategory !== "cars") return false;
+      if (filters.brand && l.brand !== filters.brand) return false;
+      if (filters.sellerType && l.sellerType !== filters.sellerType)
+        return false;
+      if (
+        filters.priceMin != null &&
+        (l.price || 0) < filters.priceMin
+      )
+        return false;
+      if (
+        filters.priceMax != null &&
+        (l.price || 0) > filters.priceMax
+      )
+        return false;
+      if (
+        filters.yearMin != null &&
+        (l.year || 0) < filters.yearMin
+      )
+        return false;
+      if (
+        filters.yearMax != null &&
+        (l.year || 0) > filters.yearMax
+      )
+        return false;
+      if (
+        filters.mileageMax != null &&
+        (l.mileage || 0) > filters.mileageMax
+      )
+        return false;
+      if (filters.specs && l.specs !== filters.specs) return false;
+    }
+
+    if (isProp) {
+      if (
+        filters.priceMin != null &&
+        (l.price || 0) < filters.priceMin
+      )
+        return false;
+      if (
+        filters.priceMax != null &&
+        (l.price || 0) > filters.priceMax
+      )
+        return false;
+      if (
+        filters.areaMin != null &&
+        (l.areaSqft || 0) < filters.areaMin
+      )
+        return false;
+      if (
+        filters.areaMax != null &&
+        (l.areaSqft || 0) > filters.areaMax
+      )
+        return false;
+    }
+
+    return true;
+  });
+
+  return (
+    <div className="hz-page">
+      <div className="hz-page-header">
+        <button className="hz-back-btn" onClick={onBack}>
+          <ChevronLeft />
+        </button>
+        <h2>{getLabel(cat, lang)}</h2>
+      </div>
+
+      <AdBanner lang={lang} />
+
+      {isMotors && (
+        <MotorsFilters
+          lang={lang}
+          filters={filters}
+          setFilters={setFilters}
+        />
+      )}
+
+      {isProp && (
+        <PropertyFilters
+          lang={lang}
+          filters={filters}
+          setFilters={setFilters}
+        />
+      )}
+
+      <div className="hz-grid">
+        {filtered.map((l) => (
+          <ListingCard
+            key={l.id}
+            item={l}
+            fav={!!favs[l.id]}
+            onToggleFav={toggleFav}
+            onOpen={onOpenListing}
+            lang={lang}
+          />
+        ))}
       </div>
     </div>
   );
@@ -2405,7 +2436,8 @@ export default function App() {
       })
     : [];
 
-  const showHome = !activeCategory && activeTab === "home" && !searchTerm;
+  const showHome =
+    !activeCategory && activeTab === "home" && !searchTerm;
   const showFavs = !activeCategory && activeTab === "favs";
 
   return (
@@ -2512,6 +2544,12 @@ export default function App() {
           if (tab === "post") {
             handlePostClick();
             return;
+          }
+          if (tab === "account") {
+            if (!user) {
+              setAccountOpen(true);
+              return;
+            }
           }
           setActiveTab(tab);
           if (tab !== "home") {
