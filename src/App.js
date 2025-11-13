@@ -579,33 +579,16 @@ function Header({
   return (
     <div className="hz-header">
       <div className="hz-header-inner">
-        <div className="hz-search-wrap">
-          <div className="hz-logo-dot">
-            <img src="/huzzlie-logo.png" alt="Huzzlie" className="hz-logo-img" />
-          </div>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                if (disableEnterSearch) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  return;
-                }
-                onSearch();
-              }
-            }}
-            placeholder={S.searchPlaceholder}
-            className={
-              "hz-search-input " + (isAR ? "hz-rtl-text" : "hz-ltr-text")
-            }
-            dir={isAR ? "rtl" : "ltr"}
-          />
-          <button className="hz-search-btn" onClick={onSearch}>
-            <Search size={18} />
-          </button>
-        </div>
+        <input
+  value={q}
+  onChange={(e) => setQ(e.target.value)}
+  placeholder={S.searchPlaceholder}
+  className={
+    "hz-search-input " + (isAR ? "hz-rtl-text" : "hz-ltr-text")
+  }
+  dir={isAR ? "rtl" : "ltr"}
+/>
+
 
         <div className="hz-header-actions">
           {/* Currency toggle: USD ⇄ SYP */}
@@ -865,6 +848,8 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
   const kmSummary = kmMax !== KM_MAX ? `≤ ${kmMax.toLocaleString()}` : "";
 
   const [activeKey, setActiveKey] = useState(null);
+
+  
 
   // local draft state for sheet inputs
   const [draftPriceMin, setDraftPriceMin] = useState("");

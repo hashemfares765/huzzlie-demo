@@ -5,7 +5,11 @@ body,
   padding: 0;
   height: 100%;
   background-color: #f6fdf8;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
+
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
@@ -19,7 +23,11 @@ body {
   background-color: #f6fdf8;
   color: #111827;
   padding-bottom: 72px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* ← no horizontal scroll inside the app */
 }
+
 
 /* ===================== HEADER ===================== */
 
@@ -41,6 +49,17 @@ body {
   align-items: center;
   gap: 10px;
 }
+/* Make layout containers match the phone width on small screens */
+@media (max-width: 640px) {
+  .hz-header-inner,
+  .hz-main {
+    max-width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+  }
+}
+
 
 /* Logo */
 
@@ -147,6 +166,17 @@ body {
   margin: 0 auto;
   padding: 10px 16px 80px;
 }
+/* Make layout containers match the phone width on small screens */
+@media (max-width: 640px) {
+  .hz-header-inner,
+  .hz-main {
+    max-width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+  }
+}
+
 
 .hz-page {
   width: 100%;
