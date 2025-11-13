@@ -21,7 +21,7 @@ body {
   padding-bottom: 72px;
 }
 
-/* Header */
+/* ===================== HEADER ===================== */
 
 .hz-header {
   position: sticky;
@@ -103,7 +103,29 @@ body {
   display: flex;
   gap: 6px;
   flex-shrink: 0;
+  align-items: center;
 }
+
+/* Currency toggle */
+
+.hz-currency-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #bbf7d0;
+  background-color: #ecfdf5;
+  color: #047857;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hz-currency-btn span {
+  line-height: 1;
+}
+
 .hz-lang-btn {
   display: inline-flex;
   align-items: center;
@@ -118,7 +140,7 @@ body {
   white-space: nowrap;
 }
 
-/* Main */
+/* ===================== MAIN LAYOUT ===================== */
 
 .hz-main {
   max-width: 1100px;
@@ -157,7 +179,7 @@ body {
   cursor: pointer;
 }
 
-/* Ad banner */
+/* ===================== AD BANNER ===================== */
 
 .hz-ad {
   margin: 4px 0 10px;
@@ -178,7 +200,7 @@ body {
   color: #6b7280;
 }
 
-/* Category grid */
+/* ===================== CATEGORY GRID ===================== */
 
 .hz-cat-grid {
   display: grid;
@@ -220,7 +242,7 @@ body {
   color: #15803d;
 }
 
-/* Promo carousel */
+/* ===================== PROMO CAROUSEL ===================== */
 
 .hz-promo-wrap {
   position: relative;
@@ -308,7 +330,7 @@ body {
   padding: 0;
 }
 
-/* Section header */
+/* ===================== SECTION HEADER ===================== */
 
 .hz-section-header {
   margin-top: 6px;
@@ -331,7 +353,7 @@ body {
   cursor: pointer;
 }
 
-/* Grid */
+/* ===================== GRID ===================== */
 
 .hz-grid {
   display: grid;
@@ -344,7 +366,7 @@ body {
   }
 }
 
-/* Cards */
+/* ===================== CARDS ===================== */
 
 .hz-card {
   background-color: #ffffff;
@@ -459,7 +481,7 @@ body {
   text-decoration: none;
 }
 
-/* Filters wrapper */
+/* ===================== FILTERS WRAPPER ===================== */
 
 .hz-filters {
   margin-top: 8px;
@@ -470,10 +492,31 @@ body {
   background-color: #ffffff;
   font-size: 10px;
 }
+
+/* Title row (name + Reset link) */
+.hz-filters-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
 .hz-filters-title {
   font-weight: 600;
   color: #16a34a;
-  margin-bottom: 4px;
+  margin-bottom: 0;
+  font-size: 12px;
+}
+
+.hz-filters-clear-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 10px;
+  color: #6b7280;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 /* Chips */
@@ -484,6 +527,8 @@ body {
   overflow-x: auto;
   padding-bottom: 4px;
   margin: 2px 0 4px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 .hz-filter-chips-scroll::-webkit-scrollbar {
   height: 3px;
@@ -496,15 +541,16 @@ body {
   border-radius: 999px;
 }
 .hz-filter-chip {
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
   border: 1px solid #e5e7eb;
   background-color: #f9fafb;
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
   color: #374151;
+  scroll-snap-align: start;
 }
 .hz-filter-chip-active {
   background-color: #16a34a;
@@ -527,211 +573,49 @@ body {
   opacity: 1;
 }
 
-/* Generic fields */
-
-.hz-field {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.hz-field label {
-  font-size: 9px;
-  color: #6b7280;
-}
-.hz-field input,
-.hz-field select,
-.hz-field textarea {
-  padding: 4px 6px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  font-size: 11px;
-  resize: vertical;
-  background-color: #ffffff;
-  color: #111827;
-}
-
-/* Bottom sheet */
-
-.hz-filter-sheet-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.35);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 999; /* high to be above everything */
-}
-
-.hz-filter-sheet {
-  width: 100%;
-  max-width: 640px;
-  max-height: 80vh;
-  background-color: #ffffff;
-  border-radius: 18px 18px 0 0;
-  padding: 16px 18px 24px;
-  box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.16);
-  animation: hz-filter-sheet-in 0.22s ease-out;
-  overflow-y: auto;
-}
-
-@keyframes hz-filter-sheet-in {
-  from {
-    transform: translateY(22px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.hz-filter-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.hz-filter-sheet-done {
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: none;
-  background-color: #16a34a;
-  color: #ffffff;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.hz-filter-sheet-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 11px;
-}
-
-/* Range layout + dual slider – FINAL, TOUCH-FRIENDLY */
-
-.hz-range-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+/* Range inputs row inside filter sheet */
 
 .hz-range-inputs {
   display: flex;
   gap: 8px;
 }
 
-.hz-range-inputs input {
+.hz-range-inputs .hz-input-scroller {
   flex: 1;
 }
 
+/* ===================== GENERIC FIELDS ===================== */
+
+.hz-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hz-field label {
+  font-size: 11px;
+  color: #374151;
+  font-weight: 600;
+}
+.hz-field input,
+.hz-field select,
+.hz-field textarea {
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+  resize: vertical;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+/* Numeric input look (filters & form) */
+
 .hz-input-scroller {
-  padding: 6px 8px;
-  border-radius: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
   font-size: 12px;
 }
-
-/* Wrapper */
-
-.hz-range-slider-wrap {
-  position: relative;
-  width: 100%;
-  padding: 14px 0 2px;
-}
-
-/* Base track */
-
-.hz-range-track {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 6px;
-  border-radius: 999px;
-  background-color: #e5e7eb;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Active selected segment */
-
-.hz-range-range {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 6px;
-  border-radius: 999px;
-  background-color: #16a34a;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Ranges: overlap, BUT only thumbs are interactive (fixes iOS Safari) */
-
-.hz-range-slider-wrap input[type="range"] {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  transform: translateY(-50%);
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: none;
-  -webkit-appearance: none;
-  appearance: none;
-  z-index: 3;
-
-  /* important bits */
-  pointer-events: none;       /* the track itself does NOT eat touches */
-}
-
-/* Safari/Chrome thumb */
-.hz-range-slider-wrap input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: #16a34a;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
-  cursor: pointer;
-
-  pointer-events: auto;       /* ✅ thumb IS draggable */
-}
-
-/* Firefox thumb */
-.hz-range-slider-wrap input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: #16a34a;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 4px rgba(15, 23, 42, 0.35);
-  cursor: pointer;
-
-  pointer-events: auto;       /* ✅ thumb IS draggable */
-}
-
-/* Hide native tracks (we draw our own) */
-.hz-range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  background: transparent;
-}
-.hz-range-slider-wrap input[type="range"]::-moz-range-track {
-  height: 6px;
-  background: transparent;
-}
-
-
 
 /* Specs pills */
 
@@ -742,11 +626,11 @@ body {
   margin-top: 4px;
 }
 .hz-spec-pill {
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid #e5e7eb;
   background-color: #f9fafb;
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   color: #374151;
 }
@@ -756,39 +640,7 @@ body {
   border-color: #16a34a;
 }
 
-/* Brand list (if used later) */
-
-.hz-brand-list-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #16a34a;
-  margin: 6px 0 4px;
-}
-.hz-brand-list {
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
-  max-height: 420px;
-  overflow-y: auto;
-}
-.hz-brand-row {
-  width: 100%;
-  text-align: left;
-  padding: 10px 14px;
-  border: none;
-  border-bottom: 1px solid #f3f4f6;
-  background-color: #ffffff;
-  font-size: 13px;
-  cursor: pointer;
-}
-.hz-brand-row:last-child {
-  border-bottom: none;
-}
-.hz-brand-row:hover {
-  background-color: #f9fafb;
-}
-
-/* Bottom nav */
+/* ===================== BOTTOM NAV ===================== */
 
 .hz-bottom-nav {
   position: fixed;
@@ -821,7 +673,7 @@ body {
   color: #16a34a;
 }
 
-/* Modals */
+/* ===================== MODALS (Account, Post, Filters) ===================== */
 
 .hz-modal-backdrop {
   position: fixed;
@@ -845,6 +697,31 @@ body {
 .hz-modal-large {
   max-width: 640px;
 }
+
+/* Filter sheet uses hz-modal + hz-modal-large + this: */
+.hz-filter-sheet {
+  width: 92%;
+  max-width: 640px;
+  max-height: 90vh;
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 14px 18px 18px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+  animation: hz-filter-sheet-in 0.18s ease-out;
+  overflow: auto;
+}
+
+@keyframes hz-filter-sheet-in {
+  from {
+    transform: scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .hz-modal-header {
   display: flex;
   justify-content: space-between;
@@ -905,6 +782,12 @@ body {
   gap: 8px;
   font-size: 9px;
 }
+
+/* variant used by filter sheets (Done / Clear all) */
+.hz-modal-footer-between {
+  justify-content: space-between;
+}
+
 .hz-fee-label {
   color: #16a34a;
 }
@@ -930,7 +813,7 @@ body {
   border: 1px solid #e5e7eb;
 }
 
-/* Detail page */
+/* ===================== DETAIL PAGE ===================== */
 
 .hz-detail {
   background-color: #ffffff;
@@ -1056,7 +939,7 @@ body {
   gap: 8px;
 }
 
-/* Account */
+/* ===================== ACCOUNT PAGE ===================== */
 
 .hz-account {
   margin-top: 6px;
@@ -1159,7 +1042,7 @@ body {
   color: #dc2626;
 }
 
-/* Search no results */
+/* ===================== MISC ===================== */
 
 .hz-no-results {
   padding: 8px 2px 10px;
