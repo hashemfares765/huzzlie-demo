@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Search,
@@ -424,52 +424,6 @@ function validateCarListing(listing) {
   return required.every((k) => !!listing[k]);
 }
 
-/* CURRENCY HELPERS */
-
-const SYP_PER_USD = 14500; // demo rate
-const USD_PER_SYP = 1 / SYP_PER_USD;
-const USD_PER_AED = 0.27; // approx
-
-function getPriceInCurrency(item, targetCurrency) {
-  if (item.price == null) return null;
-  let priceUSD;
-
-  switch (item.currency) {
-    case "USD":
-      priceUSD = item.price;
-      break;
-    case "AED":
-      priceUSD = item.price * USD_PER_AED;
-      break;
-    case "SYP":
-      priceUSD = item.price * USD_PER_SYP;
-      break;
-    default:
-      priceUSD = item.price;
-  }
-
-  if (targetCurrency === "USD") return priceUSD;
-  if (targetCurrency === "SYP") return priceUSD * SYP_PER_USD;
-  return priceUSD;
-}
-
-function formatPrice(amount, currency) {
-  if (amount == null) return "";
-  const rounded = Math.round(amount);
-  if (currency === "USD") {
-    return "$ " + rounded.toLocaleString();
-  }
-  if (currency === "SYP") {
-    return rounded.toLocaleString() + " ل.س";
-  }
-  return rounded.toLocaleString() + " " + currency;
-}
-
-function getPriceDisplay(item, currency) {
-  const amount = getPriceInCurrency(item, currency);
-  return formatPrice(amount, currency);
-}
-
 /* COMPONENTS */
 
 function AdBanner({ lang }) {
@@ -503,13 +457,11 @@ function WhatsAppButton({ number, title }) {
   );
 }
 
-function ListingCard({ item, fav, onToggleFav, onOpen, lang, currency }) {
+function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
   const localizedTitle =
     lang === "ar" && item.titleAr ? item.titleAr : item.title;
   const localizedLocation =
     lang === "ar" && item.locationAr ? item.locationAr : item.location;
-  const priceText = getPriceDisplay(item, currency);
-
   return (
     <div
       className="hz-card"
@@ -542,7 +494,10 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang, currency }) {
           <Tag size={14} className="hz-card-tag" />
         </div>
         <div className="hz-card-price-row">
-          <span className="hz-price">{priceText}</span>
+          <span className="hz-price">
+            {item.currency}{" "}
+            {item.price != null ? item.price.toLocaleString() : ""}
+          </span>
           <span className="hz-loc">
             <MapPin size={12} />
             {localizedLocation}
@@ -563,45 +518,38 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang, currency }) {
   );
 }
 
-function Header({
-  q,
-  setQ,
-  onSearch,
-  lang,
-  setLang,
-  disableEnterSearch,
-  currency,
-  setCurrency,
-}) {
+function Header({ q, setQ, onSearch, lang, setLang }) {
   const S = STRINGS[lang];
   const isAR = lang === "ar";
 
   return (
     <div className="hz-header">
       <div className="hz-header-inner">
-        <input
-  value={q}
-  onChange={(e) => setQ(e.target.value)}
-  placeholder={S.searchPlaceholder}
-  className={
-    "hz-search-input " + (isAR ? "hz-rtl-text" : "hz-ltr-text")
-  }
-  dir={isAR ? "rtl" : "ltr"}
-/>
-
+        <div className="hz-search-wrap">
+          <div className="hz-logo-dot">
+            <img src="/huzzlie-logo.png" alt="Huzzlie" className="hz-logo-img" />
+          </div>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSearch();
+              }
+            }}
+            placeholder={S.searchPlaceholder}
+            className={
+              "hz-search-input " + (isAR ? "hz-rtl-text" : "hz-ltr-text")
+            }
+            dir={isAR ? "rtl" : "ltr"}
+          />
+          <button className="hz-search-btn" onClick={onSearch}>
+            <Search size={18} />
+          </button>
+        </div>
 
         <div className="hz-header-actions">
-          {/* Currency toggle: USD ⇄ SYP */}
-          <button
-            className="hz-currency-btn"
-            onClick={() =>
-              setCurrency(currency === "USD" ? "SYP" : "USD")
-            }
-          >
-            <Tag size={16} />
-            <span>{currency === "USD" ? "USD / ل.س" : "ل.س / USD"}</span>
-          </button>
-
           <button
             className="hz-lang-btn"
             onClick={() => setLang(lang === "en" ? "ar" : "en")}
@@ -792,20 +740,18 @@ function PromoCarousel() {
   );
 }
 
-/* === FILTER SHEETS === */
-/* Motors Filters – Dubizzle-style chips + sheets, currency-aware */
+/* === FILTERS – REWRITTEN TO USE DRAFTS + APPLY BUTTON === */
 
-function MotorsFilters({ lang, filters, setFilters, currency }) {
+/* MOTORS FILTERS */
+
+function MotorsFilters({ lang, filters, setFilters }) {
   const isAr = lang === "ar";
   const t = (en, ar) => (isAr ? ar : en);
 
   const LABELS = {
     brand: t("Brand", "الماركة"),
     sellerType: t("Seller", "البائع"),
-    price:
-      currency === "USD"
-        ? t("Price (USD)", "السعر (دولار)")
-        : t("Price (SYP)", "السعر (ليرة سورية)"),
+    price: t("Price (USD)", "السعر (دولار)"),
     year: t("Year", "السنة"),
     km: t("Max KM", "أقصى كم"),
     specs: t("Specs", "المواصفات"),
@@ -818,184 +764,164 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
   const KM_MIN = 0;
   const KM_MAX = 500000;
 
-  const priceMin = filters.priceMin ?? PRICE_MIN;
-  const priceMax = filters.priceMax ?? PRICE_MAX;
-  const yearMin = filters.yearMin ?? YEAR_MIN;
-  const yearMax = filters.yearMax ?? YEAR_MAX;
-  const kmMax = filters.mileageMax ?? KM_MAX;
+  // local draft state ONLY
+  const [draftBrand, setDraftBrand] = useState(filters.brand || "");
+  const [draftSellerType, setDraftSellerType] = useState(
+    filters.sellerType || ""
+  );
+  const [draftPriceMin, setDraftPriceMin] = useState(
+    filters.priceMin != null ? String(filters.priceMin) : ""
+  );
+  const [draftPriceMax, setDraftPriceMax] = useState(
+    filters.priceMax != null ? String(filters.priceMax) : ""
+  );
+  const [draftYearMin, setDraftYearMin] = useState(
+    filters.yearMin != null ? String(filters.yearMin) : ""
+  );
+  const [draftYearMax, setDraftYearMax] = useState(
+    filters.yearMax != null ? String(filters.yearMax) : ""
+  );
+  const [draftKmMax, setDraftKmMax] = useState(
+    filters.mileageMax != null ? String(filters.mileageMax) : ""
+  );
+  const [draftSpecs, setDraftSpecs] = useState(filters.specs || "");
 
-  const sheetTitleMap = {
-    brand: LABELS.brand,
-    sellerType: LABELS.sellerType,
-    price: LABELS.price,
-    year: LABELS.year,
-    km: LABELS.km,
-    specs: LABELS.specs,
-  };
+  // sync drafts when parent filters change externally (reset)
+  useEffect(() => {
+    setDraftBrand(filters.brand || "");
+    setDraftSellerType(filters.sellerType || "");
+    setDraftPriceMin(
+      filters.priceMin != null ? String(filters.priceMin) : ""
+    );
+    setDraftPriceMax(
+      filters.priceMax != null ? String(filters.priceMax) : ""
+    );
+    setDraftYearMin(filters.yearMin != null ? String(filters.yearMin) : "");
+    setDraftYearMax(filters.yearMax != null ? String(filters.yearMax) : "");
+    setDraftKmMax(
+      filters.mileageMax != null ? String(filters.mileageMax) : ""
+    );
+    setDraftSpecs(filters.specs || "");
+  }, [
+    filters.brand,
+    filters.sellerType,
+    filters.priceMin,
+    filters.priceMax,
+    filters.yearMin,
+    filters.yearMax,
+    filters.mileageMax,
+    filters.specs,
+  ]);
 
-  const priceSummary =
-    priceMin !== PRICE_MIN || priceMax !== PRICE_MAX
-      ? `${priceMin} - ${
-          priceMax === PRICE_MAX ? t("Any", "أي") : priceMax
-        }`
-      : "";
-
-  const yearSummary =
-    yearMin !== YEAR_MIN || yearMax !== YEAR_MAX
-      ? `${yearMin}${yearMax !== YEAR_MAX ? " - " + yearMax : "+"}`
-      : "";
-
-  const kmSummary = kmMax !== KM_MAX ? `≤ ${kmMax.toLocaleString()}` : "";
-
-  const [activeKey, setActiveKey] = useState(null);
-
-  
-
-  // local draft state for sheet inputs
-  const [draftPriceMin, setDraftPriceMin] = useState("");
-  const [draftPriceMax, setDraftPriceMax] = useState("");
-  const [draftYearMin, setDraftYearMin] = useState("");
-  const [draftYearMax, setDraftYearMax] = useState("");
-  const [draftKmMax, setDraftKmMax] = useState("");
+  const [expandedKey, setExpandedKey] = useState(null);
 
   function chipClass(key) {
-    return "hz-filter-chip " + (activeKey === key ? "hz-filter-chip-active" : "");
+    return (
+      "hz-filter-chip " +
+      (expandedKey === key ? "hz-filter-chip-active" : "")
+    );
   }
-  function openSheet(key) {
-    if (key === "price") {
-      setDraftPriceMin(priceMin === PRICE_MIN ? "" : String(priceMin));
-      setDraftPriceMax(priceMax === PRICE_MAX ? "" : String(priceMax));
-    } else if (key === "year") {
-      setDraftYearMin(yearMin === YEAR_MIN ? "" : String(yearMin));
-      setDraftYearMax(yearMax === YEAR_MAX ? "" : String(yearMax));
-    } else if (key === "km") {
-      setDraftKmMax(kmMax === KM_MAX ? "" : String(kmMax));
-    }
-    setActiveKey(key);
-  }
-  function closeSheet() {
-    setActiveKey(null);
+  function toggleExpand(key) {
+    setExpandedKey((prev) => (prev === key ? null : key));
   }
 
-  function numSanitise(str) {
-    const s = (str ?? "").toString().replace(/[^\d]/g, "");
-    return s;
+  function cleanNumber(str) {
+    return (str ?? "").replace(/[^\d]/g, "");
   }
-  function parseOrUndef(str) {
-    if (str === "" || str == null) return undefined;
+  function parseOrUndefined(str) {
+    if (!str) return undefined;
     const n = Number(str);
     return Number.isFinite(n) ? n : undefined;
   }
 
-  const stopEnter = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
+  // summaries for chips based on committed filters
+  const priceSummary =
+    filters.priceMin != null || filters.priceMax != null
+      ? `${filters.priceMin ?? PRICE_MIN} - ${
+          filters.priceMax == null
+            ? t("Any", "أي")
+            : filters.priceMax === PRICE_MAX
+            ? t("Any", "أي")
+            : filters.priceMax
+        }`
+      : "";
 
-  function commitActiveSheetAndClose() {
-    if (activeKey === "price") {
-      const vMin = parseOrUndef(draftPriceMin);
-      const vMax = parseOrUndef(draftPriceMax);
+  const yearSummary =
+    filters.yearMin != null || filters.yearMax != null
+      ? `${filters.yearMin ?? YEAR_MIN}${
+          filters.yearMax != null ? " - " + filters.yearMax : "+"
+        }`
+      : "";
 
-      setFilters((f) => {
-        const currentMax = f.priceMax ?? PRICE_MAX;
-        const currentMin = f.priceMin ?? PRICE_MIN;
+  const kmSummary =
+    filters.mileageMax != null ? `≤ ${filters.mileageMax.toLocaleString()}` : "";
 
-        const newMin =
-          vMin == null
-            ? PRICE_MIN
-            : Math.max(PRICE_MIN, Math.min(vMax ?? currentMax, vMin));
-        const newMax =
-          vMax == null
-            ? PRICE_MAX
-            : Math.min(PRICE_MAX, Math.max(vMin ?? currentMin, vMax));
+  function applyFilters() {
+    const pMin = parseOrUndefined(cleanNumber(draftPriceMin));
+    const pMax = parseOrUndefined(cleanNumber(draftPriceMax));
+    const yMin = parseOrUndefined(cleanNumber(draftYearMin));
+    const yMax = parseOrUndefined(cleanNumber(draftYearMax));
+    const kMax = parseOrUndefined(cleanNumber(draftKmMax));
 
-        return { ...f, priceMin: newMin, priceMax: newMax };
-      });
-    } else if (activeKey === "year") {
-      const vMin = parseOrUndef(draftYearMin);
-      const vMax = parseOrUndef(draftYearMax);
-
-      setFilters((f) => {
-        const currentMax = f.yearMax ?? YEAR_MAX;
-        const currentMin = f.yearMin ?? YEAR_MIN;
-
-        const newMin =
-          vMin == null
-            ? YEAR_MIN
-            : Math.max(YEAR_MIN, Math.min(vMax ?? currentMax, vMin));
-        const newMax =
-          vMax == null
-            ? YEAR_MAX
-            : Math.min(YEAR_MAX, Math.max(vMin ?? currentMin, vMax));
-
-        return { ...f, yearMin: newMin, yearMax: newMax };
-      });
-    } else if (activeKey === "km") {
-      const v = parseOrUndef(draftKmMax);
-      const clamped =
-        v == null ? KM_MAX : Math.max(KM_MIN, Math.min(KM_MAX, v));
-      setFilters((f) => ({ ...f, mileageMax: clamped }));
-    }
-
-    closeSheet();
+    setFilters((f) => ({
+      ...f,
+      brand: draftBrand || undefined,
+      sellerType: draftSellerType || undefined,
+      specs: draftSpecs || undefined,
+      priceMin:
+        pMin == null
+          ? undefined
+          : Math.max(PRICE_MIN, Math.min(pMin, PRICE_MAX)),
+      priceMax:
+        pMax == null
+          ? undefined
+          : Math.max(PRICE_MIN, Math.min(pMax, PRICE_MAX)),
+      yearMin:
+        yMin == null
+          ? undefined
+          : Math.max(YEAR_MIN, Math.min(yMin, YEAR_MAX)),
+      yearMax:
+        yMax == null
+          ? undefined
+          : Math.max(YEAR_MIN, Math.min(yMax, YEAR_MAX)),
+      mileageMax:
+        kMax == null
+          ? undefined
+          : Math.max(KM_MIN, Math.min(kMax, KM_MAX)),
+    }));
   }
 
   function clearAll() {
-    setFilters({});
+    setDraftBrand("");
+    setDraftSellerType("");
     setDraftPriceMin("");
     setDraftPriceMax("");
     setDraftYearMin("");
     setDraftYearMax("");
     setDraftKmMax("");
-    setActiveKey(null);
-  }
+    setDraftSpecs("");
 
-  function Sheet({ children }) {
-    if (!activeKey) return null;
-    return (
-      <div className="hz-modal-backdrop">
-        <div
-          className="hz-modal hz-modal-large hz-filter-sheet"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="hz-modal-header">
-            <h3>{sheetTitleMap[activeKey] ?? ""}</h3>
-            <button className="hz-close" onClick={closeSheet}>
-              ×
-            </button>
-          </div>
-          <div className="hz-modal-body">{children}</div>
-          <div className="hz-modal-footer hz-modal-footer-between">
-            <button className="hz-secondary" onClick={clearAll}>
-              {isAr ? "مسح الكل" : "Clear all"}
-            </button>
-            <button className="hz-primary" onClick={commitActiveSheetAndClose}>
-              {isAr ? "تم" : "Done"}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    setFilters({
+      brand: undefined,
+      sellerType: undefined,
+      priceMin: undefined,
+      priceMax: undefined,
+      yearMin: undefined,
+      yearMax: undefined,
+      mileageMax: undefined,
+      specs: undefined,
+    });
   }
 
   return (
     <div className="hz-filters">
-      <div className="hz-filters-title-row">
-        <div className="hz-filters-title">{STRINGS[lang].carsFilters}</div>
-        {Object.keys(filters).length > 0 && (
-          <button className="hz-filters-clear-link" onClick={clearAll}>
-            {isAr ? "إعادة تعيين" : "Reset"}
-          </button>
-        )}
-      </div>
+      <div className="hz-filters-title">{STRINGS[lang].carsFilters}</div>
 
+      {/* chips */}
       <div className="hz-filter-chips-scroll">
         <button
           className={chipClass("brand")}
-          onClick={() => openSheet("brand")}
+          onClick={() => toggleExpand("brand")}
         >
           <span className="hz-filter-chip-label">
             {LABELS.brand}
@@ -1006,7 +932,7 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
 
         <button
           className={chipClass("sellerType")}
-          onClick={() => openSheet("sellerType")}
+          onClick={() => toggleExpand("sellerType")}
         >
           <span className="hz-filter-chip-label">
             {LABELS.sellerType}
@@ -1023,7 +949,7 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
 
         <button
           className={chipClass("price")}
-          onClick={() => openSheet("price")}
+          onClick={() => toggleExpand("price")}
         >
           <span className="hz-filter-chip-label">
             {LABELS.price}
@@ -1034,7 +960,7 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
 
         <button
           className={chipClass("year")}
-          onClick={() => openSheet("year")}
+          onClick={() => toggleExpand("year")}
         >
           <span className="hz-filter-chip-label">
             {LABELS.year}
@@ -1043,7 +969,10 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
           </span>
         </button>
 
-        <button className={chipClass("km")} onClick={() => openSheet("km")}>
+        <button
+          className={chipClass("km")}
+          onClick={() => toggleExpand("km")}
+        >
           <span className="hz-filter-chip-label">
             {LABELS.km}
             {kmSummary ? ` · ${kmSummary}` : ""}
@@ -1053,7 +982,7 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
 
         <button
           className={chipClass("specs")}
-          onClick={() => openSheet("specs")}
+          onClick={() => toggleExpand("specs")}
         >
           <span className="hz-filter-chip-label">
             {LABELS.specs}
@@ -1063,337 +992,288 @@ function MotorsFilters({ lang, filters, setFilters, currency }) {
         </button>
       </div>
 
-      <Sheet>
-        {/* BRAND */}
-        {activeKey === "brand" && (
-          <div className="hz-field">
-            <label>{LABELS.brand}</label>
-            <select
-              value={filters.brand || ""}
-              onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  brand: e.target.value || undefined,
-                }))
-              }
-              onKeyDown={stopEnter}
-            >
-              <option value="">{t("Any brand", "أي ماركة")}</option>
-              {CAR_BRANDS.map(
-                (b) =>
-                  b && (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  )
-              )}
-            </select>
-          </div>
-        )}
-
-        {/* SELLER TYPE */}
-        {activeKey === "sellerType" && (
-          <div className="hz-field">
-            <label>{LABELS.sellerType}</label>
-            <select
-              value={filters.sellerType || ""}
-              onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  sellerType: e.target.value || undefined,
-                }))
-              }
-              onKeyDown={stopEnter}
-            >
-              <option value="">{t("Any seller", "أي بائع")}</option>
-              <option value="private">{t("Private", "فرد")}</option>
-              <option value="dealership">{t("Dealership", "معرض")}</option>
-            </select>
-          </div>
-        )}
-
-        {/* PRICE */}
-        {activeKey === "price" && (
-          <div className="hz-field">
-            <label>{LABELS.price}</label>
-            <div className="hz-range-inputs">
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftPriceMin}
-                onKeyDown={stopEnter}
-                onChange={(e) => {
-                  const s = numSanitise(e.target.value);
-                  setDraftPriceMin(s);
-                }}
-                placeholder={t("Min", "أدنى")}
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftPriceMax}
-                onKeyDown={stopEnter}
-                onChange={(e) => {
-                  const s = numSanitise(e.target.value);
-                  setDraftPriceMax(s);
-                }}
-                placeholder={t("Max", "أعلى")}
-              />
+      {/* expanded section */}
+      {expandedKey && (
+        <div className="hz-filter-panel" style={{ marginTop: 6 }}>
+          {expandedKey === "brand" && (
+            <div className="hz-field">
+              <label>{LABELS.brand}</label>
+              <select
+                value={draftBrand}
+                onChange={(e) => setDraftBrand(e.target.value)}
+              >
+                <option value="">{t("Any brand", "أي ماركة")}</option>
+                {CAR_BRANDS.map(
+                  (b) =>
+                    b && (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    )
+                )}
+              </select>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* YEAR */}
-        {activeKey === "year" && (
-          <div className="hz-field">
-            <label>{LABELS.year}</label>
-            <div className="hz-range-inputs">
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftYearMin}
-                onKeyDown={stopEnter}
-                onChange={(e) => {
-                  const s = numSanitise(e.target.value);
-                  setDraftYearMin(s);
-                }}
-                placeholder={t("From", "من")}
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftYearMax}
-                onKeyDown={stopEnter}
-                onChange={(e) => {
-                  const s = numSanitise(e.target.value);
-                  setDraftYearMax(s);
-                }}
-                placeholder={t("To", "إلى")}
-              />
+          {expandedKey === "sellerType" && (
+            <div className="hz-field">
+              <label>{LABELS.sellerType}</label>
+              <select
+                value={draftSellerType}
+                onChange={(e) => setDraftSellerType(e.target.value)}
+              >
+                <option value="">{t("Any seller", "أي بائع")}</option>
+                <option value="private">{t("Private", "فرد")}</option>
+                <option value="dealership">{t("Dealership", "معرض")}</option>
+              </select>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* MAX KM */}
-        {activeKey === "km" && (
-          <div className="hz-field">
-            <label>{LABELS.km}</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              className="hz-input-scroller"
-              value={draftKmMax}
-              onKeyDown={stopEnter}
-              onChange={(e) => {
-                const s = numSanitise(e.target.value);
-                setDraftKmMax(s);
-              }}
-              placeholder={t("Max kilometers", "أقصى عدد كيلومترات")}
-            />
-          </div>
-        )}
-
-        {/* SPECS */}
-        {activeKey === "specs" && (
-          <div className="hz-field">
-            <label>{LABELS.specs}</label>
-            <div className="hz-specs-options">
-              {["GCC", "EU", "USA", "Japan"].map((s) => (
-                <button
-                  key={s}
-                  className={
-                    "hz-spec-pill " +
-                    (filters.specs === s ? "hz-spec-pill-active" : "")
+          {expandedKey === "price" && (
+            <div className="hz-field">
+              <label>{LABELS.price}</label>
+              <div
+                className="hz-range-inputs"
+                style={{ display: "flex", gap: 6 }}
+              >
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftPriceMin}
+                  onChange={(e) =>
+                    setDraftPriceMin(cleanNumber(e.target.value))
                   }
-                  onClick={() =>
-                    setFilters((f) => ({
-                      ...f,
-                      specs: f.specs === s ? undefined : s,
-                    }))
+                  placeholder={t("Min", "أدنى")}
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftPriceMax}
+                  onChange={(e) =>
+                    setDraftPriceMax(cleanNumber(e.target.value))
                   }
-                >
-                  {s === "Japan" ? t("Japan", "ياباني") : s}
-                </button>
-              ))}
+                  placeholder={t("Max", "أعلى")}
+                />
+              </div>
             </div>
+          )}
+
+          {expandedKey === "year" && (
+            <div className="hz-field">
+              <label>{LABELS.year}</label>
+              <div
+                className="hz-range-inputs"
+                style={{ display: "flex", gap: 6 }}
+              >
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftYearMin}
+                  onChange={(e) =>
+                    setDraftYearMin(cleanNumber(e.target.value))
+                  }
+                  placeholder={t("From", "من")}
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftYearMax}
+                  onChange={(e) =>
+                    setDraftYearMax(cleanNumber(e.target.value))
+                  }
+                  placeholder={t("To", "إلى")}
+                />
+              </div>
+            </div>
+          )}
+
+          {expandedKey === "km" && (
+            <div className="hz-field">
+              <label>{LABELS.km}</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="hz-input-scroller"
+                value={draftKmMax}
+                onChange={(e) =>
+                  setDraftKmMax(cleanNumber(e.target.value))
+                }
+                placeholder={t("Max kilometers", "أقصى عدد كيلومترات")}
+              />
+            </div>
+          )}
+
+          {expandedKey === "specs" && (
+            <div className="hz-field">
+              <label>{LABELS.specs}</label>
+              <div className="hz-specs-options">
+                {["GCC", "EU", "USA", "Japan"].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={
+                      "hz-spec-pill " +
+                      (draftSpecs === s ? "hz-spec-pill-active" : "")
+                    }
+                    onClick={() =>
+                      setDraftSpecs((prev) => (prev === s ? "" : s))
+                    }
+                  >
+                    {s === "Japan" ? t("Japan", "ياباني") : s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div
+            className="hz-filter-actions"
+            style={{
+              marginTop: 8,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 8,
+            }}
+          >
+            <button
+              type="button"
+              className="hz-secondary"
+              onClick={clearAll}
+            >
+              {t("Clear", "مسح الكل")}
+            </button>
+            <button
+              type="button"
+              className="hz-primary"
+              onClick={applyFilters}
+            >
+              {t("Apply", "تطبيق")}
+            </button>
           </div>
-        )}
-      </Sheet>
+        </div>
+      )}
     </div>
   );
 }
 
-/* Property Filters – currency-aware price */
+/* PROPERTY FILTERS */
 
-function PropertyFilters({ filters, setFilters, lang, currency }) {
+function PropertyFilters({ filters, setFilters, lang }) {
   const S = STRINGS[lang];
-  const [activeKey, setActiveKey] = useState(null);
   const isAr = lang === "ar";
 
-  const [draftPriceMin, setDraftPriceMin] = useState("");
-  const [draftPriceMax, setDraftPriceMax] = useState("");
-  const [draftAreaMin, setDraftAreaMin] = useState("");
-  const [draftAreaMax, setDraftAreaMax] = useState("");
+  const [expandedKey, setExpandedKey] = useState(null);
+
+  const [draftPriceMin, setDraftPriceMin] = useState(
+    filters.priceMin != null ? String(filters.priceMin) : ""
+  );
+  const [draftPriceMax, setDraftPriceMax] = useState(
+    filters.priceMax != null ? String(filters.priceMax) : ""
+  );
+  const [draftAreaMin, setDraftAreaMin] = useState(
+    filters.areaMin != null ? String(filters.areaMin) : ""
+  );
+  const [draftAreaMax, setDraftAreaMax] = useState(
+    filters.areaMax != null ? String(filters.areaMax) : ""
+  );
+
+  useEffect(() => {
+    setDraftPriceMin(
+      filters.priceMin != null ? String(filters.priceMin) : ""
+    );
+    setDraftPriceMax(
+      filters.priceMax != null ? String(filters.priceMax) : ""
+    );
+    setDraftAreaMin(
+      filters.areaMin != null ? String(filters.areaMin) : ""
+    );
+    setDraftAreaMax(
+      filters.areaMax != null ? String(filters.areaMax) : ""
+    );
+  }, [
+    filters.priceMin,
+    filters.priceMax,
+    filters.areaMin,
+    filters.areaMax,
+  ]);
 
   function chipClass(key) {
-    return "hz-filter-chip " + (activeKey === key ? "hz-filter-chip-active" : "");
+    return (
+      "hz-filter-chip " +
+      (expandedKey === key ? "hz-filter-chip-active" : "")
+    );
   }
-  function openSheet(key) {
-    if (key === "priceMin") {
-      setDraftPriceMin(filters.priceMin ?? "");
-    } else if (key === "priceMax") {
-      setDraftPriceMax(filters.priceMax ?? "");
-    } else if (key === "areaMin") {
-      setDraftAreaMin(filters.areaMin ?? "");
-    } else if (key === "areaMax") {
-      setDraftAreaMax(filters.areaMax ?? "");
-    }
-    setActiveKey(key);
-  }
-  function closeSheet() {
-    setActiveKey(null);
+  function toggleExpand(key) {
+    setExpandedKey((prev) => (prev === key ? null : key));
   }
 
-  function numSanitise(str) {
-    const s = (str ?? "").toString().replace(/[^\d]/g, "");
-    return s;
+  function cleanNumber(str) {
+    return (str ?? "").replace(/[^\d]/g, "");
   }
-  function parseOrUndef(str) {
-    if (str === "" || str == null) return undefined;
+  function parseOrUndefined(str) {
+    if (!str) return undefined;
     const n = Number(str);
     return Number.isFinite(n) ? n : undefined;
   }
-  const stopEnter = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
 
-  const titles = {
-    priceMin:
-      currency === "USD"
-        ? isAr
-          ? "الحد الأدنى للسعر (دولار)"
-          : "Minimum Price (USD)"
-        : isAr
-        ? "الحد الأدنى للسعر (ليرة سورية)"
-        : "Minimum Price (SYP)",
-    priceMax:
-      currency === "USD"
-        ? isAr
-          ? "الحد الأعلى للسعر (دولار)"
-          : "Maximum Price (USD)"
-        : isAr
-        ? "الحد الأعلى للسعر (ليرة سورية)"
-        : "Maximum Price (SYP)",
-    areaMin: isAr ? "الحد الأدنى للمساحة" : "Minimum Area",
-    areaMax: isAr ? "الحد الأعلى للمساحة" : "Maximum Area",
-  };
+  function applyFilters() {
+    const pMin = parseOrUndefined(cleanNumber(draftPriceMin));
+    const pMax = parseOrUndefined(cleanNumber(draftPriceMax));
+    const aMin = parseOrUndefined(cleanNumber(draftAreaMin));
+    const aMax = parseOrUndefined(cleanNumber(draftAreaMax));
 
-  function commitActiveSheetAndClose() {
-    if (activeKey === "priceMin") {
-      const v = parseOrUndef(draftPriceMin);
-      setFilters((f) => ({ ...f, priceMin: v }));
-    } else if (activeKey === "priceMax") {
-      const v = parseOrUndef(draftPriceMax);
-      setFilters((f) => ({ ...f, priceMax: v }));
-    } else if (activeKey === "areaMin") {
-      const v = parseOrUndef(draftAreaMin);
-      setFilters((f) => ({ ...f, areaMin: v }));
-    } else if (activeKey === "areaMax") {
-      const v = parseOrUndef(draftAreaMax);
-      setFilters((f) => ({ ...f, areaMax: v }));
-    }
-    closeSheet();
+    setFilters((f) => ({
+      ...f,
+      priceMin: pMin,
+      priceMax: pMax,
+      areaMin: aMin,
+      areaMax: aMax,
+    }));
   }
 
   function clearAll() {
-    setFilters({});
     setDraftPriceMin("");
     setDraftPriceMax("");
     setDraftAreaMin("");
     setDraftAreaMax("");
-    setActiveKey(null);
-  }
-
-  function Sheet({ children }) {
-    if (!activeKey) return null;
-    return (
-      <div className="hz-modal-backdrop">
-        <div
-          className="hz-modal hz-modal-large hz-filter-sheet"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="hz-modal-header">
-            <h3>{titles[activeKey]}</h3>
-            <button className="hz-close" onClick={closeSheet}>
-              ×
-            </button>
-          </div>
-          <div className="hz-modal-body">{children}</div>
-          <div className="hz-modal-footer hz-modal-footer-between">
-            <button className="hz-secondary" onClick={clearAll}>
-              {isAr ? "مسح الكل" : "Clear all"}
-            </button>
-            <button className="hz-primary" onClick={commitActiveSheetAndClose}>
-              {isAr ? "تم" : "Done"}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    setFilters({
+      priceMin: undefined,
+      priceMax: undefined,
+      areaMin: undefined,
+      areaMax: undefined,
+    });
   }
 
   return (
     <div className="hz-filters">
-      <div className="hz-filters-title-row">
-        <div className="hz-filters-title">{S.propertyFilters}</div>
-        {Object.keys(filters).length > 0 && (
-          <button className="hz-filters-clear-link" onClick={clearAll}>
-            {isAr ? "إعادة تعيين" : "Reset"}
-          </button>
-        )}
-      </div>
+      <div className="hz-filters-title">{S.propertyFilters}</div>
 
       <div className="hz-filter-chips-scroll">
         <button
           className={chipClass("priceMin")}
-          onClick={() => openSheet("priceMin")}
+          onClick={() => toggleExpand("priceMin")}
         >
-          {currency === "USD"
-            ? isAr
-              ? "أدنى سعر (دولار)"
-              : "Min Price (USD)"
-            : isAr
-            ? "أدنى سعر (ليرة سورية)"
-            : "Min Price (SYP)"}
+          {isAr ? "أدنى سعر" : "Min Price"}
           {filters.priceMin ? ` · ${filters.priceMin}` : ""}
           <ChevronDown className="hz-filter-chip-arrow" />
         </button>
 
         <button
           className={chipClass("priceMax")}
-          onClick={() => openSheet("priceMax")}
+          onClick={() => toggleExpand("priceMax")}
         >
-          {currency === "USD"
-            ? isAr
-              ? "أعلى سعر (دولار)"
-              : "Max Price (USD)"
-            : isAr
-            ? "أعلى سعر (ليرة سورية)"
-            : "Max Price (SYP)"}
+          {isAr ? "أعلى سعر" : "Max Price"}
           {filters.priceMax ? ` · ${filters.priceMax}` : ""}
           <ChevronDown className="hz-filter-chip-arrow" />
         </button>
 
         <button
           className={chipClass("areaMin")}
-          onClick={() => openSheet("areaMin")}
+          onClick={() => toggleExpand("areaMin")}
         >
           {isAr ? "أقل مساحة" : "Min Area"}
           {filters.areaMin ? ` · ${filters.areaMin}` : ""}
@@ -1402,7 +1282,7 @@ function PropertyFilters({ filters, setFilters, lang, currency }) {
 
         <button
           className={chipClass("areaMax")}
-          onClick={() => openSheet("areaMax")}
+          onClick={() => toggleExpand("areaMax")}
         >
           {isAr ? "أكبر مساحة" : "Max Area"}
           {filters.areaMax ? ` · ${filters.areaMax}` : ""}
@@ -1410,83 +1290,110 @@ function PropertyFilters({ filters, setFilters, lang, currency }) {
         </button>
       </div>
 
-      <Sheet>
-        {activeKey === "priceMin" && (
-          <div className="hz-field">
-            <label>{titles.priceMin}</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              className="hz-input-scroller"
-              value={draftPriceMin}
-              onKeyDown={stopEnter}
-              onChange={(e) => {
-                const s = numSanitise(e.target.value);
-                setDraftPriceMin(s);
-              }}
-              placeholder={isAr ? "أدنى سعر" : "Min price"}
-            />
-          </div>
-        )}
+      {expandedKey && (
+        <div className="hz-filter-panel" style={{ marginTop: 6 }}>
+          {expandedKey === "priceMin" && (
+            <div className="hz-field">
+              <label>
+                {isAr ? "الحد الأدنى للسعر" : "Minimum Price"}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="hz-input-scroller"
+                value={draftPriceMin}
+                onChange={(e) =>
+                  setDraftPriceMin(cleanNumber(e.target.value))
+                }
+                placeholder={isAr ? "أدنى سعر" : "Min price"}
+              />
+            </div>
+          )}
 
-        {activeKey === "priceMax" && (
-          <div className="hz-field">
-            <label>{titles.priceMax}</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              className="hz-input-scroller"
-              value={draftPriceMax}
-              onKeyDown={stopEnter}
-              onChange={(e) => {
-                const s = numSanitise(e.target.value);
-                setDraftPriceMax(s);
-              }}
-              placeholder={isAr ? "أعلى سعر" : "Max price"}
-            />
-          </div>
-        )}
+          {expandedKey === "priceMax" && (
+            <div className="hz-field">
+              <label>
+                {isAr ? "الحد الأعلى للسعر" : "Maximum Price"}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="hz-input-scroller"
+                value={draftPriceMax}
+                onChange={(e) =>
+                  setDraftPriceMax(cleanNumber(e.target.value))
+                }
+                placeholder={isAr ? "أعلى سعر" : "Max price"}
+              />
+            </div>
+          )}
 
-        {activeKey === "areaMin" && (
-          <div className="hz-field">
-            <label>
-              {isAr ? "الحد الأدنى للمساحة (قدم²)" : "Minimum Area (sqft)"}
-            </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              className="hz-input-scroller"
-              value={draftAreaMin}
-              onKeyDown={stopEnter}
-              onChange={(e) => {
-                const s = numSanitise(e.target.value);
-                setDraftAreaMin(s);
-              }}
-              placeholder={isAr ? "أقل مساحة" : "Min sqft"}
-            />
-          </div>
-        )}
+          {expandedKey === "areaMin" && (
+            <div className="hz-field">
+              <label>
+                {isAr
+                  ? "الحد الأدنى للمساحة (قدم²)"
+                  : "Minimum Area (sqft)"}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="hz-input-scroller"
+                value={draftAreaMin}
+                onChange={(e) =>
+                  setDraftAreaMin(cleanNumber(e.target.value))
+                }
+                placeholder={isAr ? "أقل مساحة" : "Min sqft"}
+              />
+            </div>
+          )}
 
-        {activeKey === "areaMax" && (
-          <div className="hz-field">
-            <label>
-              {isAr ? "الحد الأعلى للمساحة (قدم²)" : "Maximum Area (sqft)"}
-            </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              className="hz-input-scroller"
-              value={draftAreaMax}
-              onKeyDown={stopEnter}
-              onChange={(e) => {
-                const s = numSanitise(e.target.value);
-                setDraftAreaMax(s);
-              }}
-              placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
-            />
+          {expandedKey === "areaMax" && (
+            <div className="hz-field">
+              <label>
+                {isAr
+                  ? "الحد الأعلى للمساحة (قدم²)"
+                  : "Maximum Area (sqft)"}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="hz-input-scroller"
+                value={draftAreaMax}
+                onChange={(e) =>
+                  setDraftAreaMax(cleanNumber(e.target.value))
+                }
+                placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
+              />
+            </div>
+          )}
+
+          <div
+            className="hz-filter-actions"
+            style={{
+              marginTop: 8,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 8,
+            }}
+          >
+            <button
+              type="button"
+              className="hz-secondary"
+              onClick={clearAll}
+            >
+              {isAr ? "مسح الكل" : "Clear"}
+            </button>
+            <button
+              type="button"
+              className="hz-primary"
+              onClick={applyFilters}
+            >
+              {isAr ? "تطبيق" : "Apply"}
+            </button>
           </div>
-        )}
-      </Sheet>
+        </div>
+      )}
     </div>
   );
 }
@@ -1502,7 +1409,6 @@ function CategoryPage({
   activeSub,
   lang,
   onOpenListing,
-  currency,
 }) {
   const isMotors = cat.key === "motors";
   const isProp = !!cat.isProperty;
@@ -1515,25 +1421,33 @@ function CategoryPage({
       if (l.subcategory !== activeSub) return false;
     }
 
-    const priceValue = getPriceInCurrency(l, currency) ?? 0;
-
     if (isMotors) {
       if (l.subcategory !== "cars") return false;
       if (filters.brand && l.brand !== filters.brand) return false;
-      if (filters.sellerType && l.sellerType !== filters.sellerType) return false;
-      if (filters.priceMin != null && priceValue < filters.priceMin) return false;
-      if (filters.priceMax != null && priceValue > filters.priceMax) return false;
-      if (filters.yearMin != null && (l.year || 0) < filters.yearMin) return false;
-      if (filters.yearMax != null && (l.year || 0) > filters.yearMax) return false;
-      if (filters.mileageMax != null && (l.mileage || 0) > filters.mileageMax) return false;
+      if (filters.sellerType && l.sellerType !== filters.sellerType)
+        return false;
+      if (filters.priceMin != null && (l.price || 0) < filters.priceMin)
+        return false;
+      if (filters.priceMax != null && (l.price || 0) > filters.priceMax)
+        return false;
+      if (filters.yearMin != null && (l.year || 0) < filters.yearMin)
+        return false;
+      if (filters.yearMax != null && (l.year || 0) > filters.yearMax)
+        return false;
+      if (filters.mileageMax != null && (l.mileage || 0) > filters.mileageMax)
+        return false;
       if (filters.specs && l.specs !== filters.specs) return false;
     }
 
     if (isProp) {
-      if (filters.priceMin != null && priceValue < filters.priceMin) return false;
-      if (filters.priceMax != null && priceValue > filters.priceMax) return false;
-      if (filters.areaMin != null && (l.areaSqft || 0) < filters.areaMin) return false;
-      if (filters.areaMax != null && (l.areaSqft || 0) > filters.areaMax) return false;
+      if (filters.priceMin != null && (l.price || 0) < filters.priceMin)
+        return false;
+      if (filters.priceMax != null && (l.price || 0) > filters.priceMax)
+        return false;
+      if (filters.areaMin != null && (l.areaSqft || 0) < filters.areaMin)
+        return false;
+      if (filters.areaMax != null && (l.areaSqft || 0) > filters.areaMax)
+        return false;
     }
 
     return true;
@@ -1551,21 +1465,11 @@ function CategoryPage({
       <AdBanner lang={lang} />
 
       {isMotors && (
-        <MotorsFilters
-          lang={lang}
-          filters={filters}
-          setFilters={setFilters}
-          currency={currency}
-        />
+        <MotorsFilters lang={lang} filters={filters} setFilters={setFilters} />
       )}
 
       {isProp && (
-        <PropertyFilters
-          lang={lang}
-          filters={filters}
-          setFilters={setFilters}
-          currency={currency}
-        />
+        <PropertyFilters lang={lang} filters={filters} setFilters={setFilters} />
       )}
 
       <div className="hz-grid">
@@ -1577,7 +1481,6 @@ function CategoryPage({
             onToggleFav={toggleFav}
             onOpen={onOpenListing}
             lang={lang}
-            currency={currency}
           />
         ))}
       </div>
@@ -1594,7 +1497,6 @@ function HomeGrid({
   toggleFav,
   onOpenCategory,
   onOpenListing,
-  currency,
 }) {
   const S = STRINGS[lang];
 
@@ -1639,7 +1541,6 @@ function HomeGrid({
             onToggleFav={toggleFav}
             onOpen={onOpenListing}
             lang={lang}
-            currency={currency}
           />
         ))}
       </div>
@@ -1649,14 +1550,13 @@ function HomeGrid({
 
 /* LISTING DETAIL */
 
-function ListingDetail({ item, onBack, lang, currency }) {
+function ListingDetail({ item, onBack, lang }) {
   const S = STRINGS[lang];
   const localizedTitle =
     lang === "ar" && item.titleAr ? item.titleAr : item.title;
   const localizedDesc = lang === "ar" && item.descAr ? item.descAr : item.desc;
   const localizedLocation =
     lang === "ar" && item.locationAr ? item.locationAr : item.location;
-  const priceText = getPriceDisplay(item, currency);
 
   return (
     <div className="hz-detail">
@@ -1687,7 +1587,10 @@ function ListingDetail({ item, onBack, lang, currency }) {
       </div>
 
       <div className="hz-detail-body">
-        <div className="hz-detail-price">{priceText}</div>
+        <div className="hz-detail-price">
+          {item.currency}{" "}
+          {item.price != null ? item.price.toLocaleString() : ""}
+        </div>
         <div className="hz-detail-title">{localizedTitle}</div>
 
         <div className="hz-detail-meta-row">
@@ -1911,13 +1814,6 @@ function AccountSheet({ open, onClose, setUser }) {
     onClose();
   }
 
-  const stopEnter = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
   return (
     <div className="hz-modal-backdrop">
       <div className="hz-modal">
@@ -1944,7 +1840,6 @@ function AccountSheet({ open, onClose, setUser }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              onKeyDown={stopEnter}
             />
           </div>
           <div className="hz-field">
@@ -1953,7 +1848,6 @@ function AccountSheet({ open, onClose, setUser }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              onKeyDown={stopEnter}
             />
           </div>
         </div>
@@ -1972,7 +1866,7 @@ function AccountSheet({ open, onClose, setUser }) {
 
 /* POST DIALOG */
 
-function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
+function PostDialog({ open, onClose, lang, onCreateListing }) {
   const S = STRINGS[lang];
 
   const [category, setCategory] = useState("");
@@ -2062,7 +1956,7 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
       title,
       titleAr: titleAr || undefined,
       price: price ? Number(price) : 0,
-      currency: currency,
+      currency: "USD",
       category,
       subcategory,
       location: city || "Damascus",
@@ -2089,33 +1983,13 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
     alert(
       "Listing created. " +
         (fee.amount
-          ? "A $" +
-            fee.amount +
-            " fee would apply (" +
-            fee.reason +
-            ") in production."
+          ? "A $" + fee.amount + " fee would apply (" + fee.reason + ") in production."
           : "This category is free to post.")
     );
 
     resetForm();
     onClose();
   }
-
-  const stopEnter = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  const priceLabel =
-    currency === "USD"
-      ? lang === "ar"
-        ? "السعر (دولار)"
-        : "Price (USD)"
-      : lang === "ar"
-      ? "السعر (ليرة سورية)"
-      : "Price (SYP)";
 
   return (
     <div className="hz-modal-backdrop">
@@ -2135,7 +2009,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                 setCategory(e.target.value);
                 setSubcategory("");
               }}
-              onKeyDown={stopEnter}
             >
               <option value="">
                 {lang === "ar" ? "اختر القسم" : "Select category"}
@@ -2154,7 +2027,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
               value={subcategory}
               onChange={(e) => setSubcategory(e.target.value)}
               disabled={!catDef}
-              onKeyDown={stopEnter}
             >
               <option value="">
                 {catDef
@@ -2181,7 +2053,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Listing title"
-              onKeyDown={stopEnter}
             />
           </div>
 
@@ -2191,21 +2062,17 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
               value={titleAr}
               onChange={(e) => setTitleAr(e.target.value)}
               placeholder="عنوان الإعلان بالعربية"
-              onKeyDown={stopEnter}
             />
           </div>
 
           <div className="hz-field">
-            <label>{priceLabel}</label>
+            <label>Price (optional)</label>
             <input
               type="text"
               inputMode="numeric"
               value={price}
-              onChange={(e) =>
-                setPrice(e.target.value.replace(/[^\d]/g, ""))
-              }
+              onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
               placeholder="Price"
-              onKeyDown={stopEnter}
             />
           </div>
 
@@ -2215,7 +2082,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               placeholder="+9639xxxxxxxx"
-              onKeyDown={stopEnter}
             />
           </div>
 
@@ -2224,7 +2090,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              onKeyDown={stopEnter}
             >
               <option value="">
                 {lang === "ar" ? "اختر المدينة" : "Select city"}
@@ -2245,7 +2110,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                   placeholder="e.g. Mercedes"
-                  onKeyDown={stopEnter}
                 />
               </div>
               <div className="hz-field">
@@ -2254,7 +2118,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   placeholder="e.g. C-Class"
-                  onKeyDown={stopEnter}
                 />
               </div>
               <div className="hz-field">
@@ -2266,7 +2129,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                   onChange={(e) =>
                     setYear(e.target.value.replace(/[^\d]/g, ""))
                   }
-                  onKeyDown={stopEnter}
                 />
               </div>
               <div className="hz-field">
@@ -2274,12 +2136,9 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                 <select
                   value={sellerType}
                   onChange={(e) => setSellerType(e.target.value)}
-                  onKeyDown={stopEnter}
                 >
                   <option value="">
-                    {lang === "ar"
-                      ? "اختر نوع البائع"
-                      : "Select"}
+                    {lang === "ar" ? "اختر نوع البائع" : "Select"}
                   </option>
                   <option value="private">
                     {lang === "ar" ? "فرد" : "Private"}
@@ -2298,7 +2157,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                   onChange={(e) =>
                     setMileage(e.target.value.replace(/[^\d]/g, ""))
                   }
-                  onKeyDown={stopEnter}
                 />
               </div>
               <div className="hz-field">
@@ -2307,7 +2165,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                   value={specs}
                   onChange={(e) => setSpecs(e.target.value)}
                   placeholder="e.g. GCC"
-                  onKeyDown={stopEnter}
                 />
               </div>
               <div className="hz-field">
@@ -2316,7 +2173,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                   value={vin}
                   onChange={(e) => setVin(e.target.value)}
                   placeholder="Vehicle VIN"
-                  onKeyDown={stopEnter}
                 />
               </div>
             </>
@@ -2324,9 +2180,7 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
 
           {isAnyProperty(category) && (
             <div className="hz-field">
-              <label>
-                {lang === "ar" ? "المساحة (قدم²)" : "Area (sqft)"}
-              </label>
+              <label>{lang === "ar" ? "المساحة (قدم²)" : "Area (sqft)"}</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -2334,19 +2188,13 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
                 onChange={(e) =>
                   setArea(e.target.value.replace(/[^\d]/g, ""))
                 }
-                onKeyDown={stopEnter}
               />
             </div>
           )}
 
           <div className="hz-field hz-field-full">
             <label>Images</label>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={onImagesChange}
-            />
+            <input type="file" multiple accept="image/*" onChange={onImagesChange} />
             {images && images.length ? (
               <div className="hz-images-count">
                 {images.length} file(s) selected
@@ -2361,7 +2209,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               placeholder="Details about your listing..."
-              onKeyDown={stopEnter}
             />
           </div>
 
@@ -2372,7 +2219,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
               value={descAr}
               onChange={(e) => setDescAr(e.target.value)}
               placeholder="تفاصيل الإعلان بالعربية..."
-              onKeyDown={stopEnter}
             />
           </div>
         </div>
@@ -2380,11 +2226,7 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
         <div className="hz-modal-footer">
           <div className="hz-fee-label">
             {fee.amount
-              ? "Posting fee: $" +
-                fee.amount +
-                " (" +
-                fee.reason +
-                ")"
+              ? "Posting fee: $" + fee.amount + " (" + fee.reason + ")"
               : "This category is free to post."}
           </div>
           <div className="hz-modal-actions">
@@ -2404,10 +2246,7 @@ function PostDialog({ open, onClose, lang, onCreateListing, currency }) {
 /* ROOT APP */
 
 export default function App() {
-  // Arabic first by default
-  const [lang, setLang] = useState("ar");
-  const [currency, setCurrency] = useState("USD");
-
+  const [lang, setLang] = useState("en"); // set to "ar" if you want Arabic by default
   const [activeTab, setActiveTab] = useState("home");
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -2496,27 +2335,13 @@ export default function App() {
   const showFavs = !activeCategory && activeTab === "favs";
 
   return (
-    <div
-      className="hz-root"
-      onKeyDownCapture={(e) => {
-        if (
-          e.key === "Enter" &&
-          (e.target.closest(".hz-modal") || e.target.closest(".hz-filter-sheet"))
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }}
-    >
+    <div className="hz-root">
       <Header
         q={search}
         setQ={setSearch}
         onSearch={handleSearch}
         lang={lang}
         setLang={setLang}
-        disableEnterSearch={accountOpen || postOpen}
-        currency={currency}
-        setCurrency={setCurrency}
       />
 
       <main className="hz-main">
@@ -2525,7 +2350,6 @@ export default function App() {
             item={selectedListing}
             onBack={() => setSelectedListing(null)}
             lang={lang}
-            currency={currency}
           />
         ) : (
           <>
@@ -2539,7 +2363,6 @@ export default function App() {
                 activeSub={activeSub}
                 lang={lang}
                 onOpenListing={(item) => setSelectedListing(item)}
-                currency={currency}
               />
             )}
 
@@ -2560,7 +2383,6 @@ export default function App() {
                         onToggleFav={toggleFav}
                         onOpen={(item) => setSelectedListing(item)}
                         lang={lang}
-                        currency={currency}
                       />
                     ))}
                   </div>
@@ -2580,7 +2402,6 @@ export default function App() {
                 toggleFav={toggleFav}
                 onOpenCategory={openCategory}
                 onOpenListing={(item) => setSelectedListing(item)}
-                currency={currency}
               />
             )}
 
@@ -2598,7 +2419,6 @@ export default function App() {
                       onToggleFav={toggleFav}
                       onOpen={(item) => setSelectedListing(item)}
                       lang={lang}
-                      currency={currency}
                     />
                   ))}
                 </div>
@@ -2659,7 +2479,6 @@ export default function App() {
         onClose={() => setPostOpen(false)}
         lang={lang}
         onCreateListing={handleCreateListing}
-        currency={currency}
       />
     </div>
   );
