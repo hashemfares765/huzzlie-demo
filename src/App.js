@@ -533,21 +533,20 @@ function Header({
   return (
     <div className="hz-header">
       <div className="hz-header-inner">
-        {/* Logo – click = go home */}
-        <button
-          type="button"
-          className="hz-logo-dot hz-logo-btn"
-          onClick={onLogoClick}
-        >
-          <img
-            src="/huzzlie-logo.png"
-            alt="Huzzlie"
-            className="hz-logo-img"
-          />
-        </button>
-
-        {/* Search bar */}
+        {/* Search bar with logo inside */}
         <div className="hz-search-wrap">
+          <button
+            type="button"
+            className="hz-logo-in-search"
+            onClick={onLogoClick}
+          >
+            <img
+              src="/huzzlie-logo.png"
+              alt="Huzzlie"
+              className="hz-logo-img"
+            />
+          </button>
+
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -589,38 +588,6 @@ function Header({
   );
 }
 
-
-function BottomNav({ active, setActive, onPost, onAccount, lang }) {
-  const S = STRINGS[lang];
-
-  function Item({ id, icon: Icon, label, onClick }) {
-    return (
-      <button
-        className={
-          "hz-nav-item " + (active === id ? "hz-nav-item-active" : "")
-        }
-        onClick={
-          onClick ||
-          (() => {
-            setActive(id);
-          })
-        }
-      >
-        <Icon size={22} />
-        <span>{label}</span>
-      </button>
-    );
-  }
-
-  return (
-    <div className="hz-bottom-nav">
-      <Item id="home" icon={Home} label={S.home} />
-      <Item id="favs" icon={Heart} label={S.favourites} />
-      <Item id="post" icon={PlusCircle} label={S.placeListing} onClick={onPost} />
-      <Item id="account" icon={User} label={S.account} onClick={onAccount} />
-    </div>
-  );
-}
 
 /* PROMO CAROUSEL */
 
@@ -1771,6 +1738,15 @@ function AccountPage({ user, listings })
     confirmPassword: "",
   });
 
+    const [settings, setSettings] = useState({
+    language: "auto", // "auto", "ar", "en"
+    emailUpdates: true,
+    whatsappUpdates: true,
+    showPublicProfile: true,
+    showPhoneOnAds: true,
+  });
+
+
   function SectionShell({ title, children }) {
     return (
       <div className="hz-page hz-account-section">
@@ -2050,6 +2026,97 @@ function AccountPage({ user, listings })
     );
   }
 
+  if (section === "settings") {
+    return (
+      <SectionShell title="Account settings">
+        <div className="hz-field">
+          <label>Preferred language</label>
+          <select
+            value={settings.language}
+            onChange={(e) =>
+              setSettings((s) => ({ ...s, language: e.target.value }))
+            }
+          >
+            <option value="auto">Match app language</option>
+            <option value="ar">Arabic</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        <div className="hz-account-settings-group">
+          <div className="hz-account-settings-title">Notifications</div>
+          <label className="hz-toggle-row">
+            <input
+              type="checkbox"
+              checked={settings.emailUpdates}
+              onChange={(e) =>
+                setSettings((s) => ({
+                  ...s,
+                  emailUpdates: e.target.checked,
+                }))
+              }
+            />
+            <span>Email updates about my ads</span>
+          </label>
+          <label className="hz-toggle-row">
+            <input
+              type="checkbox"
+              checked={settings.whatsappUpdates}
+              onChange={(e) =>
+                setSettings((s) => ({
+                  ...s,
+                  whatsappUpdates: e.target.checked,
+                }))
+              }
+            />
+            <span>WhatsApp alerts for new messages</span>
+          </label>
+        </div>
+
+        <div className="hz-account-settings-group">
+          <div className="hz-account-settings-title">Privacy</div>
+          <label className="hz-toggle-row">
+            <input
+              type="checkbox"
+              checked={settings.showPublicProfile}
+              onChange={(e) =>
+                setSettings((s) => ({
+                  ...s,
+                  showPublicProfile: e.target.checked,
+                }))
+              }
+            />
+            <span>Show my public profile to other users</span>
+          </label>
+          <label className="hz-toggle-row">
+            <input
+              type="checkbox"
+              checked={settings.showPhoneOnAds}
+              onChange={(e) =>
+                setSettings((s) => ({
+                  ...s,
+                  showPhoneOnAds: e.target.checked,
+                }))
+              }
+            />
+            <span>Show phone number on my ads</span>
+          </label>
+        </div>
+
+        <div className="hz-account-section-actions">
+          <button
+            className="hz-primary"
+            onClick={() =>
+              alert("Account settings saved (demo – backend to come).")
+            }
+          >
+            Save settings
+          </button>
+        </div>
+      </SectionShell>
+    );
+  }
+
 
   // MAIN ACCOUNT MENU
   return (
@@ -2131,12 +2198,12 @@ function AccountPage({ user, listings })
         </button>
 
         <button
-          className="hz-account-item"
-          onClick={() => alert("General account settings (demo).")}
-        >
-          <Settings size={18} />
-          <span>Account settings</span>
-        </button>
+  className="hz-account-item"
+  onClick={() => setSection("settings")}
+>
+  <Settings size={18} />
+  <span>Account settings</span>
+</button>
 
         <button
           className="hz-account-item hz-account-danger"
@@ -2669,6 +2736,35 @@ function IntroScreen() {
 
 
 /* ROOT APP */
+
+function BottomNav({ activeTab, setActiveTab }) {
+  const isActive = (tab) => (activeTab === tab ? "hz-nav-item active" : "hz-nav-item");
+
+  return (
+    <div className="hz-bottom-nav">
+      <button className={isActive("home")} onClick={() => setActiveTab("home")}>
+        <Home size={20} />
+        <span>الرئيسية</span>
+      </button>
+
+      <button className={isActive("fav")} onClick={() => setActiveTab("fav")}>
+        <Heart size={20} />
+        <span>المفضلة</span>
+      </button>
+
+      <button className={isActive("post")} onClick={() => setActiveTab("post")}>
+        <PlusCircle size={24} />
+        <span>إضافة إعلان</span>
+      </button>
+
+      <button className={isActive("account")} onClick={() => setActiveTab("account")}>
+        <User size={20} />
+        <span>الحساب</span>
+      </button>
+    </div>
+  );
+}
+
 
 export default function App() {
     const [showIntro, setShowIntro] = useState(true);
