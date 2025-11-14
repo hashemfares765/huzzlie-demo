@@ -533,21 +533,51 @@ function Header({
   return (
     <div className="hz-header">
       <div className="hz-header-inner">
-        <div className="hz-search-wrap">
-          <button className="hz-logo-dot" onClick={onLogoClick}>
-            <img
-              src="/huzzlie-logo.png"
-              alt="Huzzlie"
-              className="hz-logo-img"
-            />
-          </button>
-          {/* ... rest of header stays the same */}
+        {/* Logo – click = go home */}
+        <button
+          type="button"
+          className="hz-logo-dot hz-logo-btn"
+          onClick={onLogoClick}
+        >
+          <img
+            src="/huzzlie-logo.png"
+            alt="Huzzlie"
+            className="hz-logo-img"
+          />
+        </button>
 
+        {/* Search bar */}
+        <div className="hz-search-wrap">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !disableEnterSearch) {
+                e.preventDefault();
+                onSearch();
+              }
+            }}
+            placeholder={S.searchPlaceholder}
+            className={
+              "hz-search-input " + (isAR ? "hz-rtl-text" : "hz-ltr-text")
+            }
+            dir={isAR ? "rtl" : "ltr"}
+          />
+
+          <button
+            type="button"
+            className="hz-search-btn"
+            onClick={onSearch}
+          >
+            <Search size={18} />
+          </button>
         </div>
 
+        {/* Language toggle */}
         <div className="hz-header-actions">
           <button
             className="hz-lang-btn"
+            type="button"
             onClick={() => setLang(lang === "en" ? "ar" : "en")}
           >
             <Languages size={16} />
@@ -558,6 +588,7 @@ function Header({
     </div>
   );
 }
+
 
 function BottomNav({ active, setActive, onPost, onAccount, lang }) {
   const S = STRINGS[lang];
@@ -1554,22 +1585,22 @@ function ListingDetail({ item, onBack, lang }) {
   const localizedLocation =
     lang === "ar" && item.locationAr ? item.locationAr : item.location;
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const imgs = item.imgs && item.imgs.length ? item.imgs : [];
+  const [index, setIndex] = useState(0);
 
-  const hasImages = item.imgs && item.imgs.length > 0;
-  const imgCount = hasImages ? item.imgs.length : 0;
-
-  function go(step) {
-    if (!hasImages || imgCount < 2) return;
-    setActiveIndex((prev) => {
-      const next = (prev + step + imgCount) % imgCount;
+  function go(delta) {
+    if (!imgs.length) return;
+    setIndex((prev) => {
+      const next = prev + delta;
+      if (next < 0) return imgs.length - 1;
+      if (next >= imgs.length) return 0;
       return next;
     });
   }
 
   function goTo(i) {
-    if (!hasImages) return;
-    setActiveIndex(i);
+    if (!imgs.length) return;
+    setIndex(i);
   }
 
   return (
@@ -1578,58 +1609,58 @@ function ListingDetail({ item, onBack, lang }) {
         <ChevronLeft size={20} />
       </button>
 
-      <div className="hz-detail-img-wrap">
-        {hasImages && (
+      <div className="hz-detail-gallery">
+        {imgs.length > 0 && (
           <>
             <div
               className="hz-detail-img-main"
               onClick={() => {
-                if (imgCount > 1) go(1);
+                if (imgs.length > 1) go(1);
               }}
             >
               <img
-                src={item.imgs[activeIndex]}
+                src={imgs[index]}
                 alt={localizedTitle}
                 className="hz-detail-img"
               />
 
-              {imgCount > 1 && (
+              {imgs.length > 1 && (
                 <>
                   <button
+                    type="button"
                     className="hz-detail-arrow hz-detail-arrow-left"
                     onClick={(e) => {
                       e.stopPropagation();
                       go(-1);
                     }}
                   >
-                    ‹
+                    <ChevronLeft size={18} />
                   </button>
                   <button
+                    type="button"
                     className="hz-detail-arrow hz-detail-arrow-right"
                     onClick={(e) => {
                       e.stopPropagation();
                       go(1);
                     }}
                   >
-                    ›
+                    <ChevronRight size={18} />
                   </button>
                 </>
               )}
             </div>
 
-            {imgCount > 1 && (
+            {imgs.length > 1 && (
               <div className="hz-detail-dots">
-                {item.imgs.map((_, i) => (
+                {imgs.map((_, i) => (
                   <button
                     key={i}
+                    type="button"
                     className={
-                      "hz-detail-dot " +
-                      (i === activeIndex ? "hz-detail-dot-active" : "")
+                      "hz-detail-dot-btn " +
+                      (i === index ? "hz-detail-dot-active" : "")
                     }
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goTo(i);
-                    }}
+                    onClick={() => goTo(i)}
                   />
                 ))}
               </div>
@@ -1703,12 +1734,17 @@ function ListingDetail({ item, onBack, lang }) {
 }
 
 
+
 /* ACCOUNT PAGE */
 
-function AccountPage({ user }) {
+function AccountPage({ user, listings })
+{
   const displayName = (user && user.name) || "Huzzlie User";
 
   const [section, setSection] = useState("menu");
+    const userKey = (user && user.email) || "demo@huzzlie.com";
+  const myAds = (listings || []).filter((l) => l.ownerId === userKey);
+
 
   const [profile, setProfile] = useState({
     firstName: "",
@@ -1919,7 +1955,7 @@ function AccountPage({ user }) {
             }
           />
         </div>
-        <div className="hz-field">
+                <div className="hz-field">
           <label>Confirm new password</label>
           <input
             type="password"
@@ -1932,6 +1968,22 @@ function AccountPage({ user }) {
             }
           />
         </div>
+
+        <div className="hz-forgot-password-row">
+          <button
+            type="button"
+            className="hz-link-button"
+            onClick={() => {
+              const target = (user && user.email) || "your email";
+              alert(
+                `In the real app, a reset code would be emailed to ${target}.`
+              );
+            }}
+          >
+            Forgot your password?
+          </button>
+        </div>
+
         <div className="hz-account-section-actions">
           <button
             className="hz-primary"
@@ -1940,6 +1992,7 @@ function AccountPage({ user }) {
             Update password
           </button>
         </div>
+
       </SectionShell>
     );
   }
@@ -1969,6 +2022,35 @@ function AccountPage({ user }) {
     );
   }
 
+    if (section === "myAds") {
+    return (
+      <SectionShell title="My ads">
+        {myAds.length === 0 ? (
+          <div className="hz-empty-state">
+            You don’t have any live ads yet.
+          </div>
+        ) : (
+          <div className="hz-myads-list">
+            {myAds.map((ad) => (
+              <div key={ad.id} className="hz-myads-item">
+                <div className="hz-myads-main">
+                  <div className="hz-myads-title">{ad.title}</div>
+                  <div className="hz-myads-meta">
+                    {ad.currency}{" "}
+                    {ad.price != null ? ad.price.toLocaleString() : 0} ·{" "}
+                    {ad.location || "Damascus"}
+                  </div>
+                </div>
+                <div className="hz-myads-status">Live</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionShell>
+    );
+  }
+
+
   // MAIN ACCOUNT MENU
   return (
     <div className="hz-page hz-account">
@@ -1996,13 +2078,14 @@ function AccountPage({ user }) {
           <Bookmark size={20} />
           <span>My public profile</span>
         </button>
-        <button
+                <button
           className="hz-account-action"
-          onClick={() => alert("My Ads section (demo).")}
+          onClick={() => setSection("myAds")}
         >
           <Search size={20} />
           <span>My ads</span>
         </button>
+
       </div>
 
       <div className="hz-account-list">
@@ -2030,13 +2113,14 @@ function AccountPage({ user }) {
           <span>Password & security</span>
         </button>
 
-        <button
+                <button
           className="hz-account-item"
-          onClick={() => alert("Ads status (demo).")}
+          onClick={() => setSection("myAds")}
         >
           <Bookmark size={18} />
           <span>My ads status</span>
         </button>
+
 
         <button
           className="hz-account-item"
@@ -2176,7 +2260,8 @@ function AccountSheet({ open, onClose, setUser, lang }) {
 
 /* POST DIALOG */
 
-function PostDialog({ open, onClose, lang, onCreateListing }) {
+function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
+
   const S = STRINGS[lang];
 
   const [category, setCategory] = useState("");
@@ -2261,8 +2346,9 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
             "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
           ];
 
-    const newListing = {
+        const newListing = {
       id: "user-" + Date.now(),
+      ownerId: userEmail || "demo@huzzlie.com",
       title,
       titleAr: titleAr || undefined,
       price: price ? Number(price) : 0,
@@ -2286,6 +2372,7 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
       featured: false,
     };
 
+
     if (typeof onCreateListing === "function") {
       onCreateListing(newListing);
     }
@@ -2303,14 +2390,16 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
 
   return (
     <div className="hz-modal-backdrop">
-      <div className="hz-modal hz-modal-large">
+      <div className="hz-modal hz-modal-large hz-post-modal">
+
         <div className="hz-modal-header">
           <h3>{S.placeListing}</h3>
           <button className="hz-close" onClick={onClose}>
             ×
           </button>
         </div>
-        <div className="hz-modal-body hz-modal-grid">
+                <div className="hz-modal-body">
+
                   <div className="hz-field hz-field-full hz-post-intro">
           <div className="hz-post-title">
             {isCar(category, subcategory)
@@ -2696,10 +2785,10 @@ export default function App() {
     setActiveTab("home");
     setActiveCategoryKey(null);
     setSelectedListing(null);
-    setSearch("");
     setSearchTerm("");
   }}
 />
+
 
 
       <main className="hz-main">
@@ -2783,7 +2872,10 @@ export default function App() {
               </div>
             )}
 
-            {activeTab === "account" && user && <AccountPage user={user} />}
+                       {activeTab === "account" && user && (
+              <AccountPage user={user} listings={listings} />
+            )}
+
           </>
         )}
       </main>
@@ -2832,12 +2924,14 @@ export default function App() {
         setUser={setUser}
       />
 
-      <PostDialog
+            <PostDialog
         open={postOpen}
         onClose={() => setPostOpen(false)}
         lang={lang}
         onCreateListing={handleCreateListing}
+        userEmail={user?.email}
       />
+
     </div>
   );
 }

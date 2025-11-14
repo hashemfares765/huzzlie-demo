@@ -58,6 +58,7 @@ textarea {
   align-items: center;
   gap: 10px;
 }
+
 /* Make layout containers match the phone width on small screens */
 @media (max-width: 640px) {
   .hz-header-inner,
@@ -70,8 +71,7 @@ textarea {
 }
 
 
-/* Logo */
-
+/* Logo button */
 .hz-logo-dot {
   width: 32px;
   height: 32px;
@@ -79,12 +79,8 @@ textarea {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-
 }
+
 .hz-logo-img {
   width: 24px;
   height: 24px;
@@ -111,13 +107,8 @@ textarea {
   background: transparent;
   color: #111827;
   min-width: 0;
-}
-.hz-rtl-text {
-  text-align: right;
-}
-.hz-ltr-text {
-  text-align: left;
-}
+
+/* Search button (magnifier) */
 .hz-search-btn {
   display: inline-flex;
   align-items: center;
@@ -130,6 +121,20 @@ textarea {
   cursor: pointer;
 }
 
+}
+.hz-rtl-text {
+  text-align: right;
+}
+.hz-ltr-text {
+  text-align: left;
+}
+.hz-logo-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
 /* Header actions */
 
 .hz-header-actions {
@@ -139,25 +144,8 @@ textarea {
   align-items: center;
 }
 
-/* Currency toggle */
 
-.hz-currency-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid #bbf7d0;
-  background-color: #ecfdf5;
-  color: #047857;
-  font-size: 11px;
-  cursor: pointer;
-  white-space: nowrap;
-}
 
-.hz-currency-btn span {
-  line-height: 1;
-}
 
 .hz-lang-btn {
   display: inline-flex;
@@ -1223,60 +1211,136 @@ textarea {
   font-size: 10px;
 }
 
-/* DETAIL GALLERY IMPROVEMENTS */
+/* Gallery wrapper */
+.hz-detail-gallery {
+  position: relative;
+  width: 100%;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
 
 .hz-detail-img-main {
   position: relative;
   width: 100%;
+  padding-top: 65%;
+  cursor: pointer;
+}
+
+.hz-detail-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .hz-detail-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   border: none;
+  background-color: rgba(15, 23, 42, 0.55);
+  color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(15, 23, 42, 0.45);
-  color: #ffffff;
-  font-size: 18px;
   cursor: pointer;
 }
-
 .hz-detail-arrow-left {
-  left: 8px;
+  left: 10px;
 }
-
 .hz-detail-arrow-right {
-  right: 8px;
+  right: 10px;
 }
 
-.hz-detail-dots button {
+.hz-detail-dots {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0 10px;
+  background-color: #ffffff;
+}
+
+.hz-detail-dot-btn {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
   border: none;
+  background-color: rgba(148, 163, 184, 0.5);
+  cursor: pointer;
+}
+.hz-detail-dot-btn.hz-detail-dot-active {
+  width: 12px;
+  background-color: #16a34a;
+}
+
+/* One column layout for PostDialog */
+.hz-post-modal .hz-modal-grid {
+  grid-template-columns: 1fr;
+}
+
+.hz-post-modal .hz-field label {
+  font-weight: 500;
+}
+
+.hz-post-modal .hz-modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.hz-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #dcfce7;
+  padding-top: env(safe-area-inset-top);
+}
+
+.hz-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Logo button */
+.hz-logo-dot {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hz-logo-btn {
+  border: none;
+  background: transparent;
   padding: 0;
+  cursor: pointer;
+}
+.hz-logo-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
-/* POST DIALOG INTRO */
-
-.hz-post-intro {
-  background-color: #f9fafb;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-}
-
-.hz-post-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.hz-post-subtitle {
-  margin-top: 2px;
-  font-size: 11px;
-  color: #6b7280;
+/* Search button (magnifier) */
+.hz-search-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  background-color: #16a34a;
+  color: #ffffff;
+  cursor: pointer;
 }
