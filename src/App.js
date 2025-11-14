@@ -2243,9 +2243,26 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
   );
 }
 
+function IntroScreen() {
+  return (
+    <div className="hz-intro-root">
+      <img src="/huzzlie-logo.png" alt="Logo" className="hz-intro-logo" />
+    </div>
+  );
+}
+
+
 /* ROOT APP */
 
 export default function App() {
+    const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 900);
+    return () => clearTimeout(timer);
+  }, []);
+  
+
   const [lang, setLang] = useState("en"); // set to "ar" if you want Arabic by default
   const [activeTab, setActiveTab] = useState("home");
   const [search, setSearch] = useState("");
@@ -2333,6 +2350,11 @@ export default function App() {
 
   const showHome = !activeCategory && activeTab === "home" && !searchTerm;
   const showFavs = !activeCategory && activeTab === "favs";
+
+    if (showIntro) {
+    return <IntroScreen />;
+  }
+
 
   return (
     <div className="hz-root">
