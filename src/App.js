@@ -289,7 +289,7 @@ const MOCK_LISTINGS = [
     title: "1BR Apartment | Downtown Damascus",
     titleAr: "شقة غرفة وصالة | وسط دمشق",
     price: 3000000,
-    currency: "SYP",
+    currency: "USD",
     category: "rent",
     subcategory: "apartment",
     location: "Damascus",
@@ -352,7 +352,7 @@ const MOCK_LISTINGS = [
     title: "Junior Marketing Executive",
     titleAr: "تنفيذي تسويق مبتدئ",
     price: 0,
-    currency: "SYP",
+    currency: "USD",
     category: "jobs",
     subcategory: "marketing",
     location: "Damascus",
@@ -370,7 +370,7 @@ const MOCK_LISTINGS = [
     title: "2021 Mercedes C-Class | Warranty",
     titleAr: "مرسيدس C كلاس 2021 | ضمان",
     price: 129000,
-    currency: "AED",
+    currency: "USD",
     category: "motors",
     subcategory: "cars",
     brand: "Mercedes",
@@ -1783,19 +1783,23 @@ function AccountPage({ user }) {
 
 /* ACCOUNT SHEET */
 
-function AccountSheet({ open, onClose, setUser }) {
+function AccountSheet({ open, onClose, setUser, lang }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  // Language strings
+  const S = STRINGS[lang || "ar"];
 
   if (!open) return null;
 
   const providers = [
-    { key: "google", label: "Continue with Google" },
+    { key: "google", label: S.continueGoogle || "Continue with Google" },
     {
       key: "microsoft",
-      label: "Continue with Microsoft (Hotmail/Outlook)",
+      label:
+        S.continueMicrosoft || "Continue with Microsoft (Hotmail/Outlook)",
     },
-    { key: "apple", label: "Continue with Apple" },
+    { key: "apple", label: S.continueApple || "Continue with Apple" },
   ];
 
   function completeWithProvider(key) {
@@ -1818,12 +1822,18 @@ function AccountSheet({ open, onClose, setUser }) {
     <div className="hz-modal-backdrop">
       <div className="hz-modal">
         <div className="hz-modal-header">
-          <h3>Create Account</h3>
+          <h3>{S.createAccount || "Create Account"}</h3>
           <button className="hz-close" onClick={onClose}>
             ×
           </button>
         </div>
+
         <div className="hz-modal-body">
+          {/* 🔥 Inline message (instead of browser alert) */}
+          <div className="hz-account-note">
+            {S.createAccountToPost || "Please create an account before posting."}
+          </div>
+
           {providers.map((p) => (
             <button
               key={p.key}
@@ -1833,36 +1843,42 @@ function AccountSheet({ open, onClose, setUser }) {
               {p.label}
             </button>
           ))}
-          <div className="hz-or">or</div>
+
+          <div className="hz-or">{S.or || "or"}</div>
+
           <div className="hz-field">
-            <label>Name</label>
+            <label>{S.nameLabel || "Name"}</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
+              placeholder={S.namePlaceholder || "Your name"}
             />
           </div>
+
           <div className="hz-field">
-            <label>Email</label>
+            <label>{S.emailLabel || "Email"}</label>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={S.emailPlaceholder || "you@example.com"}
             />
           </div>
         </div>
+
         <div className="hz-modal-footer">
           <button className="hz-secondary" onClick={onClose}>
-            Cancel
+            {S.cancel || "Cancel"}
           </button>
+
           <button className="hz-primary" onClick={completeManual}>
-            Save
+            {S.save || "Save"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 /* POST DIALOG */
 
@@ -2263,7 +2279,7 @@ export default function App() {
   }, []);
   
 
-  const [lang, setLang] = useState("en"); // set to "ar" if you want Arabic by default
+  const [lang, setLang] = useState("ar"); // set to "ar" if you want Arabic by default
   const [activeTab, setActiveTab] = useState("home");
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -2298,13 +2314,13 @@ export default function App() {
   }
 
   function handlePostClick() {
-    if (!user) {
-      alert(STRINGS[lang].createAccountToPost);
-      setAccountOpen(true);
-      return;
-    }
-    setPostOpen(true);
+  if (!user) {
+    setAccountOpen(true);
+    return;
   }
+  setPostOpen(true);
+}
+
 
   function handleCreateListing(newListing) {
     setListings((prev) => [newListing, ...prev]);

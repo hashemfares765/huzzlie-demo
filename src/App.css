@@ -12,11 +12,20 @@ body,
 
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    -system-ui, sans-serif;
+  font-family: "Inter", "Noto Sans Arabic", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #111827;
   overflow-x: hidden;
 }
+
+/* Make all UI elements use the same font */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 
 .hz-root {
   min-height: 100vh;
@@ -1080,6 +1089,20 @@ body {
   color: #6b7280;
 }
 
+/* ========================================= */
+/* PREMIUM TYPOGRAPHY — GLOBAL HEADERS/TITLES */
+/* ========================================= */
+
+.hz-page-header h2,
+.hz-section-header h3,
+.hz-account-name,
+.hz-detail-price,
+.hz-detail-title,
+.hz-card-title {
+  font-weight: 600;
+}
+
+
 /* ===================== INTRO ANIMATION ===================== */
 
 .hz-intro-root {
@@ -1121,4 +1144,16 @@ body {
 @keyframes appFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* ===================== ACCOUNT NOTE (Inside Create Account Modal) ===================== */
+
+.hz-account-note {
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  font-size: 11px;
+  color: #166534;
 }
