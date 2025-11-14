@@ -518,7 +518,15 @@ function ListingCard({ item, fav, onToggleFav, onOpen, lang }) {
   );
 }
 
-function Header({ q, setQ, onSearch, lang, setLang }) {
+function Header({
+  q,
+  setQ,
+  onSearch,
+  lang,
+  setLang,
+  disableEnterSearch,
+  onLogoClick,
+}) {
   const S = STRINGS[lang];
   const isAR = lang === "ar";
 
@@ -526,27 +534,15 @@ function Header({ q, setQ, onSearch, lang, setLang }) {
     <div className="hz-header">
       <div className="hz-header-inner">
         <div className="hz-search-wrap">
-          <div className="hz-logo-dot">
-            <img src="/huzzlie-logo.png" alt="Huzzlie" className="hz-logo-img" />
-          </div>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                onSearch();
-              }
-            }}
-            placeholder={S.searchPlaceholder}
-            className={
-              "hz-search-input " + (isAR ? "hz-rtl-text" : "hz-ltr-text")
-            }
-            dir={isAR ? "rtl" : "ltr"}
-          />
-          <button className="hz-search-btn" onClick={onSearch}>
-            <Search size={18} />
+          <button className="hz-logo-dot" onClick={onLogoClick}>
+            <img
+              src="/huzzlie-logo.png"
+              alt="Huzzlie"
+              className="hz-logo-img"
+            />
           </button>
+          {/* ... rest of header stays the same */}
+
         </div>
 
         <div className="hz-header-actions">
@@ -1558,6 +1554,24 @@ function ListingDetail({ item, onBack, lang }) {
   const localizedLocation =
     lang === "ar" && item.locationAr ? item.locationAr : item.location;
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const hasImages = item.imgs && item.imgs.length > 0;
+  const imgCount = hasImages ? item.imgs.length : 0;
+
+  function go(step) {
+    if (!hasImages || imgCount < 2) return;
+    setActiveIndex((prev) => {
+      const next = (prev + step + imgCount) % imgCount;
+      return next;
+    });
+  }
+
+  function goTo(i) {
+    if (!hasImages) return;
+    setActiveIndex(i);
+  }
+
   return (
     <div className="hz-detail">
       <button className="hz-detail-back" onClick={onBack}>
@@ -1565,24 +1579,62 @@ function ListingDetail({ item, onBack, lang }) {
       </button>
 
       <div className="hz-detail-img-wrap">
-        {item.imgs && item.imgs.length > 0 && (
-          <img
-            src={item.imgs[0]}
-            alt={localizedTitle}
-            className="hz-detail-img"
-          />
-        )}
-        {item.imgs && item.imgs.length > 1 && (
-          <div className="hz-detail-dots">
-            {item.imgs.map((_, i) => (
-              <span
-                key={i}
-                className={
-                  "hz-detail-dot " + (i === 0 ? "hz-detail-dot-active" : "")
-                }
+        {hasImages && (
+          <>
+            <div
+              className="hz-detail-img-main"
+              onClick={() => {
+                if (imgCount > 1) go(1);
+              }}
+            >
+              <img
+                src={item.imgs[activeIndex]}
+                alt={localizedTitle}
+                className="hz-detail-img"
               />
-            ))}
-          </div>
+
+              {imgCount > 1 && (
+                <>
+                  <button
+                    className="hz-detail-arrow hz-detail-arrow-left"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      go(-1);
+                    }}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    className="hz-detail-arrow hz-detail-arrow-right"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      go(1);
+                    }}
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+            </div>
+
+            {imgCount > 1 && (
+              <div className="hz-detail-dots">
+                {item.imgs.map((_, i) => (
+                  <button
+                    key={i}
+                    className={
+                      "hz-detail-dot " +
+                      (i === activeIndex ? "hz-detail-dot-active" : "")
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goTo(i);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -1650,11 +1702,274 @@ function ListingDetail({ item, onBack, lang }) {
   );
 }
 
+
 /* ACCOUNT PAGE */
 
 function AccountPage({ user }) {
   const displayName = (user && user.name) || "Huzzlie User";
 
+  const [section, setSection] = useState("menu");
+
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    dob: "",
+    nationality: "",
+    gender: "",
+  });
+
+  const [publicProfile, setPublicProfile] = useState({
+    bio: "",
+  });
+
+  const [contact, setContact] = useState({
+    phone: "",
+    altPhone: "",
+    city: "",
+    address: "",
+  });
+
+  const [security, setSecurity] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  function SectionShell({ title, children }) {
+    return (
+      <div className="hz-page hz-account-section">
+        <div className="hz-account-section-header">
+          <button
+            className="hz-back-btn"
+            onClick={() => setSection("menu")}
+          >
+            <ChevronLeft />
+          </button>
+          <h2>{title}</h2>
+        </div>
+        <div className="hz-account-section-body">{children}</div>
+      </div>
+    );
+  }
+
+  if (section === "profile") {
+    return (
+      <SectionShell title="Profile & basic info">
+        <div className="hz-field">
+          <label>First name</label>
+          <input
+            value={profile.firstName}
+            onChange={(e) =>
+              setProfile((p) => ({ ...p, firstName: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>Last name</label>
+          <input
+            value={profile.lastName}
+            onChange={(e) =>
+              setProfile((p) => ({ ...p, lastName: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>Date of birth</label>
+          <input
+            type="date"
+            value={profile.dob}
+            onChange={(e) =>
+              setProfile((p) => ({ ...p, dob: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>Nationality</label>
+          <input
+            value={profile.nationality}
+            onChange={(e) =>
+              setProfile((p) => ({ ...p, nationality: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>Gender</label>
+          <select
+            value={profile.gender}
+            onChange={(e) =>
+              setProfile((p) => ({ ...p, gender: e.target.value }))
+            }
+          >
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Prefer not to say</option>
+          </select>
+        </div>
+        <div className="hz-account-section-actions">
+          <button
+            className="hz-primary"
+            onClick={() => alert("Profile saved (demo).")}
+          >
+            Save changes
+          </button>
+        </div>
+      </SectionShell>
+    );
+  }
+
+  if (section === "public") {
+    return (
+      <SectionShell title="My public profile">
+        <div className="hz-field">
+          <label>About you (visible to others)</label>
+          <textarea
+            rows={3}
+            value={publicProfile.bio}
+            onChange={(e) =>
+              setPublicProfile((p) => ({ ...p, bio: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-account-section-actions">
+          <button
+            className="hz-primary"
+            onClick={() => alert("Public profile saved (demo).")}
+          >
+            Save changes
+          </button>
+        </div>
+      </SectionShell>
+    );
+  }
+
+  if (section === "contact") {
+    return (
+      <SectionShell title="Phone numbers & addresses">
+        <div className="hz-field">
+          <label>Primary phone number</label>
+          <input
+            value={contact.phone}
+            onChange={(e) =>
+              setContact((c) => ({ ...c, phone: e.target.value }))
+            }
+            placeholder="+9639xxxxxxx"
+          />
+        </div>
+        <div className="hz-field">
+          <label>Alternate phone (optional)</label>
+          <input
+            value={contact.altPhone}
+            onChange={(e) =>
+              setContact((c) => ({ ...c, altPhone: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>City</label>
+          <input
+            value={contact.city}
+            onChange={(e) =>
+              setContact((c) => ({ ...c, city: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>Address (not visible to other users)</label>
+          <textarea
+            rows={2}
+            value={contact.address}
+            onChange={(e) =>
+              setContact((c) => ({ ...c, address: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-account-section-actions">
+          <button
+            className="hz-primary"
+            onClick={() => alert("Contact details saved (demo).")}
+          >
+            Save changes
+          </button>
+        </div>
+      </SectionShell>
+    );
+  }
+
+  if (section === "security") {
+    return (
+      <SectionShell title="Password & security">
+        <div className="hz-field">
+          <label>Current password</label>
+          <input
+            type="password"
+            value={security.currentPassword}
+            onChange={(e) =>
+              setSecurity((s) => ({ ...s, currentPassword: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>New password</label>
+          <input
+            type="password"
+            value={security.newPassword}
+            onChange={(e) =>
+              setSecurity((s) => ({ ...s, newPassword: e.target.value }))
+            }
+          />
+        </div>
+        <div className="hz-field">
+          <label>Confirm new password</label>
+          <input
+            type="password"
+            value={security.confirmPassword}
+            onChange={(e) =>
+              setSecurity((s) => ({
+                ...s,
+                confirmPassword: e.target.value,
+              }))
+            }
+          />
+        </div>
+        <div className="hz-account-section-actions">
+          <button
+            className="hz-primary"
+            onClick={() => alert("Password updated (demo).")}
+          >
+            Update password
+          </button>
+        </div>
+      </SectionShell>
+    );
+  }
+
+  if (section === "deactivate") {
+    return (
+      <SectionShell title="Deactivate / delete account">
+        <p className="hz-account-warning">
+          You can temporarily deactivate your account or permanently delete it.
+          This is a demo only – no real deletion happens yet.
+        </p>
+        <div className="hz-account-section-actions hz-account-danger-actions">
+          <button
+            className="hz-secondary"
+            onClick={() => alert("Account deactivated (demo).")}
+          >
+            Deactivate account
+          </button>
+          <button
+            className="hz-danger"
+            onClick={() => alert("Account deleted (demo).")}
+          >
+            Delete account
+          </button>
+        </div>
+      </SectionShell>
+    );
+  }
+
+  // MAIN ACCOUNT MENU
   return (
     <div className="hz-page hz-account">
       <div className="hz-account-card">
@@ -1663,13 +1978,11 @@ function AccountPage({ user }) {
         </div>
         <div className="hz-account-main">
           <div className="hz-account-name">{displayName}</div>
-          <div className="hz-account-joined">Joined on July 2023</div>
+          <div className="hz-account-joined">Member since July 2023</div>
         </div>
         <button
           className="hz-account-verify"
-          onClick={() => {
-            alert("Verification flow coming soon (demo).");
-          }}
+          onClick={() => alert("Verification flow coming soon (demo).")}
         >
           Get Verified
         </button>
@@ -1678,108 +1991,89 @@ function AccountPage({ user }) {
       <div className="hz-account-actions">
         <button
           className="hz-account-action"
-          onClick={() => {
-            alert("My Ads section (demo).");
-          }}
+          onClick={() => setSection("public")}
         >
           <Bookmark size={20} />
-          <span>My Ads</span>
+          <span>My public profile</span>
         </button>
         <button
           className="hz-account-action"
-          onClick={() => {
-            alert("My Searches section (demo).");
-          }}
+          onClick={() => alert("My Ads section (demo).")}
         >
           <Search size={20} />
-          <span>My Searches</span>
+          <span>My ads</span>
         </button>
       </div>
 
       <div className="hz-account-list">
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("Edit basic info (demo).");
-          }}
+          onClick={() => setSection("profile")}
         >
           <User size={18} />
-          <span>Profile & Basic Info</span>
+          <span>Profile & basic info</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("Manage phone numbers & addresses (demo).");
-          }}
+          onClick={() => setSection("contact")}
         >
           <Phone size={18} />
-          <span>Phone Numbers & Addresses</span>
+          <span>Phone numbers & addresses</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("Change password & security settings (demo).");
-          }}
+          onClick={() => setSection("security")}
         >
           <Shield size={18} />
-          <span>Password & Security</span>
+          <span>Password & security</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("View ads status (demo).");
-          }}
+          onClick={() => alert("Ads status (demo).")}
         >
           <Bookmark size={18} />
-          <span>My Ads Status</span>
+          <span>My ads status</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("Notifications settings (demo).");
-          }}
+          onClick={() => alert("Notifications settings (demo).")}
         >
           <Bell size={18} />
-          <span>Notifications & Email Settings</span>
+          <span>Notifications & email settings</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("General account settings (demo).");
-          }}
+          onClick={() => alert("General account settings (demo).")}
         >
           <Settings size={18} />
-          <span>Account Settings</span>
+          <span>Account settings</span>
         </button>
 
         <button
           className="hz-account-item hz-account-danger"
-          onClick={() => {
-            alert("Deactivate / delete flow (demo).");
-          }}
+          onClick={() => setSection("deactivate")}
         >
           <Trash2 size={18} />
-          <span>Deactivate / Delete Account</span>
+          <span>Deactivate / delete account</span>
         </button>
 
         <button
           className="hz-account-item"
-          onClick={() => {
-            alert("Logged out (demo).");
-          }}
+          onClick={() => alert("Logged out (demo).")}
         >
           <LogOut size={18} />
-          <span>Log Out</span>
+          <span>Log out</span>
         </button>
       </div>
     </div>
   );
 }
+
 
 /* ACCOUNT SHEET */
 
@@ -2017,6 +2311,23 @@ function PostDialog({ open, onClose, lang, onCreateListing }) {
           </button>
         </div>
         <div className="hz-modal-body hz-modal-grid">
+                  <div className="hz-field hz-field-full hz-post-intro">
+          <div className="hz-post-title">
+            {isCar(category, subcategory)
+              ? lang === "ar"
+                ? "أخبرنا عن سيارتك"
+                : "Tell us about your car"
+              : lang === "ar"
+              ? "تفاصيل الإعلان"
+              : "Listing details"}
+          </div>
+          <div className="hz-post-subtitle">
+            {lang === "ar"
+              ? "املأ الحقول التالية بدقة لزيادة فرص بيع إعلانك."
+              : "Fill in the details carefully to get better results."}
+          </div>
+        </div>
+
           <div className="hz-field">
             <label>Category</label>
             <select
@@ -2375,12 +2686,21 @@ export default function App() {
   return (
     <div className="hz-root">
       <Header
-        q={search}
-        setQ={setSearch}
-        onSearch={handleSearch}
-        lang={lang}
-        setLang={setLang}
-      />
+  q={search}
+  setQ={setSearch}
+  onSearch={handleSearch}
+  lang={lang}
+  setLang={setLang}
+  disableEnterSearch={accountOpen || postOpen}
+  onLogoClick={() => {
+    setActiveTab("home");
+    setActiveCategoryKey(null);
+    setSelectedListing(null);
+    setSearch("");
+    setSearchTerm("");
+  }}
+/>
+
 
       <main className="hz-main">
         {selectedListing ? (
