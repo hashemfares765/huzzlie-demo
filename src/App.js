@@ -2737,33 +2737,52 @@ function IntroScreen() {
 
 /* ROOT APP */
 
-function BottomNav({ activeTab, setActiveTab }) {
-  const isActive = (tab) => (activeTab === tab ? "hz-nav-item active" : "hz-nav-item");
+function BottomNav({ activeTab, onTabChange, onPost, onAccount, lang }) {
+  const S = STRINGS[lang || "ar"];
+  const isActive = (tab) =>
+    activeTab === tab ? "hz-nav-item active" : "hz-nav-item";
 
   return (
     <div className="hz-bottom-nav">
-      <button className={isActive("home")} onClick={() => setActiveTab("home")}>
+      {/* HOME */}
+      <button
+        className={isActive("home")}
+        onClick={() => onTabChange("home")}
+      >
         <Home size={20} />
-        <span>الرئيسية</span>
+        <span>{S.home}</span>
       </button>
 
-      <button className={isActive("fav")} onClick={() => setActiveTab("fav")}>
+      {/* FAVOURITES – use 'favs' to match your showFavs logic */}
+      <button
+        className={isActive("favs")}
+        onClick={() => onTabChange("favs")}
+      >
         <Heart size={20} />
-        <span>المفضلة</span>
+        <span>{S.favourites}</span>
       </button>
 
-      <button className={isActive("post")} onClick={() => setActiveTab("post")}>
+      {/* PLACE LISTING – uses onPost so it opens the dialog */}
+      <button
+        className="hz-nav-item hz-nav-post"
+        onClick={onPost}
+      >
         <PlusCircle size={24} />
-        <span>إضافة إعلان</span>
+        <span>{S.placeListing}</span>
       </button>
 
-      <button className={isActive("account")} onClick={() => setActiveTab("account")}>
+      {/* ACCOUNT – uses onAccount to handle login / account page */}
+      <button
+        className={isActive("account")}
+        onClick={onAccount}
+      >
         <User size={20} />
-        <span>الحساب</span>
+        <span>{S.account}</span>
       </button>
     </div>
   );
 }
+
 
 
 export default function App() {
@@ -2775,8 +2794,8 @@ export default function App() {
   }, []);
   
 
-  const [lang, setLang] = useState("ar"); // set to "ar" if you want Arabic by default
-  const [activeTab, setActiveTab] = useState("home");
+const [lang, setLang] = useState("ar"); // set to "ar" if you want Arabic by default
+const [activeTab, setActiveTab] = useState("home");
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(null);
@@ -2787,6 +2806,22 @@ export default function App() {
   const [activeSub, setActiveSub] = useState("");
   const [selectedListing, setSelectedListing] = useState(null);
   const [listings, setListings] = useState(MOCK_LISTINGS);
+
+  function handleBottomTab(tab) {
+  // home / favs etc
+  setActiveTab
+(tab);
+
+  if (tab !== "home") {
+    setActiveCategoryKey(null);
+    setSelectedListing(null);
+    setSearchTerm("");
+  } else {
+    setActiveCategoryKey(null);
+    setSelectedListing(null);
+  }
+}
+
 
   function toggleFav(id) {
     setFavs((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -2976,43 +3011,24 @@ export default function App() {
         )}
       </main>
 
-      <BottomNav
-        active={activeTab}
-        setActive={(tab) => {
-          if (tab === "post") {
-            handlePostClick();
-            return;
-          }
-          if (tab === "account") {
-            if (!user) {
-              setAccountOpen(true);
-              return;
-            }
-          }
-          setActiveTab(tab);
-          if (tab !== "home") {
-            setActiveCategoryKey(null);
-            setSelectedListing(null);
-            setSearchTerm("");
-          }
-          if (tab === "home") {
-            setActiveCategoryKey(null);
-            setSelectedListing(null);
-          }
-        }}
-        onPost={handlePostClick}
-        onAccount={() => {
-          if (!user) {
-            setAccountOpen(true);
-          } else {
-            setActiveTab("account");
-            setActiveCategoryKey(null);
-            setSelectedListing(null);
-            setSearchTerm("");
-          }
-        }}
-        lang={lang}
-      />
+        <BottomNav
+  activeTab={activeTab}
+  onTabChange={handleBottomTab}
+  onPost={handlePostClick}
+  onAccount={() => {
+    if (!user) {
+      setAccountOpen(true);
+    } else {
+      setActiveTab("account");
+      setActiveCategoryKey(null);
+      setSelectedListing(null);
+      setSearchTerm("");
+    }
+  }}
+  lang={lang}
+/>
+
+
 
       <AccountSheet
         open={accountOpen}
