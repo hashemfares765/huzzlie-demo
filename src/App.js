@@ -1,3 +1,5 @@
+import { supabase } from "./supabaseClient";
+
 import React, { useState, useEffect } from "react";
 
 import {
@@ -41,8 +43,7 @@ const STRINGS = {
     account: "Account",
     latestListings: "Latest Listings",
     seeAll: "See all",
-    feeNote:
-      "Cars cost $3 per listing. Properties (rent/sale/off-plan/rooms) cost $10 per listing. Others are free.",
+    feeNote: "All listings are currently free to post for every category.",
     carsTitle: "Cars",
     carsFilters: "Car Filters",
     propertyFilters: "Property Filters",
@@ -65,8 +66,7 @@ const STRINGS = {
     account: "الحساب",
     latestListings: "أحدث الإعلانات",
     seeAll: "عرض الكل",
-    feeNote:
-      "إعلانات السيارات 3$ للإعلان. العقارات (إيجار/بيع/خطة مستقبلية/غرف) 10$ للإعلان. باقي الأقسام مجانية.",
+    feeNote: "جميع الإعلانات مجانية حالياً في كل الأقسام.",
     carsTitle: "سيارات",
     carsFilters: "فلاتر السيارات",
     propertyFilters: "فلاتر العقارات",
@@ -281,118 +281,6 @@ const CAR_BRANDS = [
   "Volvo",
 ];
 
-/* MOCK LISTINGS */
-
-const MOCK_LISTINGS = [
-  {
-    id: "l1",
-    title: "1BR Apartment | Downtown Damascus",
-    titleAr: "شقة غرفة وصالة | وسط دمشق",
-    price: 3000000,
-    currency: "USD",
-    category: "rent",
-    subcategory: "apartment",
-    location: "Damascus",
-    locationAr: "دمشق",
-    areaSqft: 780,
-    whatsapp: "+963944111222",
-    imgs: [
-      "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc:
-      "Bright 1BR apartment in central Damascus, close to shops and cafés.",
-    descAr: "شقة غرفة وصالة مشرقة في قلب دمشق بالقرب من المحلات والمقاهي.",
-    featured: true,
-  },
-  {
-    id: "l2",
-    title: "2018 Toyota Camry | GCC | Full service",
-    titleAr: "تويوتا كامري 2018 | خليجي | صيانة كاملة",
-    price: 15000,
-    currency: "USD",
-    category: "motors",
-    subcategory: "cars",
-    brand: "Toyota",
-    model: "Camry",
-    year: 2018,
-    mileage: 98000,
-    specs: "GCC",
-    sellerType: "private",
-    location: "Aleppo",
-    locationAr: "حلب",
-    whatsapp: "+963944333444",
-    imgs: [
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Clean Camry with full service history and no major accidents.",
-    descAr: "كامري نظيفة مع سجل صيانة كامل وبدون حوادث كبيرة.",
-    featured: false,
-  },
-  {
-    id: "l3",
-    title: "Modern Sofa | Like New",
-    titleAr: "كنبة عصرية | كالجديدة",
-    price: 400,
-    currency: "USD",
-    category: "furniture",
-    subcategory: "sofa",
-    location: "Homs",
-    locationAr: "حمص",
-    whatsapp: "+963944555666",
-    imgs: [
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Comfortable 3-seater sofa, barely used.",
-    descAr: "كنبة مريحة لثلاثة أشخاص، مستخدمة قليلاً جداً.",
-    featured: false,
-  },
-  {
-    id: "l4",
-    title: "Junior Marketing Executive",
-    titleAr: "تنفيذي تسويق مبتدئ",
-    price: 0,
-    currency: "USD",
-    category: "jobs",
-    subcategory: "marketing",
-    location: "Damascus",
-    locationAr: "دمشق",
-    whatsapp: "+963944777888",
-    imgs: [
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc: "Entry-level marketing role at a growing agency.",
-    descAr: "وظيفة تسويق للمبتدئين في وكالة نامية.",
-    featured: false,
-  },
-  {
-    id: "l5",
-    title: "2021 Mercedes C-Class | Warranty",
-    titleAr: "مرسيدس C كلاس 2021 | ضمان",
-    price: 129000,
-    currency: "USD",
-    category: "motors",
-    subcategory: "cars",
-    brand: "Mercedes",
-    model: "C-Class",
-    year: 2021,
-    mileage: 42000,
-    specs: "GCC",
-    sellerType: "dealership",
-    location: "Dubai",
-    locationAr: "دبي",
-    whatsapp: "+971581234567",
-    imgs: [
-      "https://images.unsplash.com/photo-1549921296-3b4a6b26b6b4?q=80&w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1200&auto=format&fit=crop",
-    ],
-    desc:
-      "Dealer-maintained C-Class with remaining warranty and full options.",
-    descAr: "C كلاس بصيانة وكالة مع ضمان ساري ومواصفات كاملة.",
-    featured: true,
-  },
-];
-
 /* BASIC HELPERS */
 
 function isCar(categoryKey, subKey) {
@@ -401,15 +289,7 @@ function isCar(categoryKey, subKey) {
 function isAnyProperty(categoryKey) {
   return !!CATEGORY_DEFS.find((c) => c.isProperty && c.key === categoryKey);
 }
-function postingFeeFor(categoryKey, subKey) {
-  if (isCar(categoryKey, subKey)) {
-    return { amount: 3, currency: "USD", reason: "Cars category fee" };
-  }
-  if (isAnyProperty(categoryKey)) {
-    return { amount: 10, currency: "USD", reason: "Property listing fee" };
-  }
-  return { amount: 0, currency: "USD", reason: "Free category" };
-}
+
 function validateCarListing(listing) {
   if (!isCar(listing.category, listing.subcategory)) return true;
   const required = [
@@ -563,11 +443,7 @@ function Header({
             dir={isAR ? "rtl" : "ltr"}
           />
 
-          <button
-            type="button"
-            className="hz-search-btn"
-            onClick={onSearch}
-          >
+          <button type="button" className="hz-search-btn" onClick={onSearch}>
             <Search size={18} />
           </button>
         </div>
@@ -587,7 +463,6 @@ function Header({
     </div>
   );
 }
-
 
 /* PROMO CAROUSEL */
 
@@ -749,6 +624,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
     year: t("Year", "السنة"),
     km: t("Max KM", "أقصى كم"),
     specs: t("Specs", "المواصفات"),
+    city: t("City", "المدينة"),
   };
 
   const PRICE_MIN = 0;
@@ -779,6 +655,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
     filters.mileageMax != null ? String(filters.mileageMax) : ""
   );
   const [draftSpecs, setDraftSpecs] = useState(filters.specs || "");
+  const [draftCity, setDraftCity] = useState(filters.city || "");
 
   // sync drafts when parent filters change externally (reset)
   useEffect(() => {
@@ -796,6 +673,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
       filters.mileageMax != null ? String(filters.mileageMax) : ""
     );
     setDraftSpecs(filters.specs || "");
+    setDraftCity(filters.city || "");
   }, [
     filters.brand,
     filters.sellerType,
@@ -805,6 +683,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
     filters.yearMax,
     filters.mileageMax,
     filters.specs,
+    filters.city,
   ]);
 
   const [expandedKey, setExpandedKey] = useState(null);
@@ -832,9 +711,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
   const priceSummary =
     filters.priceMin != null || filters.priceMax != null
       ? `${filters.priceMin ?? PRICE_MIN} - ${
-          filters.priceMax == null
-            ? t("Any", "أي")
-            : filters.priceMax === PRICE_MAX
+          filters.priceMax == null || filters.priceMax === PRICE_MAX
             ? t("Any", "أي")
             : filters.priceMax
         }`
@@ -862,6 +739,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
       brand: draftBrand || undefined,
       sellerType: draftSellerType || undefined,
       specs: draftSpecs || undefined,
+      city: draftCity || undefined,
       priceMin:
         pMin == null
           ? undefined
@@ -894,6 +772,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
     setDraftYearMax("");
     setDraftKmMax("");
     setDraftSpecs("");
+    setDraftCity("");
 
     setFilters({
       brand: undefined,
@@ -904,6 +783,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
       yearMax: undefined,
       mileageMax: undefined,
       specs: undefined,
+      city: undefined,
     });
   }
 
@@ -913,6 +793,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
 
       {/* chips */}
       <div className="hz-filter-chips-scroll">
+        {/* Brand */}
         <button
           className={chipClass("brand")}
           onClick={() => toggleExpand("brand")}
@@ -924,6 +805,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Seller */}
         <button
           className={chipClass("sellerType")}
           onClick={() => toggleExpand("sellerType")}
@@ -941,6 +823,19 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* City */}
+        <button
+          className={chipClass("city")}
+          onClick={() => toggleExpand("city")}
+        >
+          <span className="hz-filter-chip-label">
+            {LABELS.city}
+            {filters.city ? ` · ${filters.city}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
+        </button>
+
+        {/* Price */}
         <button
           className={chipClass("price")}
           onClick={() => toggleExpand("price")}
@@ -952,6 +847,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Year */}
         <button
           className={chipClass("year")}
           onClick={() => toggleExpand("year")}
@@ -963,10 +859,8 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
-        <button
-          className={chipClass("km")}
-          onClick={() => toggleExpand("km")}
-        >
+        {/* KM */}
+        <button className={chipClass("km")} onClick={() => toggleExpand("km")}>
           <span className="hz-filter-chip-label">
             {LABELS.km}
             {kmSummary ? ` · ${kmSummary}` : ""}
@@ -974,6 +868,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
           </span>
         </button>
 
+        {/* Specs */}
         <button
           className={chipClass("specs")}
           onClick={() => toggleExpand("specs")}
@@ -1019,6 +914,23 @@ function MotorsFilters({ lang, filters, setFilters }) {
                 <option value="">{t("Any seller", "أي بائع")}</option>
                 <option value="private">{t("Private", "فرد")}</option>
                 <option value="dealership">{t("Dealership", "معرض")}</option>
+              </select>
+            </div>
+          )}
+
+          {expandedKey === "city" && (
+            <div className="hz-field">
+              <label>{LABELS.city}</label>
+              <select
+                value={draftCity}
+                onChange={(e) => setDraftCity(e.target.value)}
+              >
+                <option value="">{t("Any city", "أي مدينة")}</option>
+                {SYRIA_CITIES.map((c) => (
+                  <option key={c.en} value={c.en}>
+                    {isAr ? c.ar : c.en}
+                  </option>
+                ))}
               </select>
             </div>
           )}
@@ -1093,9 +1005,7 @@ function MotorsFilters({ lang, filters, setFilters }) {
                 inputMode="numeric"
                 className="hz-input-scroller"
                 value={draftKmMax}
-                onChange={(e) =>
-                  setDraftKmMax(cleanNumber(e.target.value))
-                }
+                onChange={(e) => setDraftKmMax(cleanNumber(e.target.value))}
                 placeholder={t("Max kilometers", "أقصى عدد كيلومترات")}
               />
             </div>
@@ -1157,11 +1067,24 @@ function MotorsFilters({ lang, filters, setFilters }) {
 /* PROPERTY FILTERS */
 
 function PropertyFilters({ filters, setFilters, lang }) {
-  const S = STRINGS[lang];
   const isAr = lang === "ar";
+  const t = (en, ar) => (isAr ? ar : en);
+
+  const LABELS = {
+    city: t("City", "المدينة"),
+    price: t("Price (USD)", "السعر (دولار)"),
+    area: t("Area (sqft)", "المساحة (قدم²)"),
+  };
+
+  const PRICE_MIN = 0;
+  const PRICE_MAX = 2000000;
+  const AREA_MIN = 0;
+  const AREA_MAX = 2000;
 
   const [expandedKey, setExpandedKey] = useState(null);
 
+  // drafts
+  const [draftCity, setDraftCity] = useState(filters.city || "");
   const [draftPriceMin, setDraftPriceMin] = useState(
     filters.priceMin != null ? String(filters.priceMin) : ""
   );
@@ -1175,7 +1098,9 @@ function PropertyFilters({ filters, setFilters, lang }) {
     filters.areaMax != null ? String(filters.areaMax) : ""
   );
 
+  // sync drafts when parent filters reset
   useEffect(() => {
+    setDraftCity(filters.city || "");
     setDraftPriceMin(
       filters.priceMin != null ? String(filters.priceMin) : ""
     );
@@ -1189,6 +1114,7 @@ function PropertyFilters({ filters, setFilters, lang }) {
       filters.areaMax != null ? String(filters.areaMax) : ""
     );
   }, [
+    filters.city,
     filters.priceMin,
     filters.priceMax,
     filters.areaMin,
@@ -1201,6 +1127,7 @@ function PropertyFilters({ filters, setFilters, lang }) {
       (expandedKey === key ? "hz-filter-chip-active" : "")
     );
   }
+
   function toggleExpand(key) {
     setExpandedKey((prev) => (prev === key ? null : key));
   }
@@ -1208,11 +1135,29 @@ function PropertyFilters({ filters, setFilters, lang }) {
   function cleanNumber(str) {
     return (str ?? "").replace(/[^\d]/g, "");
   }
+
   function parseOrUndefined(str) {
     if (!str) return undefined;
     const n = Number(str);
     return Number.isFinite(n) ? n : undefined;
   }
+
+  // summaries
+  const priceSummary =
+    filters.priceMin != null || filters.priceMax != null
+      ? `${filters.priceMin ?? PRICE_MIN} - ${
+          filters.priceMax == null || filters.priceMax === PRICE_MAX
+            ? t("Any", "أي")
+            : filters.priceMax
+        }`
+      : "";
+
+  const areaSummary =
+    filters.areaMin != null || filters.areaMax != null
+      ? `${filters.areaMin ?? AREA_MIN}${
+          filters.areaMax != null ? " - " + filters.areaMax : "+"
+        }`
+      : "";
 
   function applyFilters() {
     const pMin = parseOrUndefined(cleanNumber(draftPriceMin));
@@ -1222,19 +1167,35 @@ function PropertyFilters({ filters, setFilters, lang }) {
 
     setFilters((f) => ({
       ...f,
-      priceMin: pMin,
-      priceMax: pMax,
-      areaMin: aMin,
-      areaMax: aMax,
+      city: draftCity || undefined,
+      priceMin:
+        pMin == null
+          ? undefined
+          : Math.max(PRICE_MIN, Math.min(pMin, PRICE_MAX)),
+      priceMax:
+        pMax == null
+          ? undefined
+          : Math.max(PRICE_MIN, Math.min(pMax, PRICE_MAX)),
+      areaMin:
+        aMin == null
+          ? undefined
+          : Math.max(AREA_MIN, Math.min(aMin, AREA_MAX)),
+      areaMax:
+        aMax == null
+          ? undefined
+          : Math.max(AREA_MIN, Math.min(aMax, AREA_MAX)),
     }));
   }
 
   function clearAll() {
+    setDraftCity("");
     setDraftPriceMin("");
     setDraftPriceMax("");
     setDraftAreaMin("");
     setDraftAreaMax("");
+
     setFilters({
+      city: undefined,
       priceMin: undefined,
       priceMax: undefined,
       areaMin: undefined,
@@ -1244,121 +1205,126 @@ function PropertyFilters({ filters, setFilters, lang }) {
 
   return (
     <div className="hz-filters">
-      <div className="hz-filters-title">{S.propertyFilters}</div>
+      <div className="hz-filters-title">{STRINGS[lang].propertyFilters}</div>
 
+      {/* chips */}
       <div className="hz-filter-chips-scroll">
+        {/* City */}
         <button
-          className={chipClass("priceMin")}
-          onClick={() => toggleExpand("priceMin")}
+          className={chipClass("city")}
+          onClick={() => toggleExpand("city")}
         >
-          {isAr ? "أدنى سعر" : "Min Price"}
-          {filters.priceMin ? ` · ${filters.priceMin}` : ""}
-          <ChevronDown className="hz-filter-chip-arrow" />
+          <span className="hz-filter-chip-label">
+            {LABELS.city}
+            {filters.city ? ` · ${filters.city}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
 
+        {/* Price */}
         <button
-          className={chipClass("priceMax")}
-          onClick={() => toggleExpand("priceMax")}
+          className={chipClass("price")}
+          onClick={() => toggleExpand("price")}
         >
-          {isAr ? "أعلى سعر" : "Max Price"}
-          {filters.priceMax ? ` · ${filters.priceMax}` : ""}
-          <ChevronDown className="hz-filter-chip-arrow" />
+          <span className="hz-filter-chip-label">
+            {LABELS.price}
+            {priceSummary ? ` · ${priceSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
 
+        {/* Area */}
         <button
-          className={chipClass("areaMin")}
-          onClick={() => toggleExpand("areaMin")}
+          className={chipClass("area")}
+          onClick={() => toggleExpand("area")}
         >
-          {isAr ? "أقل مساحة" : "Min Area"}
-          {filters.areaMin ? ` · ${filters.areaMin}` : ""}
-          <ChevronDown className="hz-filter-chip-arrow" />
-        </button>
-
-        <button
-          className={chipClass("areaMax")}
-          onClick={() => toggleExpand("areaMax")}
-        >
-          {isAr ? "أكبر مساحة" : "Max Area"}
-          {filters.areaMax ? ` · ${filters.areaMax}` : ""}
-          <ChevronDown className="hz-filter-chip-arrow" />
+          <span className="hz-filter-chip-label">
+            {LABELS.area}
+            {areaSummary ? ` · ${areaSummary}` : ""}
+            <ChevronDown className="hz-filter-chip-arrow" />
+          </span>
         </button>
       </div>
 
+      {/* expanded panel */}
       {expandedKey && (
         <div className="hz-filter-panel" style={{ marginTop: 6 }}>
-          {expandedKey === "priceMin" && (
+          {expandedKey === "city" && (
             <div className="hz-field">
-              <label>
-                {isAr ? "الحد الأدنى للسعر" : "Minimum Price"}
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftPriceMin}
-                onChange={(e) =>
-                  setDraftPriceMin(cleanNumber(e.target.value))
-                }
-                placeholder={isAr ? "أدنى سعر" : "Min price"}
-              />
+              <label>{LABELS.city}</label>
+              <select
+                value={draftCity}
+                onChange={(e) => setDraftCity(e.target.value)}
+              >
+                <option value="">{t("Any city", "أي مدينة")}</option>
+                {SYRIA_CITIES.map((c) => (
+                  <option key={c.en} value={c.en}>
+                    {isAr ? c.ar : c.en}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
-          {expandedKey === "priceMax" && (
+          {expandedKey === "price" && (
             <div className="hz-field">
-              <label>
-                {isAr ? "الحد الأعلى للسعر" : "Maximum Price"}
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftPriceMax}
-                onChange={(e) =>
-                  setDraftPriceMax(cleanNumber(e.target.value))
-                }
-                placeholder={isAr ? "أعلى سعر" : "Max price"}
-              />
+              <label>{LABELS.price}</label>
+              <div
+                className="hz-range-inputs"
+                style={{ display: "flex", gap: 6 }}
+              >
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftPriceMin}
+                  onChange={(e) =>
+                    setDraftPriceMin(cleanNumber(e.target.value))
+                  }
+                  placeholder={t("Min", "أدنى")}
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftPriceMax}
+                  onChange={(e) =>
+                    setDraftPriceMax(cleanNumber(e.target.value))
+                  }
+                  placeholder={t("Max", "أعلى")}
+                />
+              </div>
             </div>
           )}
 
-          {expandedKey === "areaMin" && (
+          {expandedKey === "area" && (
             <div className="hz-field">
-              <label>
-                {isAr
-                  ? "الحد الأدنى للمساحة (قدم²)"
-                  : "Minimum Area (sqft)"}
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftAreaMin}
-                onChange={(e) =>
-                  setDraftAreaMin(cleanNumber(e.target.value))
-                }
-                placeholder={isAr ? "أقل مساحة" : "Min sqft"}
-              />
-            </div>
-          )}
-
-          {expandedKey === "areaMax" && (
-            <div className="hz-field">
-              <label>
-                {isAr
-                  ? "الحد الأعلى للمساحة (قدم²)"
-                  : "Maximum Area (sqft)"}
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                className="hz-input-scroller"
-                value={draftAreaMax}
-                onChange={(e) =>
-                  setDraftAreaMax(cleanNumber(e.target.value))
-                }
-                placeholder={isAr ? "أكبر مساحة" : "Max sqft"}
-              />
+              <label>{LABELS.area}</label>
+              <div
+                className="hz-range-inputs"
+                style={{ display: "flex", gap: 6 }}
+              >
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftAreaMin}
+                  onChange={(e) =>
+                    setDraftAreaMin(cleanNumber(e.target.value))
+                  }
+                  placeholder={t("From", "من")}
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="hz-input-scroller"
+                  value={draftAreaMax}
+                  onChange={(e) =>
+                    setDraftAreaMax(cleanNumber(e.target.value))
+                  }
+                  placeholder={t("To", "إلى")}
+                />
+              </div>
             </div>
           )}
 
@@ -1376,14 +1342,14 @@ function PropertyFilters({ filters, setFilters, lang }) {
               className="hz-secondary"
               onClick={clearAll}
             >
-              {isAr ? "مسح الكل" : "Clear"}
+              {t("Clear", "مسح الكل")}
             </button>
             <button
               type="button"
               className="hz-primary"
               onClick={applyFilters}
             >
-              {isAr ? "تطبيق" : "Apply"}
+              {t("Apply", "تطبيق")}
             </button>
           </div>
         </div>
@@ -1420,24 +1386,32 @@ function CategoryPage({
       if (filters.brand && l.brand !== filters.brand) return false;
       if (filters.sellerType && l.sellerType !== filters.sellerType)
         return false;
+      if (filters.city && l.city !== filters.city) return false;
+
       if (filters.priceMin != null && (l.price || 0) < filters.priceMin)
         return false;
       if (filters.priceMax != null && (l.price || 0) > filters.priceMax)
         return false;
+
       if (filters.yearMin != null && (l.year || 0) < filters.yearMin)
         return false;
       if (filters.yearMax != null && (l.year || 0) > filters.yearMax)
         return false;
+
       if (filters.mileageMax != null && (l.mileage || 0) > filters.mileageMax)
         return false;
+
       if (filters.specs && l.specs !== filters.specs) return false;
     }
 
     if (isProp) {
+      if (filters.city && l.city !== filters.city) return false;
+
       if (filters.priceMin != null && (l.price || 0) < filters.priceMin)
         return false;
       if (filters.priceMax != null && (l.price || 0) > filters.priceMax)
         return false;
+
       if (filters.areaMin != null && (l.areaSqft || 0) < filters.areaMin)
         return false;
       if (filters.areaMax != null && (l.areaSqft || 0) > filters.areaMax)
@@ -1463,7 +1437,11 @@ function CategoryPage({
       )}
 
       {isProp && (
-        <PropertyFilters lang={lang} filters={filters} setFilters={setFilters} />
+        <PropertyFilters
+          lang={lang}
+          filters={filters}
+          setFilters={setFilters}
+        />
       )}
 
       <div className="hz-grid">
@@ -1554,6 +1532,9 @@ function ListingDetail({ item, onBack, lang }) {
 
   const imgs = item.imgs && item.imgs.length ? item.imgs : [];
   const [index, setIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
 
   function go(delta) {
     if (!imgs.length) return;
@@ -1570,6 +1551,29 @@ function ListingDetail({ item, onBack, lang }) {
     setIndex(i);
   }
 
+  function onTouchStart(e) {
+    if (!imgs.length) return;
+    setTouchStartX(e.touches[0].clientX);
+    setTouchEndX(null);
+  }
+
+  function onTouchMove(e) {
+    if (!imgs.length) return;
+    setTouchEndX(e.touches[0].clientX);
+  }
+
+  function onTouchEnd() {
+    if (touchStartX == null || touchEndX == null) return;
+    const diff = touchStartX - touchEndX;
+    const threshold = 40;
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) go(1);
+      else go(-1);
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  }
+
   return (
     <div className="hz-detail">
       <button className="hz-detail-back" onClick={onBack}>
@@ -1582,8 +1586,11 @@ function ListingDetail({ item, onBack, lang }) {
             <div
               className="hz-detail-img-main"
               onClick={() => {
-                if (imgs.length > 1) go(1);
+                if (imgs.length) setLightboxOpen(true);
               }}
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
             >
               <img
                 src={imgs[index]}
@@ -1696,22 +1703,76 @@ function ListingDetail({ item, onBack, lang }) {
           <WhatsAppButton number={item.whatsapp} title={localizedTitle} />
         </div>
       </div>
+
+      {lightboxOpen && imgs.length > 0 && (
+        <div
+          className="hz-lightbox-overlay"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <div
+            className="hz-lightbox-inner"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            <button
+              type="button"
+              className="hz-lightbox-close"
+              onClick={() => setLightboxOpen(false)}
+            >
+              ×
+            </button>
+
+            <div className="hz-lightbox-img-wrap">
+              <img
+                src={imgs[index]}
+                alt={localizedTitle}
+                className="hz-lightbox-img"
+              />
+
+              {imgs.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="hz-lightbox-arrow hz-lightbox-arrow-left"
+                    onClick={() => go(-1)}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    className="hz-lightbox-arrow hz-lightbox-arrow-right"
+                    onClick={() => go(1)}
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-
-
 /* ACCOUNT PAGE */
 
-function AccountPage({ user, listings })
-{
+function AccountPage({
+  user,
+  listings,
+  onDeleteListing,
+  onLogout,
+  onOpenListing,
+}) {
   const displayName = (user && user.name) || "Huzzlie User";
 
   const [section, setSection] = useState("menu");
-    const userKey = (user && user.email) || "demo@huzzlie.com";
-  const myAds = (listings || []).filter((l) => l.ownerId === userKey);
 
+  // use real Supabase user id and DB user_id column
+  const ownerId = user?.id;
+  const myAds = (listings || []).filter((l) => l.user_id === ownerId);
 
   const [profile, setProfile] = useState({
     firstName: "",
@@ -1738,14 +1799,13 @@ function AccountPage({ user, listings })
     confirmPassword: "",
   });
 
-    const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState({
     language: "auto", // "auto", "ar", "en"
     emailUpdates: true,
     whatsappUpdates: true,
     showPublicProfile: true,
     showPhoneOnAds: true,
   });
-
 
   function SectionShell({ title, children }) {
     return (
@@ -1859,24 +1919,22 @@ function AccountPage({ user, listings })
     return (
       <SectionShell title="Phone numbers & addresses">
         <div className="hz-field">
-          <label>Primary phone number</label>
-          <input
-            value={contact.phone}
-            onChange={(e) =>
-              setContact((c) => ({ ...c, phone: e.target.value }))
-            }
-            placeholder="+9639xxxxxxx"
-          />
-        </div>
-        <div className="hz-field">
           <label>Alternate phone (optional)</label>
           <input
             value={contact.altPhone}
-            onChange={(e) =>
-              setContact((c) => ({ ...c, altPhone: e.target.value }))
-            }
+            onChange={(e) => {
+              let v = e.target.value.replace(/[^\d+]/g, "");
+              if (v.indexOf("+") > 0) {
+                v = v.replace(/\+/g, "");
+              } else if (v.indexOf("+") === 0) {
+                v = "+" + v.slice(1).replace(/\+/g, "");
+              }
+              setContact((c) => ({ ...c, altPhone: v }));
+            }}
+            inputMode="tel"
           />
         </div>
+
         <div className="hz-field">
           <label>City</label>
           <input
@@ -1917,7 +1975,10 @@ function AccountPage({ user, listings })
             type="password"
             value={security.currentPassword}
             onChange={(e) =>
-              setSecurity((s) => ({ ...s, currentPassword: e.target.value }))
+              setSecurity((s) => ({
+                ...s,
+                currentPassword: e.target.value,
+              }))
             }
           />
         </div>
@@ -1931,7 +1992,7 @@ function AccountPage({ user, listings })
             }
           />
         </div>
-                <div className="hz-field">
+        <div className="hz-field">
           <label>Confirm new password</label>
           <input
             type="password"
@@ -1968,7 +2029,6 @@ function AccountPage({ user, listings })
             Update password
           </button>
         </div>
-
       </SectionShell>
     );
   }
@@ -1998,7 +2058,7 @@ function AccountPage({ user, listings })
     );
   }
 
-    if (section === "myAds") {
+  if (section === "myAds") {
     return (
       <SectionShell title="My ads">
         {myAds.length === 0 ? (
@@ -2007,19 +2067,66 @@ function AccountPage({ user, listings })
           </div>
         ) : (
           <div className="hz-myads-list">
-            {myAds.map((ad) => (
-              <div key={ad.id} className="hz-myads-item">
-                <div className="hz-myads-main">
-                  <div className="hz-myads-title">{ad.title}</div>
-                  <div className="hz-myads-meta">
-                    {ad.currency}{" "}
-                    {ad.price != null ? ad.price.toLocaleString() : 0} ·{" "}
-                    {ad.location || "Damascus"}
+            {myAds.map((ad) => {
+              const thumb = ad.imgs && ad.imgs.length ? ad.imgs[0] : null;
+              return (
+                <div key={ad.id} className="hz-myads-item">
+                  <div className="hz-myads-thumb-wrap">
+                    {thumb ? (
+                      <img
+                        src={thumb}
+                        alt={ad.title}
+                        className="hz-myads-thumb"
+                      />
+                    ) : (
+                      <div className="hz-myads-thumb-placeholder">
+                        No image
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="hz-myads-main">
+                    <div className="hz-myads-title">{ad.title}</div>
+                    <div className="hz-myads-meta">
+                      {ad.currency}{" "}
+                      {ad.price != null ? ad.price.toLocaleString() : 0} ·{" "}
+                      {ad.city || ad.location || "Damascus"}
+                    </div>
+                    <div className="hz-myads-status-row">
+                      <span
+                        className={
+                          "hz-myads-status " +
+                          (ad.status === "active"
+                            ? "hz-myads-status-active"
+                            : "hz-myads-status-muted")
+                        }
+                      >
+                        {ad.status || "Active"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="hz-myads-actions">
+                    <button
+                      type="button"
+                      className="hz-myads-view"
+                      onClick={() => onOpenListing && onOpenListing(ad)}
+                    >
+                      View
+                    </button>
+                    <button
+                      type="button"
+                      className="hz-myads-delete"
+                      onClick={() =>
+                        onDeleteListing && onDeleteListing(ad.id)
+                      }
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-                <div className="hz-myads-status">Live</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </SectionShell>
@@ -2117,7 +2224,6 @@ function AccountPage({ user, listings })
     );
   }
 
-
   // MAIN ACCOUNT MENU
   return (
     <div className="hz-page hz-account">
@@ -2127,7 +2233,6 @@ function AccountPage({ user, listings })
         </div>
         <div className="hz-account-main">
           <div className="hz-account-name">{displayName}</div>
-          <div className="hz-account-joined">Member since July 2023</div>
         </div>
         <button
           className="hz-account-verify"
@@ -2145,23 +2250,19 @@ function AccountPage({ user, listings })
           <Bookmark size={20} />
           <span>My public profile</span>
         </button>
-                <button
+        <button
           className="hz-account-action"
           onClick={() => setSection("myAds")}
         >
           <Search size={20} />
           <span>My ads</span>
         </button>
-
       </div>
 
       <div className="hz-account-list">
-        <button
-          className="hz-account-item"
-          onClick={() => setSection("profile")}
-        >
-          <User size={18} />
-          <span>Profile & basic info</span>
+        <button className="hz-account-item" onClick={onLogout}>
+          <LogOut size={18} />
+          <span>Log out</span>
         </button>
 
         <button
@@ -2180,14 +2281,13 @@ function AccountPage({ user, listings })
           <span>Password & security</span>
         </button>
 
-                <button
+        <button
           className="hz-account-item"
           onClick={() => setSection("myAds")}
         >
           <Bookmark size={18} />
           <span>My ads status</span>
         </button>
-
 
         <button
           className="hz-account-item"
@@ -2198,12 +2298,12 @@ function AccountPage({ user, listings })
         </button>
 
         <button
-  className="hz-account-item"
-  onClick={() => setSection("settings")}
->
-  <Settings size={18} />
-  <span>Account settings</span>
-</button>
+          className="hz-account-item"
+          onClick={() => setSection("settings")}
+        >
+          <Settings size={18} />
+          <span>Account settings</span>
+        </button>
 
         <button
           className="hz-account-item hz-account-danger"
@@ -2213,10 +2313,7 @@ function AccountPage({ user, listings })
           <span>Deactivate / delete account</span>
         </button>
 
-        <button
-          className="hz-account-item"
-          onClick={() => alert("Logged out (demo).")}
-        >
+        <button className="hz-account-item" onClick={onLogout}>
           <LogOut size={18} />
           <span>Log out</span>
         </button>
@@ -2225,110 +2322,148 @@ function AccountPage({ user, listings })
   );
 }
 
-
 /* ACCOUNT SHEET */
 
-function AccountSheet({ open, onClose, setUser, lang }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+function AccountSheet({ open, onClose, setUser, lang, onGoogleLogin }) {
+  const isAr = lang === "ar";
+  const t = (en, ar) => (isAr ? ar : en);
 
-  // Language strings
-  const S = STRINGS[lang || "ar"];
+  const [mode, setMode] = useState("login"); // "login" | "signup"
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   if (!open) return null;
 
-  const providers = [
-    { key: "google", label: S.continueGoogle || "Continue with Google" },
-    {
-      key: "microsoft",
-      label:
-        S.continueMicrosoft || "Continue with Microsoft (Hotmail/Outlook)",
-    },
-    { key: "apple", label: S.continueApple || "Continue with Apple" },
-  ];
+  async function handleEmailSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
 
-  function completeWithProvider(key) {
-    const displayName = name || key.toUpperCase() + " User";
-    const displayEmail = email || key + "@huzzlie.com";
-    setUser({ name: displayName, email: displayEmail });
-    onClose();
-  }
-
-  function completeManual() {
-    if (!name && !email) return;
-    setUser({
-      name: name || "Huzzlie User",
-      email: email || "user@huzzlie.com",
-    });
-    onClose();
+    try {
+      if (mode === "login") {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setUser(data.user);
+        onClose();
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setUser(data.user);
+        onClose();
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      setErrorMsg(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="hz-modal-backdrop">
-      <div className="hz-modal">
-        <div className="hz-modal-header">
-          <h3>{S.createAccount || "Create Account"}</h3>
-          <button className="hz-close" onClick={onClose}>
-            ×
+    <div className="hz-account-sheet-overlay">
+      <div className="hz-account-sheet">
+        <button
+          type="button"
+          className="hz-account-close"
+          onClick={onClose}
+        >
+          ×
+        </button>
+
+        <h2 className="hz-account-title">{t("Account", "الحساب")}</h2>
+
+        {/* GOOGLE LOGIN BUTTON */}
+        <div className="hz-oauth-section">
+          <button
+            type="button"
+            className="hz-google-btn"
+            onClick={onGoogleLogin}
+          >
+            {t("Continue with Google", "تسجيل باستخدام جوجل")}
           </button>
         </div>
 
-        <div className="hz-modal-body">
-          {/* 🔥 Inline message (instead of browser alert) */}
-          <div className="hz-account-note">
-            {S.createAccountToPost || "Please create an account before posting."}
-          </div>
+        <div className="hz-account-separator">
+          {t("or use email", "أو باستخدام البريد الإلكتروني")}
+        </div>
 
-          {providers.map((p) => (
+        {/* EMAIL/PASSWORD FORM */}
+        <form className="hz-account-form" onSubmit={handleEmailSubmit}>
+          <div className="hz-toggle-row">
             <button
-              key={p.key}
-              className="hz-provider-btn"
-              onClick={() => completeWithProvider(p.key)}
+              type="button"
+              className={
+                "hz-toggle-btn " +
+                (mode === "login" ? "hz-toggle-btn-active" : "")
+              }
+              onClick={() => setMode("login")}
             >
-              {p.label}
+              {t("Login", "تسجيل الدخول")}
             </button>
-          ))}
-
-          <div className="hz-or">{S.or || "or"}</div>
-
-          <div className="hz-field">
-            <label>{S.nameLabel || "Name"}</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={S.namePlaceholder || "Your name"}
-            />
+            <button
+              type="button"
+              className={
+                "hz-toggle-btn " +
+                (mode === "signup" ? "hz-toggle-btn-active" : "")
+              }
+              onClick={() => setMode("signup")}
+            >
+              {t("Create account", "إنشاء حساب")}
+            </button>
           </div>
 
           <div className="hz-field">
-            <label>{S.emailLabel || "Email"}</label>
+            <label>{t("Email", "البريد الإلكتروني")}</label>
             <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={S.emailPlaceholder || "you@example.com"}
+              placeholder={t("you@example.com", "you@example.com")}
+              required
             />
           </div>
-        </div>
 
-        <div className="hz-modal-footer">
-          <button className="hz-secondary" onClick={onClose}>
-            {S.cancel || "Cancel"}
-          </button>
+          <div className="hz-field">
+            <label>{t("Password", "كلمة المرور")}</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t("Your password", "كلمة المرور")}
+              required
+            />
+          </div>
 
-          <button className="hz-primary" onClick={completeManual}>
-            {S.save || "Save"}
+          {errorMsg && <div className="hz-error-text">{errorMsg}</div>}
+
+          <button
+            type="submit"
+            className="hz-primary hz-account-submit"
+            disabled={loading}
+          >
+            {loading
+              ? t("Please wait…", "يرجى الانتظار…")
+              : mode === "login"
+              ? t("Login", "تسجيل الدخول")
+              : t("Sign up", "إنشاء حساب")}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
 }
 
-
 /* POST DIALOG */
 
 function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
-
   const S = STRINGS[lang];
 
   const [category, setCategory] = useState("");
@@ -2353,7 +2488,6 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
   if (!open) return null;
 
   const catDef = CATEGORY_DEFS.find((c) => c.key === category);
-  const fee = postingFeeFor(category, subcategory);
 
   function onImagesChange(e) {
     const files = Array.prototype.slice.call(e.target.files || []);
@@ -2382,6 +2516,7 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
   }
 
   function handleSubmit() {
+    // basic required fields
     if (!title || !category || !subcategory || !whatsapp) {
       alert("Please fill title, category, subcategory & WhatsApp.");
       return;
@@ -2406,50 +2541,21 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
       return;
     }
 
-    const imgUrls =
-      images && images.length
-        ? images.map((file) => URL.createObjectURL(file))
-        : [
-            "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop",
-          ];
-
-        const newListing = {
-      id: "user-" + Date.now(),
-      ownerId: userEmail || "demo@huzzlie.com",
+    const formValues = {
       title,
-      titleAr: titleAr || undefined,
-      price: price ? Number(price) : 0,
-      currency: "USD",
+      description: desc,
+      price: price ? Number(price) : null,
       category,
       subcategory,
-      location: city || "Damascus",
-      locationAr: SYRIA_CITIES.find((c) => c.en === city)?.ar || undefined,
-      areaSqft: isAnyProperty(category) && area ? Number(area) : undefined,
+      city,
+      area: isAnyProperty(category) && area ? Number(area) : null,
       whatsapp,
-      brand: baseListing.brand,
-      model: baseListing.model,
-      year: baseListing.year,
-      sellerType: baseListing.sellerType,
-      mileage: baseListing.mileage,
-      vin: baseListing.vin,
-      specs: baseListing.specs,
-      desc,
-      descAr: descAr || undefined,
-      imgs: imgUrls,
-      featured: false,
+      images,
     };
 
-
     if (typeof onCreateListing === "function") {
-      onCreateListing(newListing);
+      onCreateListing(formValues);
     }
-
-    alert(
-      "Listing created. " +
-        (fee.amount
-          ? "A $" + fee.amount + " fee would apply (" + fee.reason + ") in production."
-          : "This category is free to post.")
-    );
 
     resetForm();
     onClose();
@@ -2458,31 +2564,30 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
   return (
     <div className="hz-modal-backdrop">
       <div className="hz-modal hz-modal-large hz-post-modal">
-
         <div className="hz-modal-header">
           <h3>{S.placeListing}</h3>
           <button className="hz-close" onClick={onClose}>
             ×
           </button>
         </div>
-                <div className="hz-modal-body">
 
-                  <div className="hz-field hz-field-full hz-post-intro">
-          <div className="hz-post-title">
-            {isCar(category, subcategory)
-              ? lang === "ar"
-                ? "أخبرنا عن سيارتك"
-                : "Tell us about your car"
-              : lang === "ar"
-              ? "تفاصيل الإعلان"
-              : "Listing details"}
+        <div className="hz-modal-body">
+          <div className="hz-field hz-field-full hz-post-intro">
+            <div className="hz-post-title">
+              {isCar(category, subcategory)
+                ? lang === "ar"
+                  ? "أخبرنا عن سيارتك"
+                  : "Tell us about your car"
+                : lang === "ar"
+                ? "تفاصيل الإعلان"
+                : "Listing details"}
+            </div>
+            <div className="hz-post-subtitle">
+              {lang === "ar"
+                ? "املأ الحقول التالية بدقة لزيادة فرص بيع إعلانك."
+                : "Fill in the details carefully to get better results."}
+            </div>
           </div>
-          <div className="hz-post-subtitle">
-            {lang === "ar"
-              ? "املأ الحقول التالية بدقة لزيادة فرص بيع إعلانك."
-              : "Fill in the details carefully to get better results."}
-          </div>
-        </div>
 
           <div className="hz-field">
             <label>Category</label>
@@ -2554,7 +2659,9 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
               type="text"
               inputMode="numeric"
               value={price}
-              onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
+              onChange={(e) =>
+                setPrice(e.target.value.replace(/[^\d]/g, ""))
+              }
               placeholder="Price"
             />
           </div>
@@ -2563,8 +2670,18 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
             <label>WhatsApp</label>
             <input
               value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value)}
+              onChange={(e) => {
+                let v = e.target.value.replace(/[^\d+]/g, "");
+                // allow only one "+" at the start
+                if (v.indexOf("+") > 0) {
+                  v = v.replace(/\+/g, "");
+                } else if (v.indexOf("+") === 0) {
+                  v = "+" + v.slice(1).replace(/\+/g, "");
+                }
+                setWhatsapp(v);
+              }}
               placeholder="+9639xxxxxxxx"
+              inputMode="tel"
             />
           </div>
 
@@ -2663,7 +2780,9 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
 
           {isAnyProperty(category) && (
             <div className="hz-field">
-              <label>{lang === "ar" ? "المساحة (قدم²)" : "Area (sqft)"}</label>
+              <label>
+                {lang === "ar" ? "المساحة (قدم²)" : "Area (sqft)"}
+              </label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -2677,7 +2796,12 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
 
           <div className="hz-field hz-field-full">
             <label>Images</label>
-            <input type="file" multiple accept="image/*" onChange={onImagesChange} />
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={onImagesChange}
+            />
             {images && images.length ? (
               <div className="hz-images-count">
                 {images.length} file(s) selected
@@ -2708,16 +2832,16 @@ function PostDialog({ open, onClose, lang, onCreateListing, userEmail }) {
 
         <div className="hz-modal-footer">
           <div className="hz-fee-label">
-            {fee.amount
-              ? "Posting fee: $" + fee.amount + " (" + fee.reason + ")"
-              : "This category is free to post."}
+            {lang === "ar"
+              ? "جميع الإعلانات مجانية حالياً، لن يتم خصم أي رسوم."
+              : "All listings are free right now – no fees will be charged."}
           </div>
           <div className="hz-modal-actions">
             <button className="hz-secondary" onClick={onClose}>
-              Cancel
+              {lang === "ar" ? "إلغاء" : "Cancel"}
             </button>
             <button className="hz-primary" onClick={handleSubmit}>
-              Pay &amp; Post (mock)
+              {lang === "ar" ? "نشر الإعلان" : "Post listing"}
             </button>
           </div>
         </div>
@@ -2734,13 +2858,12 @@ function IntroScreen() {
   );
 }
 
-
-/* ROOT APP */
+/* BOTTOM NAV */
 
 function BottomNav({ activeTab, onTabChange, onPost, onAccount, lang }) {
   const S = STRINGS[lang || "ar"];
   const isActive = (tab) =>
-    activeTab === tab ? "hz-nav-item active" : "hz-nav-item";
+    activeTab === tab ? "hz-nav-item hz-nav-item-active" : "hz-nav-item";
 
   return (
     <div className="hz-bottom-nav">
@@ -2753,7 +2876,7 @@ function BottomNav({ activeTab, onTabChange, onPost, onAccount, lang }) {
         <span>{S.home}</span>
       </button>
 
-      {/* FAVOURITES – use 'favs' to match your showFavs logic */}
+      {/* FAVOURITES */}
       <button
         className={isActive("favs")}
         onClick={() => onTabChange("favs")}
@@ -2762,16 +2885,13 @@ function BottomNav({ activeTab, onTabChange, onPost, onAccount, lang }) {
         <span>{S.favourites}</span>
       </button>
 
-      {/* PLACE LISTING – uses onPost so it opens the dialog */}
-      <button
-        className="hz-nav-item hz-nav-post"
-        onClick={onPost}
-      >
+      {/* PLACE LISTING */}
+      <button className="hz-nav-item hz-nav-post" onClick={onPost}>
         <PlusCircle size={24} />
         <span>{S.placeListing}</span>
       </button>
 
-      {/* ACCOUNT – uses onAccount to handle login / account page */}
+      {/* ACCOUNT */}
       <button
         className={isActive("account")}
         onClick={onAccount}
@@ -2783,19 +2903,13 @@ function BottomNav({ activeTab, onTabChange, onPost, onAccount, lang }) {
   );
 }
 
-
+/* ROOT APP */
 
 export default function App() {
-    const [showIntro, setShowIntro] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 900);
-    return () => clearTimeout(timer);
-  }, []);
-  
-
-const [lang, setLang] = useState("ar"); // set to "ar" if you want Arabic by default
-const [activeTab, setActiveTab] = useState("home");
+  // --- STATE HOOKS ---
+  const [showIntro, setShowIntro] = useState(true);
+  const [lang, setLang] = useState("ar"); // Arabic by default
+  const [activeTab, setActiveTab] = useState("home");
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(null);
@@ -2805,29 +2919,149 @@ const [activeTab, setActiveTab] = useState("home");
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
   const [activeSub, setActiveSub] = useState("");
   const [selectedListing, setSelectedListing] = useState(null);
-  const [listings, setListings] = useState(MOCK_LISTINGS);
+  const [listings, setListings] = useState([]);
 
+  // --- SUPABASE AUTH: KEEP USER IN SYNC ---
+  useEffect(() => {
+    const init = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error getting session:", error);
+      } else {
+        setUser(data?.session?.user ?? null);
+      }
+    };
+
+    init();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // --- LOAD LISTINGS FROM SUPABASE + HARD-DELETE OLDER THAN 30 DAYS ---
+  useEffect(() => {
+    async function loadListings() {
+      // 1) Calculate cutoff (30 days ago)
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+
+      // 2) Hard-delete old listings from Supabase
+      const { error: deleteError } = await supabase
+        .from("listings")
+        .delete()
+        .lt("created_at", cutoff.toISOString());
+
+      if (deleteError) {
+        console.error("Error deleting expired listings:", deleteError);
+      }
+
+      // 3) Load remaining active listings
+      const { data, error } = await supabase
+        .from("listings")
+        .select("*")
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error loading listings:", error);
+      } else {
+        const mapped = (data || []).map((row) => ({
+          ...row,
+          imgs: row.images ? JSON.parse(row.images) : [],
+        }));
+        setListings(mapped);
+      }
+    }
+
+    loadListings();
+  }, []);
+
+  // --- INTRO SPLASH TIMER ---
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 900);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // --- USER KEY (FOR FAVOURITES, ETC) ---
+  const userKey = user?.id || user?.email || null;
+  console.log("user state =", user);
+  console.log("userKey =", userKey);
+
+  // CLOSE LOGIN SHEET ON LOGIN OR LOGOUT
+  useEffect(() => {
+    setAccountOpen(false);
+  }, [user]);
+
+  // --- LOAD FAVOURITES WHEN USER CHANGES ---
+  useEffect(() => {
+    console.log("🔄 loadFavorites effect fired. userKey =", userKey);
+
+    const loadFavorites = async () => {
+      if (!userKey) {
+        console.log("No userKey → clearing favs");
+        setFavs({});
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("listing_id")
+        .eq("user_id", userKey);
+
+      if (error) {
+        console.error("❌ Error loading favorites:", error);
+        return;
+      }
+
+      console.log("✅ Loaded favorites from DB:", data);
+
+      const favMap = {};
+      (data || []).forEach((row) => {
+        favMap[row.listing_id] = true;
+      });
+
+      setFavs(favMap);
+    };
+
+    loadFavorites();
+  }, [userKey]);
+
+  // --- NAV / CATEGORY HELPERS ---
   function handleBottomTab(tab) {
-  // home / favs etc
-  setActiveTab
-(tab);
+    setAccountOpen(false);
 
-  if (tab !== "home") {
-    setActiveCategoryKey(null);
-    setSelectedListing(null);
-    setSearchTerm("");
-  } else {
-    setActiveCategoryKey(null);
-    setSelectedListing(null);
-  }
-}
+    if (tab === "favs" && !userKey) {
+      setAccountOpen(true);
+      return;
+    }
 
+    if (tab === "account" && !userKey) {
+      setAccountOpen(true);
+      return;
+    }
 
-  function toggleFav(id) {
-    setFavs((prev) => ({ ...prev, [id]: !prev[id] }));
+    setActiveTab(tab);
+
+    if (tab !== "home") {
+      setActiveCategoryKey(null);
+      setSelectedListing(null);
+      setSearchTerm("");
+    } else {
+      setActiveCategoryKey(null);
+      setSelectedListing(null);
+    }
   }
 
   function openCategory(key) {
+    setAccountOpen(false);
+
     setActiveCategoryKey(key);
     const cat = CATEGORY_DEFS.find((c) => c.key === key);
     const firstSub =
@@ -2845,21 +3079,160 @@ const [activeTab, setActiveTab] = useState("home");
   }
 
   function handlePostClick() {
-  if (!user) {
-    setAccountOpen(true);
-    return;
+    if (!user) {
+      setAccountOpen(true);
+      return;
+    }
+    setPostOpen(true);
   }
-  setPostOpen(true);
-}
 
+  // --- LOGOUT ---
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+      alert("Could not log out. Please try again.");
+      return;
+    }
 
-  function handleCreateListing(newListing) {
-    setListings((prev) => [newListing, ...prev]);
+    // Clear local state
+    setUser(null);
+    setFavs({});
     setActiveTab("home");
-    setActiveCategoryKey(null);
-    setSelectedListing(null);
+    setAccountOpen(false);
+  };
+
+  function handleAccountClick() {
+    if (!user) {
+      setAccountOpen(true);
+      return;
+    }
+    setActiveTab("account");
   }
 
+  // --- GOOGLE LOGIN (OAUTH) ---
+  async function handleGoogleLogin() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.error("Google sign-in error:", error.message);
+      alert("There was a problem signing in with Google.");
+    }
+  }
+
+  // --- CREATE LISTING (WITH IMAGE UPLOAD) ---
+  const handleCreateListing = async (formValues) => {
+    if (!user) {
+      setAccountOpen(true);
+      return;
+    }
+
+    // 1) Upload images to Supabase Storage
+    let imageUrls = [];
+
+    if (formValues.images && formValues.images.length > 0) {
+      const uploads = await Promise.all(
+        formValues.images.map(async (file, index) => {
+          try {
+            const ext = file.name.split(".").pop();
+            const filePath = `listings/${user.id}/${Date.now()}-${index}.${ext}`;
+
+            const { error: uploadError } = await supabase.storage
+              .from("listing-images")
+              .upload(filePath, file);
+
+            if (uploadError) {
+              console.error("Error uploading image:", uploadError);
+              return null;
+            }
+
+            const { data } = supabase.storage
+              .from("listing-images")
+              .getPublicUrl(filePath);
+
+            return data.publicUrl;
+          } catch (err) {
+            console.error("Unexpected error uploading image:", err);
+            return null;
+          }
+        })
+      );
+
+      imageUrls = uploads.filter(Boolean);
+    }
+
+    // 2) Build payload for the listings table
+    const payload = {
+      user_id: user.id,
+      title: formValues.title,
+      description: formValues.description,
+      price: formValues.price,
+      category: formValues.category,
+      subcategory: formValues.subcategory || null,
+      city: formValues.city,
+      area: formValues.area,
+      whatsapp: formValues.whatsapp,
+      images: imageUrls.length ? JSON.stringify(imageUrls) : null,
+      status: "active",
+    };
+
+    console.log("🟢 Creating listing with payload:", payload);
+
+    const { data, error } = await supabase
+      .from("listings")
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("❌ Error creating listing:", error);
+      alert("Could not create listing, please try again.");
+      return;
+    }
+
+    console.log("✅ Listing created:", data);
+
+    const created = {
+      ...data,
+      imgs: data.images ? JSON.parse(data.images) : [],
+    };
+
+    setListings((prev) => [created, ...prev]);
+    setPostOpen(false);
+  };
+
+  // --- DELETE LISTING ---
+  const deleteListing = async (listingId) => {
+    if (!user || !user.id) {
+      setAccountOpen(true);
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this listing?"
+    );
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from("listings")
+      .delete()
+      .match({ id: listingId, user_id: user.id });
+
+    if (error) {
+      console.error("❌ Error deleting listing:", error);
+      alert("Could not delete listing. Please try again.");
+      return;
+    }
+
+    setListings((prev) => prev.filter((l) => l.id !== listingId));
+  };
+
+  // --- SEARCH ---
   function handleSearch() {
     const term = search.trim().toLowerCase();
     setSearchTerm(term);
@@ -2869,7 +3242,8 @@ const [activeTab, setActiveTab] = useState("home");
   }
 
   const activeCategory =
-    activeCategoryKey && CATEGORY_DEFS.find((c) => c.key === activeCategoryKey);
+    activeCategoryKey &&
+    CATEGORY_DEFS.find((c) => c.key === activeCategoryKey);
 
   const favListings = listings.filter((l) => favs[l.id]);
 
@@ -2898,62 +3272,157 @@ const [activeTab, setActiveTab] = useState("home");
   const showHome = !activeCategory && activeTab === "home" && !searchTerm;
   const showFavs = !activeCategory && activeTab === "favs";
 
-    if (showIntro) {
+  // --- INTRO SCREEN ---
+  if (showIntro) {
     return <IntroScreen />;
   }
 
+  // --- TOGGLE FAVOURITE ---
+  const toggleFav = async (listingId) => {
+    console.log("🔥 toggleFav clicked for listingId =", listingId);
+    console.log("   current userKey =", userKey);
+    console.log("   current favs map =", favs);
 
+    if (!userKey) {
+      console.log("No userKey → opening account sheet");
+      setAccountOpen(true);
+      return;
+    }
+
+    const isFav = !!favs[listingId];
+    console.log("   was favourite?", isFav);
+
+    if (!isFav) {
+      console.log("➕ Adding favourite in Supabase…");
+      const { data, error } = await supabase
+        .from("favorites")
+        .insert({
+          user_id: userKey,
+          listing_id: listingId,
+        })
+        .select();
+
+      if (error) {
+        console.error("❌ Error adding favorite:", error);
+        return;
+      }
+
+      console.log("✅ Inserted favourite row:", data);
+
+      setFavs((prev) => ({
+        ...prev,
+        [listingId]: true,
+      }));
+    } else {
+      console.log("➖ Removing favourite in Supabase…");
+      const { data, error } = await supabase
+        .from("favorites")
+        .delete()
+        .match({ user_id: userKey, listing_id: listingId })
+        .select();
+
+      if (error) {
+        console.error("❌ Error removing favorite:", error);
+        return;
+      }
+
+      console.log("✅ Deleted favourite row:", data);
+
+      setFavs((prev) => {
+        const copy = { ...prev };
+        delete copy[listingId];
+        return copy;
+      });
+    }
+  };
+
+  // --- RENDER ---
   return (
-    <div className="hz-root">
-      <Header
-  q={search}
-  setQ={setSearch}
-  onSearch={handleSearch}
-  lang={lang}
-  setLang={setLang}
-  disableEnterSearch={accountOpen || postOpen}
-  onLogoClick={() => {
-    setActiveTab("home");
-    setActiveCategoryKey(null);
-    setSelectedListing(null);
-    setSearchTerm("");
-  }}
-/>
+    <>
+      <div className="hz-root">
+        <Header
+          q={search}
+          setQ={setSearch}
+          onSearch={handleSearch}
+          lang={lang}
+          setLang={setLang}
+          disableEnterSearch={accountOpen || postOpen}
+          onLogoClick={() => {
+            setActiveTab("home");
+            setActiveCategoryKey(null);
+            setSelectedListing(null);
+            setSearchTerm("");
+          }}
+        />
 
+        <main className="hz-main">
+          {selectedListing ? (
+            <ListingDetail
+              item={selectedListing}
+              onBack={() => setSelectedListing(null)}
+              lang={lang}
+            />
+          ) : (
+            <>
+              {activeCategory && (
+                <CategoryPage
+                  cat={activeCategory}
+                  listings={listings}
+                  favs={favs}
+                  toggleFav={toggleFav}
+                  onBack={handleBackFromCategory}
+                  activeSub={activeSub}
+                  lang={lang}
+                  onOpenListing={(item) => setSelectedListing(item)}
+                />
+              )}
 
-
-      <main className="hz-main">
-        {selectedListing ? (
-          <ListingDetail
-            item={selectedListing}
-            onBack={() => setSelectedListing(null)}
-            lang={lang}
-          />
-        ) : (
-          <>
-            {activeCategory && (
-              <CategoryPage
-                cat={activeCategory}
-                listings={listings}
-                favs={favs}
-                toggleFav={toggleFav}
-                onBack={handleBackFromCategory}
-                activeSub={activeSub}
-                lang={lang}
-                onOpenListing={(item) => setSelectedListing(item)}
-              />
-            )}
-
-            {!activeCategory && searchTerm && (
-              <div className="hz-page">
-                <div className="hz-section-header">
-                  <h3>
-                    {STRINGS[lang].searchResults} "{search}"
-                  </h3>
+              {!activeCategory && searchTerm && (
+                <div className="hz-page">
+                  <div className="hz-section-header">
+                    <h3>
+                      {STRINGS[lang].searchResults} "{search}"
+                    </h3>
+                  </div>
+                  {searchResults.length ? (
+                    <div className="hz-grid">
+                      {searchResults.map((l) => (
+                        <ListingCard
+                          key={l.id}
+                          item={l}
+                          fav={!!favs[l.id]}
+                          onToggleFav={toggleFav}
+                          onOpen={(item) => setSelectedListing(item)}
+                          lang={lang}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="hz-no-results">
+                      {STRINGS[lang].searchNoResults}
+                    </div>
+                  )}
                 </div>
-                {searchResults.length ? (
+              )}
+
+              {showHome && (
+                <HomeGrid
+                  lang={lang}
+                  favs={favs}
+                  listings={listings}
+                  toggleFav={toggleFav}
+                  onOpenCategory={openCategory}
+                  onOpenListing={(item) => setSelectedListing(item)}
+                />
+              )}
+
+              {showFavs && (
+                <div className="hz-page">
+                  <div className="hz-section-header">
+                    <h3>{STRINGS[lang].favourites}</h3>
+                  </div>
                   <div className="hz-grid">
-                    {searchResults.map((l) => (
+                    {favListings.map((l) => (
                       <ListingCard
                         key={l.id}
                         item={l}
@@ -2964,86 +3433,46 @@ const [activeTab, setActiveTab] = useState("home");
                       />
                     ))}
                   </div>
-                ) : (
-                  <div className="hz-no-results">
-                    {STRINGS[lang].searchNoResults}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {showHome && (
-              <HomeGrid
-                lang={lang}
-                favs={favs}
-                listings={listings}
-                toggleFav={toggleFav}
-                onOpenCategory={openCategory}
-                onOpenListing={(item) => setSelectedListing(item)}
-              />
-            )}
-
-            {showFavs && (
-              <div className="hz-page">
-                <div className="hz-section-header">
-                  <h3>{STRINGS[lang].favourites}</h3>
                 </div>
-                <div className="hz-grid">
-                  {favListings.map((l) => (
-                    <ListingCard
-                      key={l.id}
-                      item={l}
-                      fav={!!favs[l.id]}
-                      onToggleFav={toggleFav}
-                      onOpen={(item) => setSelectedListing(item)}
-                      lang={lang}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+              )}
 
-                       {activeTab === "account" && user && (
-              <AccountPage user={user} listings={listings} />
-            )}
-
-          </>
-        )}
-      </main>
+              {activeTab === "account" && user && (
+                <AccountPage
+                  user={user}
+                  listings={listings}
+                  onDeleteListing={deleteListing}
+                  onLogout={handleLogout}
+                  onOpenListing={(item) => setSelectedListing(item)}
+                />
+              )}
+            </>
+          )}
+        </main>
 
         <BottomNav
-  activeTab={activeTab}
-  onTabChange={handleBottomTab}
-  onPost={handlePostClick}
-  onAccount={() => {
-    if (!user) {
-      setAccountOpen(true);
-    } else {
-      setActiveTab("account");
-      setActiveCategoryKey(null);
-      setSelectedListing(null);
-      setSearchTerm("");
-    }
-  }}
-  lang={lang}
-/>
+          activeTab={activeTab}
+          onTabChange={handleBottomTab}
+          onPost={handlePostClick}
+          onAccount={handleAccountClick}
+          lang={lang}
+        />
 
+        <AccountSheet
+          open={accountOpen}
+          onClose={() => setAccountOpen(false)}
+          setUser={setUser}
+          lang={lang}
+          onGoogleLogin={handleGoogleLogin}
+        />
 
-
-      <AccountSheet
-        open={accountOpen}
-        onClose={() => setAccountOpen(false)}
-        setUser={setUser}
-      />
-
-            <PostDialog
-        open={postOpen}
-        onClose={() => setPostOpen(false)}
-        lang={lang}
-        onCreateListing={handleCreateListing}
-        userEmail={user?.email}
-      />
-
-    </div>
+        <PostDialog
+          open={postOpen}
+          onClose={() => setPostOpen(false)}
+          lang={lang}
+          onCreateListing={handleCreateListing}
+          userEmail={user?.email}
+        />
+      </div>
+    </>
   );
 }
